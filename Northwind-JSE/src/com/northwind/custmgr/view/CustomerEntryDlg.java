@@ -14,10 +14,12 @@
  * You should have received a copy of the GNU General Public License
  * along with this program.  If not, see <http://www.gnu.org/licenses/>.
  */
-package com.northwind.view;
+package com.northwind.custmgr.view;
 
+import com.northwind.custmgr.model.Customer;
 import com.northwind.utils.ScreenUtils;
 import java.awt.Image;
+import java.awt.event.ActionListener;
 
 /**
  *
@@ -25,6 +27,9 @@ import java.awt.Image;
  */
 public class CustomerEntryDlg extends javax.swing.JDialog {
 
+    private boolean newEntry;
+    private Customer newCust;
+    
     /**
      * Creates new form CustomerEntryDlg
      */
@@ -39,6 +44,26 @@ public class CustomerEntryDlg extends javax.swing.JDialog {
         this.setIconImage(icon);
         
         this.getRootPane().setDefaultButton(saveButton);
+    }
+    
+    public void setNewEntry(boolean nue) {
+        this.newEntry = nue;
+    }
+    
+    public boolean isNewEntry() {
+        return this.newEntry;
+    }
+    
+    public void setEntry(Customer o) {
+        this.newCust = o;
+    }
+    
+    public Customer getEntry() {
+        return this.newCust;
+    }
+    
+    public void addActionListener(ActionListener listener) {
+        this.addActionListener(listener);
     }
 
     /**

@@ -20,9 +20,14 @@ import com.northwind.exceptions.InvalidLoggingLevelException;
 import com.northwind.utils.ArgumentParser;
 import com.northwind.utils.Logger;
 import com.northwind.view.MainWindow;
+import com.northwind.enums.SysExits;
+import com.northwind.settings.AppProperties;
+import java.io.File;
 import java.time.Instant;
 import java.util.logging.Level;
 import java.util.logging.LogRecord;
+import javax.swing.UIManager;
+import javax.swing.UnsupportedLookAndFeelException;
 
 /**
  *
@@ -31,17 +36,30 @@ import java.util.logging.LogRecord;
 public class Northwind {
     private static final Logger log = Logger.getInstance();
     private static final LogRecord record;
+    private static final AppProperties props = AppProperties.getInstance();
     
     static {
         record = new LogRecord(Level.ALL, "Application Starting");
     }
     
+    private Northwind() { /* to allow access from outside the class. */ }
+    
     /**
      * @param args the command line arguments
      */
-    public static void main(String[] args) {        
+    public static void main(String[] args) {
         record.setSourceClassName(Northwind.class.getCanonicalName());
         record.setSourceMethodName("main");
+        record.setResourceBundleName("Basic Edition");
+        String build = Long.valueOf(System.currentTimeMillis()).toString();
+        build = build.substring(build.length() - 9);
+        record.setSequenceNumber(Long.valueOf(build));
+        record.setLoggerName("0.1.5");
+        Object[] mods = new Object[]{ "Base Module", 
+                "Customer Management Module"};
+        record.setParameters(mods);
+        log.welcome(record);
+        
         record.setParameters(args);
         log.enter(record);
         
@@ -54,9 +72,11 @@ public class Northwind {
         int levelToSet = 0;
         String level = "";
         if (parser.isSwitchPresent("--debug") || parser.isSwitchPresent("-d")) {
+            props.setProperty("debugging", Boolean.TRUE.toString());
             levelToSet = Logger.DEBUG;
             level = "DEBUG";
         } else {
+            props.setProperty("debugging", Boolean.FALSE.toString());
             levelToSet = Logger.CONFIG;
             level = "CONFIG";
         }
@@ -72,6 +92,64 @@ public class Northwind {
             record.setMessage("Exception while setting logging level");
             record.setThrown(ex);
             log.error(record);
+        }
+        
+        String lafName;
+        if (parser.isSwitchPresent("--laf") ) {
+            lafName = parser.getSwitchValue("--laf");
+        } else if ( parser.isSwitchPresent("-l") ) {
+            lafName = parser.getSwitchValue("-l");
+        } else {
+            lafName = "SYSTEM";
+        }
+        
+        record.setMessage("For the record, we are going to list all installed "
+                + "Look and Feels:");
+        log.debug(record);
+        int x = 0;
+        
+        for ( javax.swing.UIManager.LookAndFeelInfo info : 
+                javax.swing.UIManager.getInstalledLookAndFeels() ) {
+            record.setMessage("LaF #" + (++x) + ": " + info.getName() + " [ " 
+                    + info.getClassName() + " ]");
+            log.debug(record);
+        }
+        
+        record.setMessage("Attempting to set the look and feel.");
+        log.config(record);
+        if ( !lafName.equals("SYSTEM") ) {
+            for (javax.swing.UIManager.LookAndFeelInfo info : 
+                    javax.swing.UIManager.getInstalledLookAndFeels()) {
+                record.setMessage(info.getName());
+                log.debug(record);
+
+                if ( info.getName().equalsIgnoreCase(lafName) )
+                    try {
+                        record.setMessage("Setting look and feel to " 
+                                + info.getName() + ".");
+                        log.debug(record);
+                        UIManager.setLookAndFeel(info.getClassName());
+                        break;
+                } catch (ClassNotFoundException | 
+                        InstantiationException | 
+                        IllegalAccessException | 
+                        UnsupportedLookAndFeelException ex) {
+                    record.setMessage(ex.getLocalizedMessage());
+                    record.setThrown(ex);
+                    log.error(record);
+                }
+            }
+        } else {
+            try {
+                UIManager.setLookAndFeel(UIManager.getSystemLookAndFeelClassName());
+                } catch (ClassNotFoundException | 
+                        InstantiationException | 
+                        IllegalAccessException | 
+                        UnsupportedLookAndFeelException ex) {
+                    record.setMessage(ex.getLocalizedMessage());
+                    record.setThrown(ex);
+                    log.error(record);
+                }
         }
         
         record.setMessage("Creating and showing the MainWindow...");

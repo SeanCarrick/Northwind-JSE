@@ -3,7 +3,7 @@
  * To change this template file, choose Tools | Templates
  * and open the template in the editor.
  */
-package com.northwind.model;
+package com.northwind.custmgr.model;
 
 /**
  *
@@ -28,6 +28,8 @@ public class Customer {
     private String contactName;
     private String notes;
     private boolean active;
+    
+    private boolean sortByState = false;
     
     public Customer() {
         
@@ -183,5 +185,13 @@ public class Customer {
 
     public void setActive(boolean active) {
         this.active = active;
+    }
+    
+    @Override
+    public String toString() {
+        if ( this.sortByState ) 
+            return this.getState();
+        else 
+            return this.getCompanyName();
     }
 }

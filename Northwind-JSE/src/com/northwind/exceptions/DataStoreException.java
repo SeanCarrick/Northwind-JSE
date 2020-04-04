@@ -20,13 +20,13 @@ package com.northwind.exceptions;
  *
  * @author Sean Carrick &lt;sean at pekinsoft dot com&gt;
  */
-public class DatabaseException extends Exception {
+public class DataStoreException extends Exception {
 
     /**
      * Creates a new instance of <code>DatabaseException</code> without detail
      * message.
      */
-    public DatabaseException() {
+    public DataStoreException() {
     }
 
     /**
@@ -35,11 +35,11 @@ public class DatabaseException extends Exception {
      *
      * @param msg the detail message.
      */
-    public DatabaseException(String msg) {
+    public DataStoreException(String msg) {
         super(msg);
     }
     
-    public DatabaseException(String msg, Throwable thrown) {
+    public DataStoreException(String msg, Throwable thrown) {
         super(msg, thrown);
     }
 }

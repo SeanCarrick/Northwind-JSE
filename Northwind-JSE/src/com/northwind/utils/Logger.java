@@ -38,6 +38,7 @@
 package com.northwind.utils;
 
 import com.northwind.exceptions.InvalidLoggingLevelException;
+import com.northwind.settings.AppPreferences;
 import java.io.File;
 import java.io.FileWriter;
 import java.io.IOException;
@@ -988,6 +989,125 @@ public class Logger {
             try {
                 log.write(StringUtils.wrapAt("WARNING: " + record.getMessage(),
                         80) + "\n");
+                
+                // Now, flush the buffer to be sure the data was written.
+                log.flush();
+            } catch ( IOException ex ) {
+                // Let the user know that the message was not written.
+                String ttl = "I/O Error: Entry Not Written";
+                MessageBox.showError(ex, ttl);
+            }
+        }
+    }
+    
+    /**
+     * This is a convenience method for logging system information at the top of
+     * the log file. This information is being logged to provide some info about
+     * the state of the system at application startup, which could possibly help
+     * in tracking down bugs.
+     * 
+     * <dl>
+     *  <dt>`LogRecord.setSourceClassName()`</dt>
+     *  <dd>This is used for exactly what the method says, the source class name
+     *      where the `Exception` was thrown.</dd>
+     *  <dt>`LogRecord.setSourceMethodName()`</dt>
+     *  <dd>This is, likewise, used for what the method says, the source method
+     *      name where the `Exception` was thrown</dd>
+     *  <dt>`LogRecord.setThrown()`</dt>
+     *  <dd>Again, use this for exactly what the method says, store the actual
+     *      `Exception` that was thrown</dd>
+     *  <dt>`LogRecord.setMessage()`</dt>
+     *  <dd>Use this method to store the package in which the `Exception` was
+     *      thrown, e.g., "com.myapp.mypkg"</dd>
+     *  <dt>`LogRecord.setResourceBundle(String)`</dt>
+     *  <dd>Use this method to pass the edition of the application that is being
+     *      tested or run: i.e., Basic Edition, Corporate Edition, Enterprise
+     *      Edition</dd>
+     *  <dt>`LogRecord.setSequenceNumber()`</dt>
+     *  <dd>Use this method to provide the build number that is being run at the
+     *      time of the `Exception` being thrown</dd>
+     *  <dt>`LogRecord.setLoggerName()`</dt>
+     *  <dd>Use this method to provide the version that is being run at the time
+     *      of the `Exception`, i.e. "1.2.19", "0.2.5", etc.</dd>
+     *  <dt>`Logger.setParameters(Object[])`</dt>
+     *  <dd>Use this method to provide a list of the installed modules when the
+     *      exception was thrown</dd>
+     * </dl>
+     * 
+     * @param record    A `LogRecord` containing all pertinent information as
+     *                  described above.
+     */
+    public void welcome(LogRecord record) {
+        // We need to try to log the welcome message, however, we will only do 
+        //+ so if logging is not turned off.
+        if ( this.level != OFF ) {
+            String ruler = "-".repeat(80);
+            String dRule = "=".repeat(80);
+            
+            // We're good to log the message to the log file.
+            String msg = dRule + " ".repeat(21) + "\n"
+                    + "Northwind Traders Complete Accounting: " 
+                    + record.getResourceBundleName() + "\n" + dRule + "\n\n";
+            msg += "\tNorthwind Traders Version: " + record.getLoggerName() 
+                    + "\n\t                    Build: " 
+                    + record.getSequenceNumber() + "\n\t"
+                    + "        Installed Modules:\n";
+            
+            for ( Object o : record.getParameters() ) {
+                msg += "\t\t\t\t   " + o.toString() + "\n";
+            }
+            
+            msg +=("\n\n");
+            msg += dRule + "\n";
+            msg +=(" ".repeat(24));
+            msg +=("S Y S T E M   I N F O R M A T I O N\n");
+            msg += ruler;
+            msg +=("\n\n");
+            msg +=("OS.................");
+            msg +=(System.getProperty("os.name"));
+            msg +=("\nOS Version.........");
+            msg +=(System.getProperty("os.version"));
+            msg +=("\nArchitecture.......");
+            msg +=(System.getProperty("os.arch"));
+            msg +=("\n\n");
+            msg +=(" ".repeat(26));
+            msg +=("J A V A   I N F O R M A T I O N");
+            msg +=("\n\n");
+            msg +=("Java Virtual Machine.....");
+            msg +=(System.getProperty("java.vm.name"));
+            msg +=("\nJava VM Version..........");
+            msg +=(System.getProperty("java.vm.version"));
+            msg +=("\nJava Runtime Name........");
+            msg +=(System.getProperty("java.runtime.name"));
+            msg +=("\nJava Runtime Version.....");
+            msg +=(System.getProperty("java.runtime.version"));
+            msg +=("\nJava Specification.......");
+            msg +=(System.getProperty("java.specification.name"));
+            msg +=("\nJava Spec. Version.......");
+            msg +=(System.getProperty("java.specification.version"));
+            msg +=("\nJava Vendor..............");
+            msg +=(System.getProperty("java.vendor"));
+            msg +=("\nJava Version.............");
+            msg +=(System.getProperty("java.version"));
+            msg +=("\nJava Version Date........");
+            msg +=(System.getProperty("java.version.date"));
+            msg +=("\nJava Class Path..........");
+            msg +=(System.getProperty("java.class.path"));
+            msg +=("\nJava Class Version.......");
+            msg +=(System.getProperty("java.class.version"));
+            msg +=("\nJava Library Path........");
+            msg +=(System.getProperty("java.library.path"));
+            msg +=("\n\n");
+            msg +=(" ".repeat(26));
+            msg +=("\n\n");
+            msg +=("User Country.............");
+            msg +=(System.getProperty("user.country"));
+            msg +=("\nUser Language............");
+            msg +=(System.getProperty("user.language"));
+            msg += "\n" + ruler + "\n" + dRule + "\n" + ruler + "\n";
+            
+            try {
+                log.write(msg);
                 
                 // Now, flush the buffer to be sure the data was written.
                 log.flush();

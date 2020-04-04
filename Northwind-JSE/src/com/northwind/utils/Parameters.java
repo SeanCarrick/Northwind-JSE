@@ -16,6 +16,7 @@
  */
 package com.northwind.utils;
 
+import com.northwind.settings.AppPreferences;
 import java.io.File;
 import java.util.prefs.Preferences;
 

@@ -1,45 +1,127 @@
 /*
- * Copyright (C) 2020 PekinSOFT Systems
- *
- * This program is free software: you can redistribute it and/or modify
- * it under the terms of the GNU General Public License as published by
- * the Free Software Foundation, either version 3 of the License, or
- * (at your option) any later version.
- *
- * This program is distributed in the hope that it will be useful,
- * but WITHOUT ANY WARRANTY; without even the implied warranty of
- * MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE.  See the
- * GNU General Public License for more details.
- *
- * You should have received a copy of the GNU General Public License
- * along with this program.  If not, see <http://www.gnu.org/licenses/>.
+ * To change this license header, choose License Headers in Project Properties.
+ * To change this template file, choose Tools | Templates
+ * and open the template in the editor.
  */
 package com.northwind.view;
 
+import com.northwind.custmgr.view.CustomersWindow;
+import com.northwind.enums.SysExits;
+import com.northwind.settings.AppProperties;
 import com.northwind.utils.Logger;
+import com.northwind.utils.ScreenUtils;
+import java.awt.Color;
+import java.awt.SystemColor;
+import java.awt.event.ActionListener;
+import java.io.File;
+import java.util.logging.Level;
 import java.util.logging.LogRecord;
+import javax.swing.JFileChooser;
+import javax.swing.JOptionPane;
+import javax.swing.filechooser.FileFilter;
 
 /**
  *
  * @author Sean Carrick &lt;sean at pekinsoft dot com&gt;
  */
-public class MainWindow extends javax.swing.JFrame {
-    Logger log = Logger.getInstance();
-    LogRecord record = new LogRecord(java.util.logging.Level.ALL, 
-            "Starting the MainForm...");
+public class MainWindow extends javax.swing.JFrame implements ActionListener {
+    
+    private final LogRecord record;
+    private final Logger log;
+    private final AppProperties props;
     
     /**
-     * Creates new form CustomersWindow
+     * Creates new form MainForm
      */
     public MainWindow() {
-        record.setSourceClassName(MainWindow.class.getCanonicalName());
+        props = AppProperties.getInstance();
+        record = new LogRecord(Level.ALL, "");
+        log = Logger.getInstance();
+        
+        record.setSourceClassName(MainWindow.class.getName());
         record.setSourceMethodName("MainWindow");
-        record.setMessage("Initializing all components...");
+        record.setMessage("Initilizing the " + record.getSourceClassName());
         log.enter(record);
+        
         initComponents();
         
-        record.setMessage("Leaving MainWindow().");
-        log.exit(record, "");
+        if ( props.getPropertyAsInt("main.window.state", "0") == NORMAL ) {
+            setSize(props.getPropertyAsInt("main.window.width", "1080"), 
+                    props.getPropertyAsInt("main.window.height", "756"));
+            
+            if (props.getPropertyAsInt("main.window.left", "0") == 0)
+                setLocation(ScreenUtils.centerDialog(this));
+            else {
+                setLocation(props.getPropertyAsInt("main.window.left", "850"),
+                        props.getPropertyAsInt("main.window.top", "340"));
+            }
+        } else {
+            setExtendedState(props.getPropertyAsInt("main.window.state", 
+                    String.valueOf(NORMAL)));
+        }
+        setTitle(props.getProjectName() + " : " + props.getVersion());
+    }
+    
+    public static void setStatus(String msg, boolean isError) {
+        tipsLabel.setText(msg);
+        
+        if ( isError ) 
+            tipsLabel.setForeground(Color.red);
+        else
+            tipsLabel.setForeground(SystemColor.controlText);
+    }
+
+    private void doNewDB() {
+        JFileChooser dlg = new JFileChooser();
+        dlg.setDialogTitle("New Northwind Data Store");
+        dlg.setFileFilter(hsqlDB);
+        File dir = new File(props.getProperty("northwind.home", props.APP_DIR));
+        dlg.setCurrentDirectory(dir);
+        if ( dlg.showSaveDialog(this) == JFileChooser.APPROVE_OPTION ) {
+            
+        }
+    }
+    
+    private void doOpenDB() {
+        
+    }
+    
+    private void doSaveDB() {
+        
+    }
+    
+    private void doExit() {
+        props.setProperty("main.window.state", String.valueOf(getExtendedState()));
+        if ( getExtendedState() != NORMAL ) {
+            props.setPropertyAsInt("main.window.left", 0);
+            props.setPropertyAsInt("main.window.top", 0);
+            props.setPropertyAsInt("main.window.height", 0);
+            props.setPropertyAsInt("main.window.width", 0);
+        } else {
+            props.setPropertyAsInt("main.window.left", getX());
+            props.setPropertyAsInt("main.window.top", getY());
+            props.setPropertyAsInt("main.window.height", getHeight());
+            props.setPropertyAsInt("main.window.width", getWidth());
+        }
+        
+        props.flush();
+        
+        props.exit(SysExits.EX_OK);
+    }
+    
+    private void doShowCustomers() {
+        CustomersWindow dlg = new CustomersWindow();
+        dlg.pack();
+        this.mainDesktop.add(dlg);
+        dlg.setVisible(true);
+    }
+    
+    private void doAbout() {
+        String display = props.getName() + "\n" + props.getVersion() + "\n\n";
+        display += props.getComments();
+        
+        JOptionPane.showMessageDialog(this, display, "About Northwind Traders", 
+                JOptionPane.INFORMATION_MESSAGE);
     }
 
     /**
@@ -51,40 +133,54 @@ public class MainWindow extends javax.swing.JFrame {
     // <editor-fold defaultstate="collapsed" desc="Generated Code">//GEN-BEGIN:initComponents
     private void initComponents() {
 
-        mainToolbar = new javax.swing.JToolBar();
-        fileToolbar = new javax.swing.JToolBar();
-        exitButton = new javax.swing.JButton();
-        mainStatusBar = new org.jdesktop.swingx.JXStatusBar();
+        mainStatusbar = new org.jdesktop.swingx.JXStatusBar();
         tipsLabel = new javax.swing.JLabel();
+        mainToolbar = new javax.swing.JToolBar();
+        exitButton = new javax.swing.JButton();
         mainDesktop = new javax.swing.JDesktopPane();
-        mainMenuBar = new javax.swing.JMenuBar();
-        fileMenu = new javax.swing.JMenu();
+        mainMenubar = new javax.swing.JMenuBar();
+        jMenu1 = new javax.swing.JMenu();
+        newMenuItem = new javax.swing.JMenuItem();
+        openMenuItem = new javax.swing.JMenuItem();
+        jSeparator1 = new javax.swing.JPopupMenu.Separator();
+        saveMenuItem = new javax.swing.JMenuItem();
+        jSeparator2 = new javax.swing.JPopupMenu.Separator();
+        printMenu = new javax.swing.JMenu();
+        jSeparator3 = new javax.swing.JPopupMenu.Separator();
         exitMenuItem = new javax.swing.JMenuItem();
-        editMenu = new javax.swing.JMenu();
-        maintainMenu = new javax.swing.JMenu();
-        customersMenuItem = new javax.swing.JMenuItem();
+        browseMenu = new javax.swing.JMenu();
+        customerList = new javax.swing.JMenuItem();
+        helpMenu = new javax.swing.JMenu();
+        contentsHelpMenu = new javax.swing.JMenuItem();
+        indexHelpMenu = new javax.swing.JMenuItem();
+        jSeparator4 = new javax.swing.JPopupMenu.Separator();
+        aboutMenu = new javax.swing.JMenuItem();
 
-        setDefaultCloseOperation(javax.swing.WindowConstants.EXIT_ON_CLOSE);
+        setDefaultCloseOperation(javax.swing.WindowConstants.DISPOSE_ON_CLOSE);
+        setTitle("Northwind Traders - Basic Edition");
+        addWindowListener(new java.awt.event.WindowAdapter() {
+            public void windowClosing(java.awt.event.WindowEvent evt) {
+                cleanUpBeforeClosing(evt);
+            }
+        });
+
+        tipsLabel.setText("Watch here for helpful information...");
+        mainStatusbar.add(tipsLabel);
 
         mainToolbar.setRollover(true);
 
-        fileToolbar.setRollover(true);
-
-        exitButton.setIcon(new javax.swing.ImageIcon(getClass().getResource("/com/northwind/resources/Turn off.png"))); // NOI18N
+        exitButton.setIcon(new javax.swing.ImageIcon(getClass().getResource("/com/northwind/resources/turnoff24.png"))); // NOI18N
+        exitButton.setToolTipText("Exit Northwind Traders");
         exitButton.setFocusable(false);
         exitButton.setHorizontalTextPosition(javax.swing.SwingConstants.CENTER);
         exitButton.setVerticalTextPosition(javax.swing.SwingConstants.BOTTOM);
+        exitButton.setActionCommand("exit");
         exitButton.addActionListener(new java.awt.event.ActionListener() {
             public void actionPerformed(java.awt.event.ActionEvent evt) {
-                doExit(evt);
+                MainWindow.this.actionPerformed(evt);
             }
         });
-        fileToolbar.add(exitButton);
-
-        mainToolbar.add(fileToolbar);
-
-        tipsLabel.setText("Watch here for helpful tips...");
-        mainStatusBar.add(tipsLabel);
+        mainToolbar.add(exitButton);
 
         javax.swing.GroupLayout mainDesktopLayout = new javax.swing.GroupLayout(mainDesktop);
         mainDesktop.setLayout(mainDesktopLayout);
@@ -94,137 +190,244 @@ public class MainWindow extends javax.swing.JFrame {
         );
         mainDesktopLayout.setVerticalGroup(
             mainDesktopLayout.createParallelGroup(javax.swing.GroupLayout.Alignment.LEADING)
-            .addGap(0, 448, Short.MAX_VALUE)
+            .addGap(0, 226, Short.MAX_VALUE)
         );
 
-        fileMenu.setText("File");
+        jMenu1.setText("File");
 
-        exitMenuItem.setAccelerator(javax.swing.KeyStroke.getKeyStroke(java.awt.event.KeyEvent.VK_4, java.awt.event.InputEvent.ALT_MASK));
+        newMenuItem.setAccelerator(javax.swing.KeyStroke.getKeyStroke(java.awt.event.KeyEvent.VK_N, java.awt.event.InputEvent.CTRL_MASK));
+        newMenuItem.setIcon(new javax.swing.ImageIcon(getClass().getResource("/com/northwind/resources/newDB.png"))); // NOI18N
+        newMenuItem.setMnemonic('N');
+        newMenuItem.setText("New Data Store...");
+        newMenuItem.setActionCommand("newDB");
+        newMenuItem.addActionListener(new java.awt.event.ActionListener() {
+            public void actionPerformed(java.awt.event.ActionEvent evt) {
+                MainWindow.this.actionPerformed(evt);
+            }
+        });
+        jMenu1.add(newMenuItem);
+
+        openMenuItem.setAccelerator(javax.swing.KeyStroke.getKeyStroke(java.awt.event.KeyEvent.VK_O, java.awt.event.InputEvent.CTRL_MASK));
+        openMenuItem.setIcon(new javax.swing.ImageIcon(getClass().getResource("/com/northwind/resources/openDB.png"))); // NOI18N
+        openMenuItem.setMnemonic('O');
+        openMenuItem.setText("Open Data Store...");
+        openMenuItem.setActionCommand("openDB");
+        openMenuItem.addActionListener(new java.awt.event.ActionListener() {
+            public void actionPerformed(java.awt.event.ActionEvent evt) {
+                MainWindow.this.actionPerformed(evt);
+            }
+        });
+        jMenu1.add(openMenuItem);
+        jMenu1.add(jSeparator1);
+
+        saveMenuItem.setAccelerator(javax.swing.KeyStroke.getKeyStroke(java.awt.event.KeyEvent.VK_S, java.awt.event.InputEvent.CTRL_MASK));
+        saveMenuItem.setIcon(new javax.swing.ImageIcon(getClass().getResource("/com/northwind/resources/save-database.png"))); // NOI18N
+        saveMenuItem.setText("Save Data Store");
+        saveMenuItem.setEnabled(false);
+        saveMenuItem.setActionCommand("saveDB");
+        jMenu1.add(saveMenuItem);
+        jMenu1.add(jSeparator2);
+
+        printMenu.setIcon(new javax.swing.ImageIcon(getClass().getResource("/com/northwind/resources/print.png"))); // NOI18N
+        printMenu.setMnemonic('P');
+        printMenu.setText("Print");
+        printMenu.setEnabled(false);
+        jMenu1.add(printMenu);
+        jMenu1.add(jSeparator3);
+
+        exitMenuItem.setAccelerator(javax.swing.KeyStroke.getKeyStroke(java.awt.event.KeyEvent.VK_F4, java.awt.event.InputEvent.ALT_MASK));
         exitMenuItem.setIcon(new javax.swing.ImageIcon(getClass().getResource("/com/northwind/resources/Turn off.png"))); // NOI18N
         exitMenuItem.setMnemonic('x');
         exitMenuItem.setText("Exit");
         exitMenuItem.addActionListener(new java.awt.event.ActionListener() {
             public void actionPerformed(java.awt.event.ActionEvent evt) {
-                doExit(evt);
+                MainWindow.this.actionPerformed(evt);
             }
         });
-        fileMenu.add(exitMenuItem);
+        jMenu1.add(exitMenuItem);
+        exitMenuItem.setActionCommand("exit");
+        exitMenuItem.getAccessibleContext().setAccessibleName("");
 
-        mainMenuBar.add(fileMenu);
+        mainMenubar.add(jMenu1);
 
-        editMenu.setText("Edit");
-        mainMenuBar.add(editMenu);
+        browseMenu.setText("Browse");
 
-        maintainMenu.setText("Maintain");
-
-        customersMenuItem.setIcon(new javax.swing.ImageIcon(getClass().getResource("/com/northwind/resources/users.png"))); // NOI18N
-        customersMenuItem.setMnemonic('u');
-        customersMenuItem.setText("Customers...");
-        customersMenuItem.addActionListener(new java.awt.event.ActionListener() {
+        customerList.setAccelerator(javax.swing.KeyStroke.getKeyStroke(java.awt.event.KeyEvent.VK_F4, 0));
+        customerList.setIcon(new javax.swing.ImageIcon(getClass().getResource("/com/northwind/resources/users.png"))); // NOI18N
+        customerList.setMnemonic('C');
+        customerList.setText("Customer List");
+        customerList.setActionCommand("customers");
+        customerList.addActionListener(new java.awt.event.ActionListener() {
             public void actionPerformed(java.awt.event.ActionEvent evt) {
-                showCustomerEntryDialog(evt);
+                MainWindow.this.actionPerformed(evt);
             }
         });
-        maintainMenu.add(customersMenuItem);
+        browseMenu.add(customerList);
 
-        mainMenuBar.add(maintainMenu);
+        mainMenubar.add(browseMenu);
 
-        setJMenuBar(mainMenuBar);
+        helpMenu.setText("Help");
+
+        contentsHelpMenu.setAccelerator(javax.swing.KeyStroke.getKeyStroke(java.awt.event.KeyEvent.VK_F2, 0));
+        contentsHelpMenu.setIcon(new javax.swing.ImageIcon(getClass().getResource("/com/northwind/resources/help.png"))); // NOI18N
+        contentsHelpMenu.setMnemonic('C');
+        contentsHelpMenu.setText("Help Contents");
+        contentsHelpMenu.setActionCommand("help");
+        helpMenu.add(contentsHelpMenu);
+
+        indexHelpMenu.setAccelerator(javax.swing.KeyStroke.getKeyStroke(java.awt.event.KeyEvent.VK_F1, 0));
+        indexHelpMenu.setIcon(new javax.swing.ImageIcon(getClass().getResource("/com/northwind/resources/help-idx.png"))); // NOI18N
+        indexHelpMenu.setMnemonic('i');
+        indexHelpMenu.setText("Help Index");
+        indexHelpMenu.setActionCommand("helpidx");
+        helpMenu.add(indexHelpMenu);
+        helpMenu.add(jSeparator4);
+
+        aboutMenu.setIcon(new javax.swing.ImageIcon(getClass().getResource("/com/northwind/resources/info.png"))); // NOI18N
+        aboutMenu.setMnemonic('N');
+        aboutMenu.setText("About Northwind");
+        aboutMenu.setActionCommand("about");
+        aboutMenu.addActionListener(new java.awt.event.ActionListener() {
+            public void actionPerformed(java.awt.event.ActionEvent evt) {
+                MainWindow.this.actionPerformed(evt);
+            }
+        });
+        helpMenu.add(aboutMenu);
+
+        mainMenubar.add(helpMenu);
+
+        setJMenuBar(mainMenubar);
 
         javax.swing.GroupLayout layout = new javax.swing.GroupLayout(getContentPane());
         getContentPane().setLayout(layout);
         layout.setHorizontalGroup(
             layout.createParallelGroup(javax.swing.GroupLayout.Alignment.LEADING)
+            .addComponent(mainStatusbar, javax.swing.GroupLayout.DEFAULT_SIZE, 489, Short.MAX_VALUE)
             .addComponent(mainToolbar, javax.swing.GroupLayout.DEFAULT_SIZE, javax.swing.GroupLayout.DEFAULT_SIZE, Short.MAX_VALUE)
-            .addComponent(mainStatusBar, javax.swing.GroupLayout.DEFAULT_SIZE, 936, Short.MAX_VALUE)
             .addComponent(mainDesktop)
         );
         layout.setVerticalGroup(
             layout.createParallelGroup(javax.swing.GroupLayout.Alignment.LEADING)
-            .addGroup(layout.createSequentialGroup()
-                .addComponent(mainToolbar, javax.swing.GroupLayout.PREFERRED_SIZE, 25, javax.swing.GroupLayout.PREFERRED_SIZE)
+            .addGroup(javax.swing.GroupLayout.Alignment.TRAILING, layout.createSequentialGroup()
+                .addComponent(mainToolbar, javax.swing.GroupLayout.PREFERRED_SIZE, javax.swing.GroupLayout.DEFAULT_SIZE, javax.swing.GroupLayout.PREFERRED_SIZE)
                 .addPreferredGap(javax.swing.LayoutStyle.ComponentPlacement.RELATED)
                 .addComponent(mainDesktop)
                 .addPreferredGap(javax.swing.LayoutStyle.ComponentPlacement.RELATED)
-                .addComponent(mainStatusBar, javax.swing.GroupLayout.PREFERRED_SIZE, javax.swing.GroupLayout.DEFAULT_SIZE, javax.swing.GroupLayout.PREFERRED_SIZE))
+                .addComponent(mainStatusbar, javax.swing.GroupLayout.PREFERRED_SIZE, javax.swing.GroupLayout.DEFAULT_SIZE, javax.swing.GroupLayout.PREFERRED_SIZE))
         );
 
         pack();
     }// </editor-fold>//GEN-END:initComponents
 
-    private void doExit(java.awt.event.ActionEvent evt) {//GEN-FIRST:event_doExit
-        record.setSourceMethodName("doExit");
+    private void cleanUpBeforeClosing(java.awt.event.WindowEvent evt) {//GEN-FIRST:event_cleanUpBeforeClosing
+        record.setSourceMethodName("cleanUpBeforeClosing");
         record.setParameters(new Object[]{evt});
+        record.setMessage("Cleaning up any messes we may have left behind.");
         log.enter(record);
         
-        record.setMessage("Disposing of the MainForm...");
-        log.exit(record, "");
-        this.dispose();
-    }//GEN-LAST:event_doExit
-
-    private void showCustomerEntryDialog(java.awt.event.ActionEvent evt) {//GEN-FIRST:event_showCustomerEntryDialog
-        record.setSourceMethodName("showCustomerEntryDialog");
-        record.setParameters(new Object[]{evt});
-        log.enter(record);
-        
-        record.setMessage("Creating and showing the CustomerEntryDlg...");
+        record.setMessage("Storing window state to our preferences");
         log.debug(record);
-        CustomerEntryDlg dlg = new CustomerEntryDlg(this, true);
-        dlg.pack();
-        dlg.setVisible(true);
-        
-        record.setMessage("Leaving showCustomerEntryDialog().");
-        log.exit(record, "");
-    }//GEN-LAST:event_showCustomerEntryDialog
-
-    /**
-     * @param args the command line arguments
-     */
-    public static void main(String args[]) {
-        /* Set the Nimbus look and feel */
-        //<editor-fold defaultstate="collapsed" desc=" Look and feel setting code (optional) ">
-        /* If Nimbus (introduced in Java SE 6) is not available, stay with the default look and feel.
-         * For details see http://download.oracle.com/javase/tutorial/uiswing/lookandfeel/plaf.html 
-         */
-        try {
-            for (javax.swing.UIManager.LookAndFeelInfo info : javax.swing.UIManager.getInstalledLookAndFeels()) {
-                if ("Nimbus".equals(info.getName())) {
-                    javax.swing.UIManager.setLookAndFeel(info.getClassName());
-                    break;
-                }
-            }
-        } catch (ClassNotFoundException ex) {
-            java.util.logging.Logger.getLogger(MainWindow.class.getName()).log(java.util.logging.Level.SEVERE, null, ex);
-        } catch (InstantiationException ex) {
-            java.util.logging.Logger.getLogger(MainWindow.class.getName()).log(java.util.logging.Level.SEVERE, null, ex);
-        } catch (IllegalAccessException ex) {
-            java.util.logging.Logger.getLogger(MainWindow.class.getName()).log(java.util.logging.Level.SEVERE, null, ex);
-        } catch (javax.swing.UnsupportedLookAndFeelException ex) {
-            java.util.logging.Logger.getLogger(MainWindow.class.getName()).log(java.util.logging.Level.SEVERE, null, ex);
+        props.setPropertyAsInt("main.window.state", getExtendedState());
+        if ( getExtendedState() == NORMAL ) {
+            props.setPropertyAsInt("main.window.left", getX());
+            props.setPropertyAsInt("main.window.top", getY());
+            props.setPropertyAsInt("main.window.width", getWidth());
+            props.setPropertyAsInt("main.window.height", getHeight());
         }
-        //</editor-fold>
-        //</editor-fold>
+        
+        
+    }//GEN-LAST:event_cleanUpBeforeClosing
 
-        /* Create and display the form */
-        java.awt.EventQueue.invokeLater(new Runnable() {
-            public void run() {
-                new MainWindow().setVisible(true);
-            }
-        });
-    }
+    @Override
+    public void actionPerformed(java.awt.event.ActionEvent evt) {//GEN-FIRST:event_actionPerformed
+        if ( evt.getActionCommand().equalsIgnoreCase("newdb") )
+            doNewDB();
+        else if ( evt.getActionCommand().equalsIgnoreCase("opendb") )
+            doOpenDB();
+        else if ( evt.getActionCommand().equalsIgnoreCase("savedb") )
+            doSaveDB();
+        else if ( evt.getActionCommand().equalsIgnoreCase("exit") )
+            doExit();
+        else if ( evt.getActionCommand().equalsIgnoreCase("customers") )
+            doShowCustomers();
+        else if ( evt.getActionCommand().equalsIgnoreCase("about") )
+            doAbout();
+    }//GEN-LAST:event_actionPerformed
+    
+    private FileFilter hsqlDB = new FileFilter() {
+        public String getDescription() {
+            return "Northwind Data Store - HSQLDB (*.script)";
+        }
+        public boolean accept(File f) {
+            if ( f.isDirectory() ) 
+                return true;
+            else if ( f.getName().endsWith(".script") )
+                return true;
+            else
+                return false;
+        }
+    };
+    
+    //<editor-fold defaultstate="collapsed" desc="Unused main() method">
+//    /**
+//     * @param args the command line arguments
+//     */
+//    public static void main(String args[]) {
+//        /* Set the Nimbus look and feel */
+//        //<editor-fold defaultstate="collapsed" desc=" Look and feel setting code (optional) ">
+//        /* If Nimbus (introduced in Java SE 6) is not available, stay with the default look and feel.
+//         * For details see http://download.oracle.com/javase/tutorial/uiswing/lookandfeel/plaf.html 
+//         */
+//        try {
+//            for (javax.swing.UIManager.LookAndFeelInfo info : javax.swing.UIManager.getInstalledLookAndFeels()) {
+//                if ("Nimbus".equals(info.getName())) {
+//                    javax.swing.UIManager.setLookAndFeel(info.getClassName());
+//                    break;
+//                }
+//            }
+//        } catch (ClassNotFoundException ex) {
+//            java.util.logging.Logger.getLogger(MainWindow.class.getName()).log(java.util.logging.Level.SEVERE, null, ex);
+//        } catch (InstantiationException ex) {
+//            java.util.logging.Logger.getLogger(MainWindow.class.getName()).log(java.util.logging.Level.SEVERE, null, ex);
+//        } catch (IllegalAccessException ex) {
+//            java.util.logging.Logger.getLogger(MainWindow.class.getName()).log(java.util.logging.Level.SEVERE, null, ex);
+//        } catch (javax.swing.UnsupportedLookAndFeelException ex) {
+//            java.util.logging.Logger.getLogger(MainWindow.class.getName()).log(java.util.logging.Level.SEVERE, null, ex);
+//        }
+//        //</editor-fold>
+//
+//        /* Create and display the form */
+//        java.awt.EventQueue.invokeLater(new Runnable() {
+//            public void run() {
+//                new MainWindow().setVisible(true);
+//            }
+//        });
+//    }
+    //</editor-fold>
 
     // Variables declaration - do not modify//GEN-BEGIN:variables
-    private javax.swing.JMenuItem customersMenuItem;
-    private javax.swing.JMenu editMenu;
+    private javax.swing.JMenuItem aboutMenu;
+    private javax.swing.JMenu browseMenu;
+    private javax.swing.JMenuItem contentsHelpMenu;
+    private javax.swing.JMenuItem customerList;
     private javax.swing.JButton exitButton;
     private javax.swing.JMenuItem exitMenuItem;
-    private javax.swing.JMenu fileMenu;
-    private javax.swing.JToolBar fileToolbar;
+    private javax.swing.JMenu helpMenu;
+    private javax.swing.JMenuItem indexHelpMenu;
+    private javax.swing.JMenu jMenu1;
+    private javax.swing.JPopupMenu.Separator jSeparator1;
+    private javax.swing.JPopupMenu.Separator jSeparator2;
+    private javax.swing.JPopupMenu.Separator jSeparator3;
+    private javax.swing.JPopupMenu.Separator jSeparator4;
     private javax.swing.JDesktopPane mainDesktop;
-    private javax.swing.JMenuBar mainMenuBar;
-    private org.jdesktop.swingx.JXStatusBar mainStatusBar;
+    private javax.swing.JMenuBar mainMenubar;
+    private org.jdesktop.swingx.JXStatusBar mainStatusbar;
     private javax.swing.JToolBar mainToolbar;
-    private javax.swing.JMenu maintainMenu;
-    private javax.swing.JLabel tipsLabel;
+    private javax.swing.JMenuItem newMenuItem;
+    private javax.swing.JMenuItem openMenuItem;
+    private javax.swing.JMenu printMenu;
+    private javax.swing.JMenuItem saveMenuItem;
+    private static javax.swing.JLabel tipsLabel;
     // End of variables declaration//GEN-END:variables
+
 }
