@@ -16,10 +16,16 @@
  */
 package com.northwind.custmgr.view;
 
+import com.northwind.custmgr.controller.CustomerManager;
 import com.northwind.custmgr.model.Customer;
+import com.northwind.exceptions.DataStoreException;
 import com.northwind.utils.ScreenUtils;
 import java.awt.Image;
 import java.awt.event.ActionListener;
+import java.util.ArrayList;
+import java.util.List;
+import java.util.logging.Level;
+import java.util.logging.Logger;
 
 /**
  *
@@ -28,7 +34,9 @@ import java.awt.event.ActionListener;
 public class CustomerEntryDlg extends javax.swing.JDialog {
 
     private boolean newEntry;
-    private Customer newCust;
+    private Customer model;
+    private List<Customer> list;
+    private CustomerManager mgr;
     
     /**
      * Creates new form CustomerEntryDlg
@@ -44,6 +52,15 @@ public class CustomerEntryDlg extends javax.swing.JDialog {
         this.setIconImage(icon);
         
         this.getRootPane().setDefaultButton(saveButton);
+        
+        list = new ArrayList<>();
+        
+        try {
+            mgr = new CustomerManager("sa", new char[0], "customers", list);
+        } catch (DataStoreException ex) {
+            System.err.println(ex.getMessage());
+            ex.printStackTrace(System.err);
+        }
     }
     
     public void setNewEntry(boolean nue) {
@@ -55,11 +72,11 @@ public class CustomerEntryDlg extends javax.swing.JDialog {
     }
     
     public void setEntry(Customer o) {
-        this.newCust = o;
+        this.model = o;
     }
     
     public Customer getEntry() {
-        return this.newCust;
+        return this.model;
     }
     
     public void addActionListener(ActionListener listener) {

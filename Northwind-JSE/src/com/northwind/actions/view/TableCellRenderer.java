@@ -6,7 +6,7 @@
 package com.northwind.actions.view;
 
 import com.northwind.custmgr.model.Customer;
-import com.northwind.custmgr.view.CustsTableModel;
+import com.northwind.custmgr.view.CustomersTableModel;
 import java.awt.Color;
 import java.awt.Component;
 import java.text.DateFormat;
@@ -55,7 +55,7 @@ public class TableCellRenderer extends DefaultTableCellRenderer {
             label.setHorizontalAlignment(JLabel.CENTER);
         }
         TableModel tm = table.getModel();
-        Customer cust = ((CustsTableModel)tm).getCustomerValues(row);
+        Customer cust = ((CustomersTableModel)tm).getCustomerValues(row);
         if ( isSelected ) {
             label.setForeground(clrCustomer(cust));
             label.setBackground(Color.GRAY);

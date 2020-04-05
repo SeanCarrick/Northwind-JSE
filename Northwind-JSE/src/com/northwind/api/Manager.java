@@ -16,6 +16,7 @@
  */
 package com.northwind.api;
 
+import com.northwind.api.db.DbConnection;
 import com.northwind.exceptions.DataStoreException;
 import com.northwind.settings.AppProperties;
 import com.northwind.utils.Logger;
@@ -64,18 +65,25 @@ public abstract class Manager {
      *                  mapping the table to the data
      * @throws SQLException in the event any database errors are experienced
      */
-    public Manager(String url, String db, String name, char[] pWord,
+    public Manager(String name, char[] pWord,
             String table, List<?> model) throws DataStoreException {
         props = AppProperties.getInstance();
         log = Logger.getInstance();
-        record = new LogRecord(Level.FINEST, "Initializing the Manager object");
+        
+        Level lvl;
+        if ( props.getPropertyAsBoolean("debugging", "true") )
+            lvl = Level.FINEST;
+        else
+            lvl = Level.INFO;
+        
+        record = new LogRecord(lvl, "Initializing the Manager object");
         record.setSourceClassName(Manager.class.getName());
         record.setSourceMethodName("Manger");
-        record.setParameters(new Object[]{url, db, name, pWord, table, model});
+        record.setParameters(new Object[]{name, pWord, table, model});
         log.enter(record);
         
-        this.dbName = db;
-        this.dbURL = url;
+        this.dbName = props.getDbName();
+        this.dbURL = props.getDbUrl() + this.dbName + props.getDbOptions();
         this.model = model;
         this.password = pWord;
         this.tableName = table;
@@ -120,9 +128,9 @@ public abstract class Manager {
                     + "name to the parameter `db`.");
             log.debug(record);
             db = props.getProperty("app.last.db", tableName);
-            
-            props.setProperty("app.last.db", db);
         }
+            
+        props.setProperty("app.last.db", db);
         
         record.setMessage("Now that we have a valid data store table name, we "
                 + "can attempt to connect to it.");
@@ -166,9 +174,8 @@ public abstract class Manager {
         log.enter(record);
         
         try {
-            Class.forName("org.hsqldb.jdbcDriver");
-            String url = "jdbc:hsqldb:" + dbName + ";shutdown=true";
-            con = DriverManager.getConnection(url);
+            DbConnection connection = new DbConnection();
+            con = connection.reconnect(dbURL);
             
             record.setMessage("Connection succeeded! Checking the table.");
             log.debug(record);
@@ -185,21 +192,6 @@ public abstract class Manager {
             record.setThrown(ex);
             log.error(record);
             throw new DataStoreException("Could not initialize the table");
-        } catch ( ClassNotFoundException ex ) {
-            record.setSourceMethodName("connect");
-            record.setMessage("Could not load the driver. Throwing new "
-                    + "DataStoreException...");
-            record.setThrown(ex);
-            log.error(record);
-            throw new DataStoreException("Could not load the driver");
-        } catch ( SQLException ex ) {
-            record.setSourceMethodName("connect");
-            record.setMessage("Could not open the data store. Throwing new "
-                    + "DataStoreException...");
-            record.setThrown(ex);
-            log.error(record);
-            throw new DataStoreException("Could not open the data store: " 
-                    + ex.getMessage());
         } finally {
             record.setSourceMethodName("connect");
             record.setMessage("Connection establishment complete.");
@@ -266,6 +258,35 @@ public abstract class Manager {
         log.exit(record, null);
     }
     
+    protected void addNew(String sql) throws DataStoreException {
+        record.setSourceMethodName("addNew");
+        record.setParameters(new Object[]{sql});
+        record.setMessage("Attempting to execute the SQL provided...");
+        log.enter(record);
+        
+        try {
+            stmt = con.createStatement();
+            stmt.executeUpdate(sql);
+        } catch ( SQLException ex ) {
+            record.setMessage("Could not modify the table. Throwing new "
+                    + "DataStoreException...");
+            record.setThrown(ex);
+            log.error(record);
+            throw new DataStoreException("Could not modify the table", ex);
+        } finally {
+            record.setMessage("Performing housekeeping before we leave...");
+            log.debug(record);
+            
+            cleanUp();
+            
+            record.setSourceMethodName("addNew");
+            record.setParameters(new Object[]{sql});
+            record.setMessage("Housekeeping complete. Returning from whence we "
+                    + "came...");
+            log.exit(record, null);
+        }
+    }
+    
     protected void update(String sql) throws DataStoreException {
         record.setSourceMethodName("update");
         record.setParameters(new Object[]{sql});
@@ -292,6 +313,38 @@ public abstract class Manager {
             record.setMessage("Housekeeping complete. Returning from whence we "
                     + "came...");
             log.exit(record, null);
+        }
+    }
+    
+    protected ResultSet fetch(String sql) throws DataStoreException {
+        record.setSourceMethodName("fetch");
+        record.setMessage("Retrieving data from the data store.");
+        log.enter(record);
+        
+        ResultSet ret = null;
+        
+        try {
+            stmt = con.createStatement();
+            ret = stmt.executeQuery(sql);
+            
+            record.setMessage("Record has been successfully fetched. "
+                    + "Returning the record.");
+            log.debug(record);
+        } catch ( SQLException ex ) {
+            record.setMessage("Could not fetch the record. Returning `null`");
+            record.setThrown(ex);
+            log.error(record);
+            ret = null;
+        } finally {
+            record.setMessage("Completed fetching from the data store table. "
+                    + "Performing housekeeping...");
+            log.debug(record);
+            cleanUp();
+            
+            record.setSourceMethodName("fetch");
+            record.setMessage("Housekeeping complete. Exiting...");
+            log.exit(record, ret);
+            return ret;
         }
     }
     
@@ -337,9 +390,9 @@ public abstract class Manager {
      * @throws DataStoreException in the event that an error is encountered 
      *                            during the update process
      */
-    public boolean updateIntField(String field, int value , int id) 
+    public boolean updateInt(String field, int value , int id) 
             throws DataStoreException {
-        record.setSourceMethodName("updateIntField");
+        record.setSourceMethodName("updateInt");
         record.setParameters(new Object[]{field, value, id});
         record.setMessage("Attempting to update field (" + field + ") "
                 + "identified by " + id + "...");
@@ -353,7 +406,7 @@ public abstract class Manager {
             
             ret = true;
         } catch ( DataStoreException ex ) {
-            record.setSourceMethodName("updateIntField");
+            record.setSourceMethodName("updateInt");
             record.setThrown(ex);
             record.setMessage(ex.getMessage());
             log.error(record);
@@ -361,13 +414,162 @@ public abstract class Manager {
             
             throw ex;
         } finally {
-            record.setSourceMethodName("updateIntField");
+            record.setSourceMethodName("updateInt");
             record.setMessage("Performing housekeeping before we leave...");
             log.debug(record);
             
             cleanUp();
             
-            record.setSourceMethodName("updateIntField");
+            record.setSourceMethodName("updateInt");
+            record.setMessage("Returning from whence we came and returning " 
+                    + ret + " to the calling procedure");
+            log.exit(record, new Object[]{ret});
+            return ret;
+        }
+    }
+    
+    
+    /**
+     * Convenience method for retrieving an integer value from the data store.
+     * 
+     * @param field the field of interest from which to get the data
+     * @param id    the ID for the record of interest
+     * @return      the value from the provided field, from the record matching
+     *              the provided ID
+     * @throws DataStoreException in the event there is an error accessing the
+     *                            data store
+     */
+    public int getInt(String field, int id) throws DataStoreException {
+        record.setSourceMethodName("getInt");
+        record.setParameters(new Object[]{field, id});
+        record.setMessage("Attempting to retrieve the field (" + field + ") "
+                + "identified by " + id + "...");
+        log.enter(record);
+        
+        int ret = 0;
+        
+        try {
+            String sql = "SELECT * FROM " + tableName + " WHERE id = " + id;
+            rs = fetch(sql);
+            
+            if ( rs != null ) {
+                ret = rs.getInt(field);
+            }
+        } catch ( DataStoreException ex ) {
+            record.setSourceMethodName("getInt");
+            record.setThrown(ex);
+            record.setMessage(ex.getMessage());
+            log.error(record);
+            ret = 0;
+            
+            throw ex;
+        } finally {
+            record.setSourceMethodName("getInt");
+            record.setMessage("Performing housekeeping before we leave...");
+            log.debug(record);
+            
+            cleanUp();
+            
+            record.setSourceMethodName("getInt");
+            record.setMessage("Returning from whence we came and returning " 
+                    + ret + " to the calling procedure");
+            log.exit(record, new Object[]{ret});
+            return ret;
+        }
+    }
+    
+    /**
+     * This is a convenience method to allow the calling procedure to update a
+     * field that holds an long value, without needing to do the conversions
+     * prior to storing the value. Conversion is taken care of within this 
+     * method.
+     * 
+     * @param field name of field to update
+     * @param value the new value to enter
+     * @param id    the id of the record to update
+     * @return      `true` on success, `false` otherwise
+     * @throws DataStoreException in the event that an error is encountered 
+     *                            during the update process
+     */
+    public boolean updateLong(String field, long value, int id) {
+        record.setSourceMethodName("updateLong");
+        record.setParameters(new Object[]{field, value, id});
+        record.setMessage("Attempting to update field (" + field + ") "
+                + "identified by " + id + "...");
+        log.enter(record);
+        
+        boolean ret = false;
+        
+        try {
+            update("UPDATE " + tableName + " SET " + field + " = " + value 
+                    + " WHERE id = " + id);
+            
+            ret = true;
+        } catch ( DataStoreException ex ) {
+            record.setSourceMethodName("updateLong");
+            record.setThrown(ex);
+            record.setMessage(ex.getMessage());
+            log.error(record);
+            ret = false;
+            
+            throw ex;
+        } finally {
+            record.setSourceMethodName("updateLong");
+            record.setMessage("Performing housekeeping before we leave...");
+            log.debug(record);
+            
+            cleanUp();
+            
+            record.setSourceMethodName("updateLong");
+            record.setMessage("Returning from whence we came and returning " 
+                    + ret + " to the calling procedure");
+            log.exit(record, new Object[]{ret});
+            return ret;
+        }
+    }
+    
+    /**
+     * Convenience method for retrieving a long value from the data store.
+     * 
+     * @param field the field of interest from which to get the data
+     * @param id    the ID for the record of interest
+     * @return      the value from the provided field, from the record matching
+     *              the provided ID
+     * @throws DataStoreException in the event there is an error accessing the
+     *                            data store
+     */
+    public long getLong(String field, int id) throws DataStoreException {
+        record.setSourceMethodName("getLong");
+        record.setParameters(new Object[]{field, id});
+        record.setMessage("Attempting to retrieve the field (" + field + ") "
+                + "identified by " + id + "...");
+        log.enter(record);
+        
+        long ret = 0;
+        
+        try {
+            String sql = "SELECT * FROM " + tableName + " WHERE id = " + id;
+            rs = fetch(sql);
+            
+            if ( rs != null ) {
+                ret = rs.getLong(field);
+            }
+        } catch ( DataStoreException ex ) {
+            record.setSourceMethodName("getLong");
+            record.setThrown(ex);
+            record.setMessage(ex.getMessage());
+            log.error(record);
+            ret = 0;
+            
+            throw ex;
+        } finally {
+            record.setSourceMethodName("getLong");
+            record.setMessage("Performing housekeeping before we leave...");
+            log.debug(record);
+            
+            cleanUp();
+            
+            record.setSourceMethodName("getLong");
             record.setMessage("Returning from whence we came and returning " 
                     + ret + " to the calling procedure");
             log.exit(record, new Object[]{ret});
@@ -388,9 +590,9 @@ public abstract class Manager {
      * @throws DataStoreException in the event that an error is encountered 
      *                            during the update process
      */
-    public boolean updateDblField(String field, double value, int id) 
+    public boolean updateDouble(String field, double value, int id) 
             throws DataStoreException {
-        record.setSourceMethodName("updateDblField");
+        record.setSourceMethodName("updateDouble");
         record.setParameters(new Object[]{field, value, id});
         record.setMessage("Attempting to update field (" + field + ") "
                 + "identified by " + id + "...");
@@ -404,7 +606,7 @@ public abstract class Manager {
             
             ret = true;
         } catch ( DataStoreException ex ) {
-            record.setSourceMethodName("updateDblField");
+            record.setSourceMethodName("updateDouble");
             record.setThrown(ex);
             record.setMessage(ex.getMessage());
             log.error(record);
@@ -412,13 +614,62 @@ public abstract class Manager {
             
             throw ex;
         } finally {
-            record.setSourceMethodName("updateDblField");
+            record.setSourceMethodName("updateDouble");
             record.setMessage("Performing housekeeping before we leave...");
             log.debug(record);
             
             cleanUp();
             
-            record.setSourceMethodName("updateDblField");
+            record.setSourceMethodName("updateDouble");
+            record.setMessage("Returning from whence we came and returning " 
+                    + ret + " to the calling procedure");
+            log.exit(record, new Object[]{ret});
+            return ret;
+        }
+    }
+
+    /**
+     * Convenience method for retrieving a double value from the data store.
+     * 
+     * @param field the field of interest from which to get the data
+     * @param id    the ID for the record of interest
+     * @return      the value from the provided field, from the record matching
+     *              the provided ID
+     * @throws DataStoreException in the event there is an error accessing the
+     *                            data store
+     */
+    public double getDouble(String field, int id) throws DataStoreException {
+        record.setSourceMethodName("getDouble");
+        record.setParameters(new Object[]{field, id});
+        record.setMessage("Attempting to retrieve the field (" + field + ") "
+                + "identified by " + id + "...");
+        log.enter(record);
+        
+        double ret = 0;
+        
+        try {
+            String sql = "SELECT * FROM " + tableName + " WHERE id = " + id;
+            rs = fetch(sql);
+            
+            if ( rs != null ) {
+                ret = rs.getDouble(field);
+            }
+        } catch ( DataStoreException ex ) {
+            record.setSourceMethodName("getDouble");
+            record.setThrown(ex);
+            record.setMessage(ex.getMessage());
+            log.error(record);
+            ret = 0;
+            
+            throw ex;
+        } finally {
+            record.setSourceMethodName("getDouble");
+            record.setMessage("Performing housekeeping before we leave...");
+            log.debug(record);
+            
+            cleanUp();
+            
+            record.setSourceMethodName("getDouble");
             record.setMessage("Returning from whence we came and returning " 
                     + ret + " to the calling procedure");
             log.exit(record, new Object[]{ret});
@@ -439,9 +690,9 @@ public abstract class Manager {
      * @throws DataStoreException in the event that an error is encountered 
      *                            during the update process
      */
-    public boolean updateFltFied(String field, float value, int id) 
+    public boolean updateFloat(String field, float value, int id) 
             throws DataStoreException {
-        record.setSourceMethodName("updateFltField");
+        record.setSourceMethodName("updateFloat");
         record.setParameters(new Object[]{field, value, id});
         record.setMessage("Attempting to update field (" + field + ") "
                 + "identified by " + id + "...");
@@ -455,7 +706,7 @@ public abstract class Manager {
             
             ret = true;
         } catch ( DataStoreException ex ) {
-            record.setSourceMethodName("updateFltField");
+            record.setSourceMethodName("updateFloat");
             record.setThrown(ex);
             record.setMessage(ex.getMessage());
             log.error(record);
@@ -463,13 +714,62 @@ public abstract class Manager {
             
             throw ex;
         } finally {
-            record.setSourceMethodName("updateFltField");
+            record.setSourceMethodName("updateFloat");
             record.setMessage("Performing housekeeping before we leave...");
             log.debug(record);
             
             cleanUp();
             
-            record.setSourceMethodName("updateFltField");
+            record.setSourceMethodName("updateFloat");
+            record.setMessage("Returning from whence we came and returning " 
+                    + ret + " to the calling procedure");
+            log.exit(record, new Object[]{ret});
+            return ret;
+        }
+    }
+
+    /**
+     * Convenience method for retrieving a float value from the data store.
+     * 
+     * @param field the field of interest from which to get the data
+     * @param id    the ID for the record of interest
+     * @return      the value from the provided field, from the record matching
+     *              the provided ID
+     * @throws DataStoreException in the event there is an error accessing the
+     *                            data store
+     */
+    public float getFloat(String field, int id) throws DataStoreException {
+        record.setSourceMethodName("getFloat");
+        record.setParameters(new Object[]{field, id});
+        record.setMessage("Attempting to retrieve the field (" + field + ") "
+                + "identified by " + id + "...");
+        log.enter(record);
+        
+        float ret = 0;
+        
+        try {
+            String sql = "SELECT * FROM " + tableName + " WHERE id = " + id;
+            rs = fetch(sql);
+            
+            if ( rs != null ) {
+                ret = rs.getLong(field);
+            }
+        } catch ( DataStoreException ex ) {
+            record.setSourceMethodName("getFloat");
+            record.setThrown(ex);
+            record.setMessage(ex.getMessage());
+            log.error(record);
+            ret = 0;
+            
+            throw ex;
+        } finally {
+            record.setSourceMethodName("getFloat");
+            record.setMessage("Performing housekeeping before we leave...");
+            log.debug(record);
+            
+            cleanUp();
+            
+            record.setSourceMethodName("getFloat");
             record.setMessage("Returning from whence we came and returning " 
                     + ret + " to the calling procedure");
             log.exit(record, new Object[]{ret});
@@ -489,9 +789,9 @@ public abstract class Manager {
      * @throws DataStoreException in the event that an error is encountered 
      *                            during the update process
      */
-    public boolean udpateField(String field, String value, int id) 
+    public boolean udpateString(String field, String value, int id) 
             throws DataStoreException {
-        record.setSourceMethodName("udpateField");
+        record.setSourceMethodName("udpateString");
         record.setParameters(new Object[]{field, value, id});
         record.setMessage("Attempting to update field (" + field + ") "
                 + "identified by " + id + "...");
@@ -505,7 +805,7 @@ public abstract class Manager {
             
             ret = true;
         } catch ( DataStoreException ex ) {
-            record.setSourceMethodName("udpateField");
+            record.setSourceMethodName("udpateString");
             record.setThrown(ex);
             record.setMessage(ex.getMessage());
             log.error(record);
@@ -513,13 +813,62 @@ public abstract class Manager {
             
             throw ex;
         } finally {
-            record.setSourceMethodName("udpateField");
+            record.setSourceMethodName("udpateString");
             record.setMessage("Performing housekeeping before we leave...");
             log.debug(record);
             
             cleanUp();
             
-            record.setSourceMethodName("udpateField");
+            record.setSourceMethodName("udpateString");
+            record.setMessage("Returning from whence we came and returning " 
+                    + ret + " to the calling procedure");
+            log.exit(record, new Object[]{ret});
+            return ret;
+        }
+    }
+
+    /**
+     * Convenience method for retrieving a string value from the data store.
+     * 
+     * @param field the field of interest from which to get the data
+     * @param id    the ID for the record of interest
+     * @return      the value from the provided field, from the record matching
+     *              the provided ID
+     * @throws DataStoreException in the event there is an error accessing the
+     *                            data store
+     */
+    public String getString(String field, int id) throws DataStoreException {
+        record.setSourceMethodName("getString");
+        record.setParameters(new Object[]{field, id});
+        record.setMessage("Attempting to retrieve the field (" + field + ") "
+                + "identified by " + id + "...");
+        log.enter(record);
+        
+        String ret = null;
+        
+        try {
+            String sql = "SELECT * FROM " + tableName + " WHERE id = " + id;
+            rs = fetch(sql);
+            
+            if ( rs != null ) {
+                ret = rs.getString(field);
+            }
+        } catch ( DataStoreException ex ) {
+            record.setSourceMethodName("getString");
+            record.setThrown(ex);
+            record.setMessage(ex.getMessage());
+            log.error(record);
+            ret = null;
+            
+            throw ex;
+        } finally {
+            record.setSourceMethodName("getString");
+            record.setMessage("Performing housekeeping before we leave...");
+            log.debug(record);
+            
+            cleanUp();
+            
+            record.setSourceMethodName("getString");
             record.setMessage("Returning from whence we came and returning " 
                     + ret + " to the calling procedure");
             log.exit(record, new Object[]{ret});
@@ -540,9 +889,9 @@ public abstract class Manager {
      * @throws DataStoreException in the event that an error is encountered 
      *                            during the update process
      */
-    public boolean updateBoolField(String field, boolean value, int id) 
+    public boolean updateBoolean(String field, boolean value, int id) 
             throws DataStoreException {
-        record.setSourceMethodName("updateBoolField");
+        record.setSourceMethodName("updateBoolean");
         record.setParameters(new Object[]{field, value, id});
         record.setMessage("Attempting to update field (" + field + ") "
                 + "identified by " + id + "...");
@@ -556,7 +905,7 @@ public abstract class Manager {
             
             ret = true;
         } catch ( DataStoreException ex ) {
-            record.setSourceMethodName("updateBoolField");
+            record.setSourceMethodName("updateBoolean");
             record.setThrown(ex);
             record.setMessage(ex.getMessage());
             log.error(record);
@@ -564,13 +913,62 @@ public abstract class Manager {
             
             throw ex;
         } finally {
-            record.setSourceMethodName("updateBoolField");
+            record.setSourceMethodName("updateBoolean");
             record.setMessage("Performing housekeeping before we leave...");
             log.debug(record);
             
             cleanUp();
             
-            record.setSourceMethodName("updateBoolField");
+            record.setSourceMethodName("updateBoolean");
+            record.setMessage("Returning from whence we came and returning " 
+                    + ret + " to the calling procedure");
+            log.exit(record, new Object[]{ret});
+            return ret;
+        }
+    }
+
+    /**
+     * Convenience method for retrieving a boolean value from the data store.
+     * 
+     * @param field the field of interest from which to get the data
+     * @param id    the ID for the record of interest
+     * @return      the value from the provided field, from the record matching
+     *              the provided ID
+     * @throws DataStoreException in the event there is an error accessing the
+     *                            data store
+     */
+    public boolean getBoolean(String field, int id) throws DataStoreException {
+        record.setSourceMethodName("getBoolean");
+        record.setParameters(new Object[]{field, id});
+        record.setMessage("Attempting to retrieve the field (" + field + ") "
+                + "identified by " + id + "...");
+        log.enter(record);
+        
+        boolean ret = false;
+        
+        try {
+            String sql = "SELECT * FROM " + tableName + " WHERE id = " + id;
+            rs = fetch(sql);
+            
+            if ( rs != null ) {
+                ret = rs.getBoolean(field);
+            }
+        } catch ( DataStoreException ex ) {
+            record.setSourceMethodName("getBoolean");
+            record.setThrown(ex);
+            record.setMessage(ex.getMessage());
+            log.error(record);
+            ret = false;
+            
+            throw ex;
+        } finally {
+            record.setSourceMethodName("getBoolean");
+            record.setMessage("Performing housekeeping before we leave...");
+            log.debug(record);
+            
+            cleanUp();
+            
+            record.setSourceMethodName("getBoolean");
             record.setMessage("Returning from whence we came and returning " 
                     + ret + " to the calling procedure");
             log.exit(record, new Object[]{ret});
@@ -648,6 +1046,46 @@ public abstract class Manager {
             record.setSourceMethodName("updateAllFields");
             record.setMessage("Returning from whence we came and returning " 
                     + ret + " to the calling procedure");
+            log.exit(record, new Object[]{ret});
+            return ret;
+        }
+    }
+    
+    public boolean add(List<String> records) throws DataStoreException {
+        record.setSourceMethodName("add");
+        record.setParameters(new Object[]{records});
+        record.setMessage("Attempting to add a new record to the data store.");
+        log.enter(record);
+        
+        boolean ret = false;
+        
+        try {
+            String sql = "INSERT INTO " + tableName + " VALUES(";
+            
+            for ( String item : records) {
+                sql += item + ", ";
+            }
+            
+            sql += ")";
+            
+            addNew(sql);
+            ret = true;
+        } catch ( DataStoreException ex ) {
+            record.setSourceMethodName("add");
+            record.setThrown(ex);
+            record.setMessage("Could not add the record for the following "
+                    + "reason:");
+            log.error(record);
+        } finally {
+            record.setSourceMethodName("add");
+            record.setMessage("Performing housekeeping before we leave...");
+            log.debug(record);
+            
+            cleanUp();
+            
+            record.setSourceMethodName("add");
+            record.setMessage("Housekeeping complete. Return from whence we "
+                    + "came.");
             log.exit(record, new Object[]{ret});
             return ret;
         }

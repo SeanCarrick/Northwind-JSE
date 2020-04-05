@@ -177,8 +177,140 @@ public class AppProperties {
         return getProperty("app.data.folder", DATA_DIR);
     }
     
+    /**
+     * Convenience method for setting the data folder for the application. 
+     * 
+     * @param value the new location for the application home folder
+     */
     public void setDataFolder(String value) {
         setProperty("app.data.folder", value);
+    }
+    
+    /**
+     * Convenience method for getting the database name
+     * 
+     * @return the value in this property list for the name of the database
+     */
+    public String getDbName() {
+        return getProperty("db.name", null);
+    }
+    
+    /**
+     * Convenience method for setting the database name.
+     * 
+     * @param value the new database name for the application.
+     */
+    public void setDbName(String value) {
+        setProperty("db.name", value);
+    }
+    
+    /**
+     * Convenience method for getting the database connection URL.
+     * 
+     * @return the value in this property list for the URL for the database
+     *         connection
+     */
+    public String getDbUrl() {
+        return getProperty("db.url", "jdbc:hsqldb:");
+    }
+    
+    /**
+     * Convenience method for setting the database connection URL.
+     * 
+     * @param value the new database connection URL for the application.
+     */
+    public void setDbURL(String value) {
+        setProperty("db.url", value);
+    }
+    
+    /**
+     * Convenience method for getting the database connection options.
+     * 
+     * @return the value in this property list for the database connection
+     *         options.
+     */
+    public String getDbOptions() {
+        return getProperty("db.options", ";shutdown=true");
+    }
+    
+    /**
+     * Convenience method for setting the database connection options.
+     * 
+     * @param value the new value for the database connection options.
+     */
+    public void setDbOptions(String value) {
+        setProperty("db.options", value);
+    }
+    
+    /**
+     * Convenience method for getting the database driver.
+     * 
+     * @return the value in this property list for the database driver.
+     */
+    public String getDbDriver() {
+        return getProperty("db.driver", "org.hsqldb.jdbcDriver");
+    }
+    
+    /**
+     * Convenience method for setting the database driver.
+     * 
+     * @param value the new value for the database driver.
+     */
+    public void setDbDriver(String value) {
+        setProperty("db.driver", value);
+    }
+    
+    /**
+     * Convenience method for getting the application home folder.
+     * 
+     * @return the value in this property list for the application home folder.
+     */
+    public String getAppHome() {
+        return getProperty("app.home", APP_DIR);
+    }
+    
+    /**
+     * Convenience method for setting the application home folder.
+     * @param value 
+     */
+    public void setAppHome(String value) {
+        setProperty("app.home", value);
+    }
+    
+    /**
+     * Convenience method for getting the logs folder.
+     * 
+     * @return the value in this property list for the log folder.
+     */
+    public String getLogHome() {
+        return getProperty("logs.home", LOG_DIR);
+    }
+    
+    /**
+     * Convenience method for setting the logs folder.
+     * 
+     * @param value the new value for the logs folder.
+     */
+    public void setLogHome(String value) {
+        setProperty("logs.home", value);
+    }
+    
+    /**
+     * Convenience method for getting the error report folder.
+     * 
+     * @return the value in this property list for the error report folder.
+     */
+    public String getErrHome() {
+        return getProperty("err.home", ERR_DIR);
+    }
+    
+    /**
+     * Convenience method for setting the error report folder.
+     * 
+     * @param value the new value for the error report folder.
+     */
+    public void setErrHome(String value) {
+        setProperty("err.home", value);
     }
     
     /**
@@ -443,8 +575,8 @@ public class AppProperties {
         //+ all we need to do here is to store the properties list to the 
         //+ configuration file so that the settings will be available at the
         //+ next run of the application.
-        try ( FileWriter out = new FileWriter(new File(APP_DIR
-                + ".northwind.conf")); ) {
+        try ( FileWriter out = new FileWriter(new File(props.getProperty(
+                "app.home", APP_DIR) + ".northwind.conf")); ) {
             props.store(out, PROJECT_NAME + " by " + VENDOR);
             out.flush();
             out.close();

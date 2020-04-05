@@ -14,7 +14,7 @@ import javax.swing.table.TableColumn;
  *
  * @author Sean Carrick &lt;sean at pekinsoft dot com&gt;
  */
-public class CustsColumnModel extends DefaultTableColumnModel {
+public class CustomersColumnModel extends DefaultTableColumnModel {
     
     private TableColumn createColumn(int columnIndex, int width, FontMetrics fm,
             boolean resizable, String text) {
@@ -34,7 +34,7 @@ public class CustsColumnModel extends DefaultTableColumnModel {
         return col;
     }
     
-    public CustsColumnModel(FontMetrics fm) {
+    public CustomersColumnModel(FontMetrics fm) {
         int digit = fm.stringWidth("0");
         int alpha = fm.stringWidth("W");
         addColumn(createColumn(0, 5 * digit, fm, false, "ID #"));

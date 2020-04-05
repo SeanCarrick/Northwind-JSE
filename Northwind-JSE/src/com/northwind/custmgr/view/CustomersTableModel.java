@@ -17,7 +17,7 @@ import javax.swing.table.AbstractTableModel;
  *
  * @author Sean Carrick &lt;sean at pekinsoft dot com&gt;
  */
-public class CustsTableModel extends AbstractTableModel {
+public class CustomersTableModel extends AbstractTableModel {
 
     private final List<Customer> list;
     private List<Customer> filteredList;
@@ -25,7 +25,7 @@ public class CustsTableModel extends AbstractTableModel {
     private boolean sortByState;
     private final DateFormat df = DateFormat.getDateInstance(DateFormat.MEDIUM);
     
-    public CustsTableModel(List<Customer> list) {
+    public CustomersTableModel(List<Customer> list) {
         this.list = list;
         filterList();
     }
