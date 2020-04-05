@@ -19,6 +19,8 @@ package com.northwind.view;
 import com.northwind.actions.controller.ActionSupport;
 import com.northwind.custmgr.model.Customer;
 import com.northwind.custmgr.view.CustomersTableModel;
+import com.northwind.settings.AppProperties;
+import com.northwind.utils.Logger;
 import java.awt.Color;
 import java.awt.FontMetrics;
 import java.awt.SystemColor;
@@ -28,6 +30,8 @@ import java.awt.event.MouseEvent;
 import java.awt.event.MouseListener;
 import java.util.ArrayList;
 import java.util.List;
+import java.util.logging.LogRecord;
+import javax.swing.JOptionPane;
 import javax.swing.event.ListSelectionEvent;
 import javax.swing.event.ListSelectionListener;
 
@@ -36,6 +40,10 @@ import javax.swing.event.ListSelectionListener;
  * @author Sean Carrick &lt;sean at pekinsoft dot com&gt;
  */
 public class MainWindow extends javax.swing.JFrame {
+    
+    private AppProperties props;
+    private LogRecord record;
+    private Logger log;
     
     private ActionSupport actionSupport = new ActionSupport(this);
     
@@ -111,6 +119,12 @@ public class MainWindow extends javax.swing.JFrame {
      */
     public MainWindow() {
         initComponents();
+        
+        props = AppProperties.getInstance();
+        
+        versionLabel.setText(props.getName() + " " + props.getVersion());
+        userLabel.setText(System.getProperty("user.name"));
+        setTitle(props.getProjectName() + " - Basic Edition");
         
         setLocationRelativeTo(null);
         customers.setAutoCreateColumnsFromModel(false);
@@ -558,22 +572,24 @@ public class MainWindow extends javax.swing.JFrame {
         mainStatusbarLayout.setHorizontalGroup(
             mainStatusbarLayout.createParallelGroup(javax.swing.GroupLayout.Alignment.LEADING)
             .addGroup(mainStatusbarLayout.createSequentialGroup()
-                .addComponent(tipsLabel)
-                .addPreferredGap(javax.swing.LayoutStyle.ComponentPlacement.RELATED, javax.swing.GroupLayout.DEFAULT_SIZE, Short.MAX_VALUE)
-                .addComponent(versionLabel)
+                .addComponent(tipsLabel, javax.swing.GroupLayout.DEFAULT_SIZE, javax.swing.GroupLayout.DEFAULT_SIZE, Short.MAX_VALUE)
                 .addGap(18, 18, 18)
+                .addComponent(versionLabel)
+                .addGap(24, 24, 24)
                 .addComponent(jLabel1)
-                .addPreferredGap(javax.swing.LayoutStyle.ComponentPlacement.RELATED)
+                .addPreferredGap(javax.swing.LayoutStyle.ComponentPlacement.UNRELATED)
                 .addComponent(userLabel)
                 .addContainerGap())
         );
         mainStatusbarLayout.setVerticalGroup(
             mainStatusbarLayout.createParallelGroup(javax.swing.GroupLayout.Alignment.LEADING)
-            .addComponent(tipsLabel, javax.swing.GroupLayout.PREFERRED_SIZE, 11, javax.swing.GroupLayout.PREFERRED_SIZE)
-            .addGroup(mainStatusbarLayout.createParallelGroup(javax.swing.GroupLayout.Alignment.BASELINE)
-                .addComponent(jLabel1, javax.swing.GroupLayout.PREFERRED_SIZE, 11, javax.swing.GroupLayout.PREFERRED_SIZE)
-                .addComponent(userLabel, javax.swing.GroupLayout.PREFERRED_SIZE, 11, javax.swing.GroupLayout.PREFERRED_SIZE)
-                .addComponent(versionLabel, javax.swing.GroupLayout.PREFERRED_SIZE, 11, javax.swing.GroupLayout.PREFERRED_SIZE))
+            .addGroup(mainStatusbarLayout.createSequentialGroup()
+                .addContainerGap(javax.swing.GroupLayout.DEFAULT_SIZE, Short.MAX_VALUE)
+                .addGroup(mainStatusbarLayout.createParallelGroup(javax.swing.GroupLayout.Alignment.BASELINE)
+                    .addComponent(tipsLabel)
+                    .addComponent(versionLabel)
+                    .addComponent(jLabel1)
+                    .addComponent(userLabel)))
         );
 
         loads.setModel(new javax.swing.table.DefaultTableModel(
@@ -602,7 +618,7 @@ public class MainWindow extends javax.swing.JFrame {
         );
         loadsTabLayout.setVerticalGroup(
             loadsTabLayout.createParallelGroup(javax.swing.GroupLayout.Alignment.LEADING)
-            .addComponent(jScrollPane2, javax.swing.GroupLayout.DEFAULT_SIZE, 587, Short.MAX_VALUE)
+            .addComponent(jScrollPane2, javax.swing.GroupLayout.DEFAULT_SIZE, 574, Short.MAX_VALUE)
         );
 
         mainTabPane.addTab("Loads", new javax.swing.ImageIcon(getClass().getResource("/com/northwind/resources/freight24.png")), loadsTab); // NOI18N
@@ -633,7 +649,7 @@ public class MainWindow extends javax.swing.JFrame {
         );
         fuelTabLayout.setVerticalGroup(
             fuelTabLayout.createParallelGroup(javax.swing.GroupLayout.Alignment.LEADING)
-            .addComponent(jScrollPane3, javax.swing.GroupLayout.DEFAULT_SIZE, 587, Short.MAX_VALUE)
+            .addComponent(jScrollPane3, javax.swing.GroupLayout.DEFAULT_SIZE, 574, Short.MAX_VALUE)
         );
 
         mainTabPane.addTab("Fuel", new javax.swing.ImageIcon(getClass().getResource("/com/northwind/resources/GasPump.png")), fuelTab); // NOI18N
@@ -664,7 +680,7 @@ public class MainWindow extends javax.swing.JFrame {
         );
         maintenanceTabLayout.setVerticalGroup(
             maintenanceTabLayout.createParallelGroup(javax.swing.GroupLayout.Alignment.LEADING)
-            .addComponent(jScrollPane4, javax.swing.GroupLayout.DEFAULT_SIZE, 587, Short.MAX_VALUE)
+            .addComponent(jScrollPane4, javax.swing.GroupLayout.DEFAULT_SIZE, 574, Short.MAX_VALUE)
         );
 
         mainTabPane.addTab("Maintenance", new javax.swing.ImageIcon(getClass().getResource("/com/northwind/resources/Wrench.png")), maintenanceTab); // NOI18N
@@ -695,7 +711,7 @@ public class MainWindow extends javax.swing.JFrame {
         );
         vehiclesTabLayout.setVerticalGroup(
             vehiclesTabLayout.createParallelGroup(javax.swing.GroupLayout.Alignment.LEADING)
-            .addComponent(jScrollPane5, javax.swing.GroupLayout.DEFAULT_SIZE, 587, Short.MAX_VALUE)
+            .addComponent(jScrollPane5, javax.swing.GroupLayout.DEFAULT_SIZE, 574, Short.MAX_VALUE)
         );
 
         mainTabPane.addTab("Vehicles", new javax.swing.ImageIcon(getClass().getResource("/com/northwind/resources/Delivery.png")), vehiclesTab); // NOI18N
@@ -726,7 +742,7 @@ public class MainWindow extends javax.swing.JFrame {
         );
         customersTabLayout.setVerticalGroup(
             customersTabLayout.createParallelGroup(javax.swing.GroupLayout.Alignment.LEADING)
-            .addComponent(jScrollPane6, javax.swing.GroupLayout.DEFAULT_SIZE, 587, Short.MAX_VALUE)
+            .addComponent(jScrollPane6, javax.swing.GroupLayout.DEFAULT_SIZE, 574, Short.MAX_VALUE)
         );
 
         mainTabPane.addTab("Customers", new javax.swing.ImageIcon(getClass().getResource("/com/northwind/resources/users.png")), customersTab); // NOI18N
@@ -757,7 +773,7 @@ public class MainWindow extends javax.swing.JFrame {
         );
         employeesPanelLayout.setVerticalGroup(
             employeesPanelLayout.createParallelGroup(javax.swing.GroupLayout.Alignment.LEADING)
-            .addComponent(jScrollPane7, javax.swing.GroupLayout.DEFAULT_SIZE, 587, Short.MAX_VALUE)
+            .addComponent(jScrollPane7, javax.swing.GroupLayout.DEFAULT_SIZE, 574, Short.MAX_VALUE)
         );
 
         mainTabPane.addTab("Employees", new javax.swing.ImageIcon(getClass().getResource("/com/northwind/resources/people.png")), employeesPanel); // NOI18N
@@ -1046,8 +1062,8 @@ public class MainWindow extends javax.swing.JFrame {
                 .addComponent(mainToolbar, javax.swing.GroupLayout.PREFERRED_SIZE, 25, javax.swing.GroupLayout.PREFERRED_SIZE)
                 .addPreferredGap(javax.swing.LayoutStyle.ComponentPlacement.RELATED)
                 .addGroup(layout.createParallelGroup(javax.swing.GroupLayout.Alignment.LEADING)
-                    .addComponent(mainTabPane)
-                    .addComponent(jScrollPane1))
+                    .addComponent(jScrollPane1)
+                    .addComponent(mainTabPane, javax.swing.GroupLayout.DEFAULT_SIZE, 607, Short.MAX_VALUE))
                 .addPreferredGap(javax.swing.LayoutStyle.ComponentPlacement.RELATED)
                 .addComponent(mainStatusbar, javax.swing.GroupLayout.PREFERRED_SIZE, javax.swing.GroupLayout.DEFAULT_SIZE, javax.swing.GroupLayout.PREFERRED_SIZE))
         );
@@ -1164,7 +1180,13 @@ public class MainWindow extends javax.swing.JFrame {
     }//GEN-LAST:event_sortByActionPerformed
 
     private void aboutActionPerformed(java.awt.event.ActionEvent evt) {//GEN-FIRST:event_aboutActionPerformed
-        // TODO add your handling code here:
+        String msg = props.getName() + "\n";
+        msg += props.getVersion() + "\n\n";
+        msg += props.getComments();
+        msg += "Released under the GNU General Public License v. 3";
+        String ttl = "About " + props.getProjectName();
+        JOptionPane.showMessageDialog(this, msg, ttl, 
+                JOptionPane.INFORMATION_MESSAGE);
     }//GEN-LAST:event_aboutActionPerformed
 
     /**

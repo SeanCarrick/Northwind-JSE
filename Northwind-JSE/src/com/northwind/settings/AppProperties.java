@@ -633,12 +633,15 @@ public class AppProperties {
     }
     
     public String getVersion() {
-        return "v. " + MAJOR + "." + MINOR + "." + REVISION + " BUILD: " + BUILD;
+        return "v. " + MAJOR + "." + MINOR + "." + REVISION + " build " + BUILD;
+    }
+    
+    public String getBuild() {
+        return String.valueOf(BUILD);
     }
     
     public String getComments() {
         StringBuilder sb = new StringBuilder();
-        sb.append("Copyright© 2006-2020 ").append(VENDOR).append("\n\n");
         sb.append(NAME).append(" aims\nto become the de facto standard by ");
         sb.append("which all future accounting\nsystems are measured, at ");
         sb.append("least for the trucking industry. Primarily,\nwe aim ");
@@ -646,8 +649,8 @@ public class AppProperties {
         sb.append("number one\naccounting system for small-business, owner-");
         sb.append("operator truck drivers,\nproviding financial reporting ");
         sb.append("that makes sense for a trucking\ncompany, including per ");
-        sb.append("mile breakdowns of all financial information.");
-        
+        sb.append("mile breakdowns of all financial information.\n\n");
+        sb.append("Copyright© 2006-2020 ").append(VENDOR).append("\n");
         return sb.toString();
     }
 }
