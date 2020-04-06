@@ -1,6 +1,6 @@
 <?xml version="1.0" encoding="UTF-8" ?>
 
-<Form version="1.3" maxVersion="1.9" type="org.netbeans.modules.form.forminfo.JFrameFormInfo">
+<Form version="1.5" maxVersion="1.9" type="org.netbeans.modules.form.forminfo.JFrameFormInfo">
   <NonVisualComponents>
     <Menu class="javax.swing.JMenuBar" name="mainMenubar">
       <SubComponents>
@@ -97,7 +97,7 @@
                   <KeyStroke key="Alt+F4"/>
                 </Property>
                 <Property name="icon" type="javax.swing.Icon" editor="org.netbeans.modules.form.editors2.IconEditor">
-                  <Image iconType="3" name="/com/northwind/resources/Turn off.png"/>
+                  <Image iconType="3" name="/com/northwind/resources/Turnoff.png"/>
                 </Property>
                 <Property name="mnemonic" type="int" value="120"/>
                 <Property name="text" type="java.lang.String" value="Exit"/>
@@ -171,6 +171,9 @@
           <SubComponents>
             <MenuItem class="javax.swing.JMenuItem" name="sortMenuItem">
               <Properties>
+                <Property name="icon" type="javax.swing.Icon" editor="org.netbeans.modules.form.editors2.IconEditor">
+                  <Image iconType="3" name="/com/northwind/resources/sort-asc.png"/>
+                </Property>
                 <Property name="text" type="java.lang.String" value="Sort By..."/>
               </Properties>
               <Events>
@@ -377,24 +380,29 @@
   <Layout>
     <DimensionLayout dim="0">
       <Group type="103" groupAlignment="0" attributes="0">
-          <Component id="mainToolbar" max="32767" attributes="0"/>
-          <Component id="mainStatusbar" alignment="0" max="32767" attributes="0"/>
-          <Group type="102" alignment="0" attributes="0">
-              <Component id="mainTabPane" min="-2" pref="1150" max="-2" attributes="0"/>
+          <Component id="mainStatusbar" max="32767" attributes="0"/>
+          <Group type="102" attributes="0">
+              <Component id="jScrollPane3" min="-2" pref="238" max="-2" attributes="0"/>
               <EmptySpace max="-2" attributes="0"/>
-              <Component id="jScrollPane1" pref="245" max="32767" attributes="0"/>
-              <EmptySpace max="-2" attributes="0"/>
+              <Component id="mainTabbedPane" max="32767" attributes="0"/>
+              <EmptySpace min="-2" max="-2" attributes="0"/>
+              <Component id="jScrollPane1" min="-2" pref="245" max="-2" attributes="0"/>
+              <EmptySpace min="-2" max="-2" attributes="0"/>
           </Group>
       </Group>
     </DimensionLayout>
     <DimensionLayout dim="1">
       <Group type="103" groupAlignment="0" attributes="0">
           <Group type="102" alignment="0" attributes="0">
-              <Component id="mainToolbar" min="-2" pref="25" max="-2" attributes="0"/>
-              <EmptySpace max="-2" attributes="0"/>
               <Group type="103" groupAlignment="0" attributes="0">
-                  <Component id="jScrollPane1" max="32767" attributes="0"/>
-                  <Component id="mainTabPane" pref="607" max="32767" attributes="0"/>
+                  <Group type="102" attributes="0">
+                      <EmptySpace max="-2" attributes="0"/>
+                      <Group type="103" groupAlignment="0" attributes="0">
+                          <Component id="mainTabbedPane" max="32767" attributes="0"/>
+                          <Component id="jScrollPane1" max="32767" attributes="0"/>
+                      </Group>
+                  </Group>
+                  <Component id="jScrollPane3" max="32767" attributes="0"/>
               </Group>
               <EmptySpace max="-2" attributes="0"/>
               <Component id="mainStatusbar" min="-2" max="-2" attributes="0"/>
@@ -403,236 +411,6 @@
     </DimensionLayout>
   </Layout>
   <SubComponents>
-    <Container class="javax.swing.JToolBar" name="mainToolbar">
-      <Properties>
-        <Property name="rollover" type="boolean" value="true"/>
-      </Properties>
-
-      <Layout class="org.netbeans.modules.form.compat2.layouts.DesignBoxLayout"/>
-      <SubComponents>
-        <Component class="javax.swing.JButton" name="exitButton">
-          <Properties>
-            <Property name="icon" type="javax.swing.Icon" editor="org.netbeans.modules.form.editors2.IconEditor">
-              <Image iconType="3" name="/com/northwind/resources/Turn off.png"/>
-            </Property>
-            <Property name="focusable" type="boolean" value="false"/>
-            <Property name="horizontalTextPosition" type="int" value="0"/>
-            <Property name="verticalTextPosition" type="int" value="3"/>
-          </Properties>
-          <Events>
-            <EventHandler event="actionPerformed" listener="java.awt.event.ActionListener" parameters="java.awt.event.ActionEvent" handler="exitActionPerformed"/>
-          </Events>
-        </Component>
-        <Component class="javax.swing.JToolBar$Separator" name="jSeparator5">
-        </Component>
-        <Component class="javax.swing.JButton" name="newButton">
-          <Properties>
-            <Property name="icon" type="javax.swing.Icon" editor="org.netbeans.modules.form.editors2.IconEditor">
-              <Image iconType="3" name="/com/northwind/resources/newDB.png"/>
-            </Property>
-            <Property name="focusable" type="boolean" value="false"/>
-            <Property name="horizontalTextPosition" type="int" value="0"/>
-            <Property name="verticalTextPosition" type="int" value="3"/>
-          </Properties>
-          <Events>
-            <EventHandler event="actionPerformed" listener="java.awt.event.ActionListener" parameters="java.awt.event.ActionEvent" handler="newActionPerformed"/>
-          </Events>
-        </Component>
-        <Component class="javax.swing.JButton" name="openButton">
-          <Properties>
-            <Property name="icon" type="javax.swing.Icon" editor="org.netbeans.modules.form.editors2.IconEditor">
-              <Image iconType="3" name="/com/northwind/resources/openDB.png"/>
-            </Property>
-            <Property name="focusable" type="boolean" value="false"/>
-            <Property name="horizontalTextPosition" type="int" value="0"/>
-            <Property name="verticalTextPosition" type="int" value="3"/>
-          </Properties>
-          <Events>
-            <EventHandler event="actionPerformed" listener="java.awt.event.ActionListener" parameters="java.awt.event.ActionEvent" handler="openActionPerformed"/>
-          </Events>
-        </Component>
-        <Component class="javax.swing.JButton" name="saveButton">
-          <Properties>
-            <Property name="icon" type="javax.swing.Icon" editor="org.netbeans.modules.form.editors2.IconEditor">
-              <Image iconType="3" name="/com/northwind/resources/save-database.png"/>
-            </Property>
-            <Property name="enabled" type="boolean" value="false"/>
-            <Property name="focusable" type="boolean" value="false"/>
-            <Property name="horizontalTextPosition" type="int" value="0"/>
-            <Property name="verticalTextPosition" type="int" value="3"/>
-          </Properties>
-          <Events>
-            <EventHandler event="actionPerformed" listener="java.awt.event.ActionListener" parameters="java.awt.event.ActionEvent" handler="saveActionPerformed"/>
-          </Events>
-        </Component>
-        <Component class="javax.swing.JToolBar$Separator" name="jSeparator6">
-        </Component>
-        <Component class="javax.swing.JButton" name="editButton">
-          <Properties>
-            <Property name="icon" type="javax.swing.Icon" editor="org.netbeans.modules.form.editors2.IconEditor">
-              <Image iconType="3" name="/com/northwind/resources/edit.png"/>
-            </Property>
-            <Property name="focusable" type="boolean" value="false"/>
-            <Property name="horizontalTextPosition" type="int" value="0"/>
-            <Property name="verticalTextPosition" type="int" value="3"/>
-          </Properties>
-          <Events>
-            <EventHandler event="actionPerformed" listener="java.awt.event.ActionListener" parameters="java.awt.event.ActionEvent" handler="editActionPerformed"/>
-          </Events>
-        </Component>
-        <Component class="javax.swing.JButton" name="markButton">
-          <Properties>
-            <Property name="icon" type="javax.swing.Icon" editor="org.netbeans.modules.form.editors2.IconEditor">
-              <Image iconType="3" name="/com/northwind/resources/mark.png"/>
-            </Property>
-            <Property name="enabled" type="boolean" value="false"/>
-            <Property name="focusable" type="boolean" value="false"/>
-            <Property name="horizontalTextPosition" type="int" value="0"/>
-            <Property name="verticalTextPosition" type="int" value="3"/>
-          </Properties>
-          <Events>
-            <EventHandler event="actionPerformed" listener="java.awt.event.ActionListener" parameters="java.awt.event.ActionEvent" handler="markActionPerformed"/>
-          </Events>
-        </Component>
-        <Component class="javax.swing.JButton" name="removeButton">
-          <Properties>
-            <Property name="icon" type="javax.swing.Icon" editor="org.netbeans.modules.form.editors2.IconEditor">
-              <Image iconType="3" name="/com/northwind/resources/delete.png"/>
-            </Property>
-            <Property name="enabled" type="boolean" value="false"/>
-            <Property name="focusable" type="boolean" value="false"/>
-            <Property name="horizontalTextPosition" type="int" value="0"/>
-            <Property name="verticalTextPosition" type="int" value="3"/>
-          </Properties>
-          <Events>
-            <EventHandler event="actionPerformed" listener="java.awt.event.ActionListener" parameters="java.awt.event.ActionEvent" handler="removeActionPerformed"/>
-          </Events>
-        </Component>
-        <Component class="javax.swing.JToolBar$Separator" name="jSeparator7">
-        </Component>
-        <Component class="javax.swing.JButton" name="loadButton">
-          <Properties>
-            <Property name="icon" type="javax.swing.Icon" editor="org.netbeans.modules.form.editors2.IconEditor">
-              <Image iconType="3" name="/com/northwind/resources/freight.png"/>
-            </Property>
-            <Property name="focusable" type="boolean" value="false"/>
-            <Property name="horizontalTextPosition" type="int" value="0"/>
-            <Property name="verticalTextPosition" type="int" value="3"/>
-          </Properties>
-          <Events>
-            <EventHandler event="actionPerformed" listener="java.awt.event.ActionListener" parameters="java.awt.event.ActionEvent" handler="loadActionPerformed"/>
-          </Events>
-        </Component>
-        <Component class="javax.swing.JButton" name="fuelButton">
-          <Properties>
-            <Property name="icon" type="javax.swing.Icon" editor="org.netbeans.modules.form.editors2.IconEditor">
-              <Image iconType="3" name="/com/northwind/resources/GasPump.png"/>
-            </Property>
-            <Property name="focusable" type="boolean" value="false"/>
-            <Property name="horizontalTextPosition" type="int" value="0"/>
-            <Property name="verticalTextPosition" type="int" value="3"/>
-          </Properties>
-          <Events>
-            <EventHandler event="actionPerformed" listener="java.awt.event.ActionListener" parameters="java.awt.event.ActionEvent" handler="fuelActionPerformed"/>
-          </Events>
-        </Component>
-        <Component class="javax.swing.JButton" name="serviceButton">
-          <Properties>
-            <Property name="icon" type="javax.swing.Icon" editor="org.netbeans.modules.form.editors2.IconEditor">
-              <Image iconType="3" name="/com/northwind/resources/Wrench.png"/>
-            </Property>
-            <Property name="focusable" type="boolean" value="false"/>
-            <Property name="horizontalTextPosition" type="int" value="0"/>
-            <Property name="verticalTextPosition" type="int" value="3"/>
-          </Properties>
-          <Events>
-            <EventHandler event="actionPerformed" listener="java.awt.event.ActionListener" parameters="java.awt.event.ActionEvent" handler="serviceActionPerformed"/>
-          </Events>
-        </Component>
-        <Component class="javax.swing.JButton" name="repairButton">
-          <Properties>
-            <Property name="icon" type="javax.swing.Icon" editor="org.netbeans.modules.form.editors2.IconEditor">
-              <Image iconType="3" name="/com/northwind/resources/repair.png"/>
-            </Property>
-            <Property name="focusable" type="boolean" value="false"/>
-            <Property name="horizontalTextPosition" type="int" value="0"/>
-            <Property name="verticalTextPosition" type="int" value="3"/>
-          </Properties>
-          <Events>
-            <EventHandler event="actionPerformed" listener="java.awt.event.ActionListener" parameters="java.awt.event.ActionEvent" handler="repairActionPerformed"/>
-          </Events>
-        </Component>
-        <Component class="javax.swing.JButton" name="tiresButton">
-          <Properties>
-            <Property name="icon" type="javax.swing.Icon" editor="org.netbeans.modules.form.editors2.IconEditor">
-              <Image iconType="3" name="/com/northwind/resources/tires24.png"/>
-            </Property>
-            <Property name="focusable" type="boolean" value="false"/>
-            <Property name="horizontalTextPosition" type="int" value="0"/>
-            <Property name="verticalTextPosition" type="int" value="3"/>
-          </Properties>
-          <Events>
-            <EventHandler event="actionPerformed" listener="java.awt.event.ActionListener" parameters="java.awt.event.ActionEvent" handler="tiresActionPerformed"/>
-          </Events>
-        </Component>
-        <Component class="javax.swing.JButton" name="customerButton">
-          <Properties>
-            <Property name="icon" type="javax.swing.Icon" editor="org.netbeans.modules.form.editors2.IconEditor">
-              <Image iconType="3" name="/com/northwind/resources/users.png"/>
-            </Property>
-            <Property name="focusable" type="boolean" value="false"/>
-            <Property name="horizontalTextPosition" type="int" value="0"/>
-            <Property name="verticalTextPosition" type="int" value="3"/>
-          </Properties>
-          <Events>
-            <EventHandler event="actionPerformed" listener="java.awt.event.ActionListener" parameters="java.awt.event.ActionEvent" handler="customerActionPerformed"/>
-          </Events>
-        </Component>
-        <Component class="javax.swing.JButton" name="employeeButton">
-          <Properties>
-            <Property name="icon" type="javax.swing.Icon" editor="org.netbeans.modules.form.editors2.IconEditor">
-              <Image iconType="3" name="/com/northwind/resources/people.png"/>
-            </Property>
-            <Property name="focusable" type="boolean" value="false"/>
-            <Property name="horizontalTextPosition" type="int" value="0"/>
-            <Property name="verticalTextPosition" type="int" value="3"/>
-          </Properties>
-          <Events>
-            <EventHandler event="actionPerformed" listener="java.awt.event.ActionListener" parameters="java.awt.event.ActionEvent" handler="employeeActionPerformed"/>
-          </Events>
-        </Component>
-        <Component class="javax.swing.JToolBar$Separator" name="jSeparator8">
-        </Component>
-        <Component class="javax.swing.JButton" name="optionsButton">
-          <Properties>
-            <Property name="icon" type="javax.swing.Icon" editor="org.netbeans.modules.form.editors2.IconEditor">
-              <Image iconType="3" name="/com/northwind/resources/config16.png"/>
-            </Property>
-            <Property name="focusable" type="boolean" value="false"/>
-            <Property name="horizontalTextPosition" type="int" value="0"/>
-            <Property name="verticalTextPosition" type="int" value="3"/>
-          </Properties>
-          <Events>
-            <EventHandler event="actionPerformed" listener="java.awt.event.ActionListener" parameters="java.awt.event.ActionEvent" handler="optionsActionPerformed"/>
-          </Events>
-        </Component>
-        <Component class="javax.swing.JToolBar$Separator" name="jSeparator9">
-        </Component>
-        <Component class="javax.swing.JButton" name="helpButton">
-          <Properties>
-            <Property name="icon" type="javax.swing.Icon" editor="org.netbeans.modules.form.editors2.IconEditor">
-              <Image iconType="3" name="/com/northwind/resources/help.png"/>
-            </Property>
-            <Property name="focusable" type="boolean" value="false"/>
-            <Property name="horizontalTextPosition" type="int" value="0"/>
-            <Property name="verticalTextPosition" type="int" value="3"/>
-          </Properties>
-          <Events>
-            <EventHandler event="actionPerformed" listener="java.awt.event.ActionListener" parameters="java.awt.event.ActionEvent" handler="helpActionPerformed"/>
-          </Events>
-        </Component>
-      </SubComponents>
-    </Container>
     <Container class="org.jdesktop.swingx.JXStatusBar" name="mainStatusbar">
 
       <Layout>
@@ -687,318 +465,6 @@
         </Component>
       </SubComponents>
     </Container>
-    <Container class="javax.swing.JTabbedPane" name="mainTabPane">
-
-      <Layout class="org.netbeans.modules.form.compat2.layouts.support.JTabbedPaneSupportLayout"/>
-      <SubComponents>
-        <Container class="javax.swing.JPanel" name="loadsTab">
-          <Constraints>
-            <Constraint layoutClass="org.netbeans.modules.form.compat2.layouts.support.JTabbedPaneSupportLayout" value="org.netbeans.modules.form.compat2.layouts.support.JTabbedPaneSupportLayout$JTabbedPaneConstraintsDescription">
-              <JTabbedPaneConstraints tabName="Loads">
-                <Property name="tabTitle" type="java.lang.String" value="Loads"/>
-                <Property name="tabIcon" type="javax.swing.Icon" editor="org.netbeans.modules.form.editors2.IconEditor">
-                  <Image iconType="3" name="/com/northwind/resources/freight24.png"/>
-                </Property>
-              </JTabbedPaneConstraints>
-            </Constraint>
-          </Constraints>
-
-          <Layout>
-            <DimensionLayout dim="0">
-              <Group type="103" groupAlignment="0" attributes="0">
-                  <Component id="jScrollPane2" alignment="0" pref="1150" max="32767" attributes="0"/>
-              </Group>
-            </DimensionLayout>
-            <DimensionLayout dim="1">
-              <Group type="103" groupAlignment="0" attributes="0">
-                  <Component id="jScrollPane2" alignment="0" pref="574" max="32767" attributes="0"/>
-              </Group>
-            </DimensionLayout>
-          </Layout>
-          <SubComponents>
-            <Container class="javax.swing.JScrollPane" name="jScrollPane2">
-              <AuxValues>
-                <AuxValue name="autoScrollPane" type="java.lang.Boolean" value="true"/>
-              </AuxValues>
-
-              <Layout class="org.netbeans.modules.form.compat2.layouts.support.JScrollPaneSupportLayout"/>
-              <SubComponents>
-                <Component class="javax.swing.JTable" name="loads">
-                  <Properties>
-                    <Property name="model" type="javax.swing.table.TableModel" editor="org.netbeans.modules.form.editors2.TableModelEditor">
-                      <Table columnCount="4" rowCount="4">
-                        <Column editable="true" title="Title 1" type="java.lang.Object"/>
-                        <Column editable="true" title="Title 2" type="java.lang.Object"/>
-                        <Column editable="true" title="Title 3" type="java.lang.Object"/>
-                        <Column editable="true" title="Title 4" type="java.lang.Object"/>
-                      </Table>
-                    </Property>
-                  </Properties>
-                  <Events>
-                    <EventHandler event="mouseClicked" listener="java.awt.event.MouseListener" parameters="java.awt.event.MouseEvent" handler="loadsMouseClicked"/>
-                  </Events>
-                </Component>
-              </SubComponents>
-            </Container>
-          </SubComponents>
-        </Container>
-        <Container class="javax.swing.JPanel" name="fuelTab">
-          <Constraints>
-            <Constraint layoutClass="org.netbeans.modules.form.compat2.layouts.support.JTabbedPaneSupportLayout" value="org.netbeans.modules.form.compat2.layouts.support.JTabbedPaneSupportLayout$JTabbedPaneConstraintsDescription">
-              <JTabbedPaneConstraints tabName="Fuel">
-                <Property name="tabTitle" type="java.lang.String" value="Fuel"/>
-                <Property name="tabIcon" type="javax.swing.Icon" editor="org.netbeans.modules.form.editors2.IconEditor">
-                  <Image iconType="3" name="/com/northwind/resources/GasPump.png"/>
-                </Property>
-              </JTabbedPaneConstraints>
-            </Constraint>
-          </Constraints>
-
-          <Layout>
-            <DimensionLayout dim="0">
-              <Group type="103" groupAlignment="0" attributes="0">
-                  <Component id="jScrollPane3" alignment="0" pref="1150" max="32767" attributes="0"/>
-              </Group>
-            </DimensionLayout>
-            <DimensionLayout dim="1">
-              <Group type="103" groupAlignment="0" attributes="0">
-                  <Component id="jScrollPane3" alignment="0" pref="574" max="32767" attributes="0"/>
-              </Group>
-            </DimensionLayout>
-          </Layout>
-          <SubComponents>
-            <Container class="javax.swing.JScrollPane" name="jScrollPane3">
-              <AuxValues>
-                <AuxValue name="autoScrollPane" type="java.lang.Boolean" value="true"/>
-              </AuxValues>
-
-              <Layout class="org.netbeans.modules.form.compat2.layouts.support.JScrollPaneSupportLayout"/>
-              <SubComponents>
-                <Component class="javax.swing.JTable" name="fuelPurchases">
-                  <Properties>
-                    <Property name="model" type="javax.swing.table.TableModel" editor="org.netbeans.modules.form.editors2.TableModelEditor">
-                      <Table columnCount="4" rowCount="4">
-                        <Column editable="true" title="Title 1" type="java.lang.Object"/>
-                        <Column editable="true" title="Title 2" type="java.lang.Object"/>
-                        <Column editable="true" title="Title 3" type="java.lang.Object"/>
-                        <Column editable="true" title="Title 4" type="java.lang.Object"/>
-                      </Table>
-                    </Property>
-                  </Properties>
-                  <Events>
-                    <EventHandler event="mouseClicked" listener="java.awt.event.MouseListener" parameters="java.awt.event.MouseEvent" handler="fuelMouseClicked"/>
-                  </Events>
-                </Component>
-              </SubComponents>
-            </Container>
-          </SubComponents>
-        </Container>
-        <Container class="javax.swing.JPanel" name="maintenanceTab">
-          <Constraints>
-            <Constraint layoutClass="org.netbeans.modules.form.compat2.layouts.support.JTabbedPaneSupportLayout" value="org.netbeans.modules.form.compat2.layouts.support.JTabbedPaneSupportLayout$JTabbedPaneConstraintsDescription">
-              <JTabbedPaneConstraints tabName="Maintenance">
-                <Property name="tabTitle" type="java.lang.String" value="Maintenance"/>
-                <Property name="tabIcon" type="javax.swing.Icon" editor="org.netbeans.modules.form.editors2.IconEditor">
-                  <Image iconType="3" name="/com/northwind/resources/Wrench.png"/>
-                </Property>
-              </JTabbedPaneConstraints>
-            </Constraint>
-          </Constraints>
-
-          <Layout>
-            <DimensionLayout dim="0">
-              <Group type="103" groupAlignment="0" attributes="0">
-                  <Component id="jScrollPane4" alignment="0" pref="1150" max="32767" attributes="0"/>
-              </Group>
-            </DimensionLayout>
-            <DimensionLayout dim="1">
-              <Group type="103" groupAlignment="0" attributes="0">
-                  <Component id="jScrollPane4" alignment="0" pref="574" max="32767" attributes="0"/>
-              </Group>
-            </DimensionLayout>
-          </Layout>
-          <SubComponents>
-            <Container class="javax.swing.JScrollPane" name="jScrollPane4">
-              <AuxValues>
-                <AuxValue name="autoScrollPane" type="java.lang.Boolean" value="true"/>
-              </AuxValues>
-
-              <Layout class="org.netbeans.modules.form.compat2.layouts.support.JScrollPaneSupportLayout"/>
-              <SubComponents>
-                <Component class="javax.swing.JTable" name="maintenance">
-                  <Properties>
-                    <Property name="model" type="javax.swing.table.TableModel" editor="org.netbeans.modules.form.editors2.TableModelEditor">
-                      <Table columnCount="4" rowCount="4">
-                        <Column editable="true" title="Title 1" type="java.lang.Object"/>
-                        <Column editable="true" title="Title 2" type="java.lang.Object"/>
-                        <Column editable="true" title="Title 3" type="java.lang.Object"/>
-                        <Column editable="true" title="Title 4" type="java.lang.Object"/>
-                      </Table>
-                    </Property>
-                  </Properties>
-                  <Events>
-                    <EventHandler event="mouseClicked" listener="java.awt.event.MouseListener" parameters="java.awt.event.MouseEvent" handler="maintenanceMouseClicked"/>
-                  </Events>
-                </Component>
-              </SubComponents>
-            </Container>
-          </SubComponents>
-        </Container>
-        <Container class="javax.swing.JPanel" name="vehiclesTab">
-          <Constraints>
-            <Constraint layoutClass="org.netbeans.modules.form.compat2.layouts.support.JTabbedPaneSupportLayout" value="org.netbeans.modules.form.compat2.layouts.support.JTabbedPaneSupportLayout$JTabbedPaneConstraintsDescription">
-              <JTabbedPaneConstraints tabName="Vehicles">
-                <Property name="tabTitle" type="java.lang.String" value="Vehicles"/>
-                <Property name="tabIcon" type="javax.swing.Icon" editor="org.netbeans.modules.form.editors2.IconEditor">
-                  <Image iconType="3" name="/com/northwind/resources/Delivery.png"/>
-                </Property>
-              </JTabbedPaneConstraints>
-            </Constraint>
-          </Constraints>
-
-          <Layout>
-            <DimensionLayout dim="0">
-              <Group type="103" groupAlignment="0" attributes="0">
-                  <Component id="jScrollPane5" alignment="0" pref="1150" max="32767" attributes="0"/>
-              </Group>
-            </DimensionLayout>
-            <DimensionLayout dim="1">
-              <Group type="103" groupAlignment="0" attributes="0">
-                  <Component id="jScrollPane5" alignment="0" pref="574" max="32767" attributes="0"/>
-              </Group>
-            </DimensionLayout>
-          </Layout>
-          <SubComponents>
-            <Container class="javax.swing.JScrollPane" name="jScrollPane5">
-              <AuxValues>
-                <AuxValue name="autoScrollPane" type="java.lang.Boolean" value="true"/>
-              </AuxValues>
-
-              <Layout class="org.netbeans.modules.form.compat2.layouts.support.JScrollPaneSupportLayout"/>
-              <SubComponents>
-                <Component class="javax.swing.JTable" name="vehicles">
-                  <Properties>
-                    <Property name="model" type="javax.swing.table.TableModel" editor="org.netbeans.modules.form.editors2.TableModelEditor">
-                      <Table columnCount="4" rowCount="4">
-                        <Column editable="true" title="Title 1" type="java.lang.Object"/>
-                        <Column editable="true" title="Title 2" type="java.lang.Object"/>
-                        <Column editable="true" title="Title 3" type="java.lang.Object"/>
-                        <Column editable="true" title="Title 4" type="java.lang.Object"/>
-                      </Table>
-                    </Property>
-                  </Properties>
-                  <Events>
-                    <EventHandler event="mouseClicked" listener="java.awt.event.MouseListener" parameters="java.awt.event.MouseEvent" handler="vehiclesMouseClicked"/>
-                  </Events>
-                </Component>
-              </SubComponents>
-            </Container>
-          </SubComponents>
-        </Container>
-        <Container class="javax.swing.JPanel" name="customersTab">
-          <Constraints>
-            <Constraint layoutClass="org.netbeans.modules.form.compat2.layouts.support.JTabbedPaneSupportLayout" value="org.netbeans.modules.form.compat2.layouts.support.JTabbedPaneSupportLayout$JTabbedPaneConstraintsDescription">
-              <JTabbedPaneConstraints tabName="Customers">
-                <Property name="tabTitle" type="java.lang.String" value="Customers"/>
-                <Property name="tabIcon" type="javax.swing.Icon" editor="org.netbeans.modules.form.editors2.IconEditor">
-                  <Image iconType="3" name="/com/northwind/resources/users.png"/>
-                </Property>
-              </JTabbedPaneConstraints>
-            </Constraint>
-          </Constraints>
-
-          <Layout>
-            <DimensionLayout dim="0">
-              <Group type="103" groupAlignment="0" attributes="0">
-                  <Component id="jScrollPane6" alignment="0" pref="1150" max="32767" attributes="0"/>
-              </Group>
-            </DimensionLayout>
-            <DimensionLayout dim="1">
-              <Group type="103" groupAlignment="0" attributes="0">
-                  <Component id="jScrollPane6" alignment="0" pref="574" max="32767" attributes="0"/>
-              </Group>
-            </DimensionLayout>
-          </Layout>
-          <SubComponents>
-            <Container class="javax.swing.JScrollPane" name="jScrollPane6">
-              <AuxValues>
-                <AuxValue name="autoScrollPane" type="java.lang.Boolean" value="true"/>
-              </AuxValues>
-
-              <Layout class="org.netbeans.modules.form.compat2.layouts.support.JScrollPaneSupportLayout"/>
-              <SubComponents>
-                <Component class="javax.swing.JTable" name="customers">
-                  <Properties>
-                    <Property name="model" type="javax.swing.table.TableModel" editor="org.netbeans.modules.form.editors2.TableModelEditor">
-                      <Table columnCount="4" rowCount="4">
-                        <Column editable="true" title="Title 1" type="java.lang.Object"/>
-                        <Column editable="true" title="Title 2" type="java.lang.Object"/>
-                        <Column editable="true" title="Title 3" type="java.lang.Object"/>
-                        <Column editable="true" title="Title 4" type="java.lang.Object"/>
-                      </Table>
-                    </Property>
-                  </Properties>
-                  <Events>
-                    <EventHandler event="mouseClicked" listener="java.awt.event.MouseListener" parameters="java.awt.event.MouseEvent" handler="customersMouseClicked"/>
-                  </Events>
-                </Component>
-              </SubComponents>
-            </Container>
-          </SubComponents>
-        </Container>
-        <Container class="javax.swing.JPanel" name="employeesPanel">
-          <Constraints>
-            <Constraint layoutClass="org.netbeans.modules.form.compat2.layouts.support.JTabbedPaneSupportLayout" value="org.netbeans.modules.form.compat2.layouts.support.JTabbedPaneSupportLayout$JTabbedPaneConstraintsDescription">
-              <JTabbedPaneConstraints tabName="Employees">
-                <Property name="tabTitle" type="java.lang.String" value="Employees"/>
-                <Property name="tabIcon" type="javax.swing.Icon" editor="org.netbeans.modules.form.editors2.IconEditor">
-                  <Image iconType="3" name="/com/northwind/resources/people.png"/>
-                </Property>
-              </JTabbedPaneConstraints>
-            </Constraint>
-          </Constraints>
-
-          <Layout>
-            <DimensionLayout dim="0">
-              <Group type="103" groupAlignment="0" attributes="0">
-                  <Component id="jScrollPane7" alignment="0" pref="1150" max="32767" attributes="0"/>
-              </Group>
-            </DimensionLayout>
-            <DimensionLayout dim="1">
-              <Group type="103" groupAlignment="0" attributes="0">
-                  <Component id="jScrollPane7" alignment="0" pref="574" max="32767" attributes="0"/>
-              </Group>
-            </DimensionLayout>
-          </Layout>
-          <SubComponents>
-            <Container class="javax.swing.JScrollPane" name="jScrollPane7">
-              <AuxValues>
-                <AuxValue name="autoScrollPane" type="java.lang.Boolean" value="true"/>
-              </AuxValues>
-
-              <Layout class="org.netbeans.modules.form.compat2.layouts.support.JScrollPaneSupportLayout"/>
-              <SubComponents>
-                <Component class="javax.swing.JTable" name="employees">
-                  <Properties>
-                    <Property name="model" type="javax.swing.table.TableModel" editor="org.netbeans.modules.form.editors2.TableModelEditor">
-                      <Table columnCount="4" rowCount="4">
-                        <Column editable="true" title="Title 1" type="java.lang.Object"/>
-                        <Column editable="true" title="Title 2" type="java.lang.Object"/>
-                        <Column editable="true" title="Title 3" type="java.lang.Object"/>
-                        <Column editable="true" title="Title 4" type="java.lang.Object"/>
-                      </Table>
-                    </Property>
-                  </Properties>
-                  <Events>
-                    <EventHandler event="mouseClicked" listener="java.awt.event.MouseListener" parameters="java.awt.event.MouseEvent" handler="employeesMouseClicked"/>
-                  </Events>
-                </Component>
-              </SubComponents>
-            </Container>
-          </SubComponents>
-        </Container>
-      </SubComponents>
-    </Container>
     <Container class="javax.swing.JScrollPane" name="jScrollPane1">
       <AuxValues>
         <AuxValue name="autoScrollPane" type="java.lang.Boolean" value="true"/>
@@ -1027,6 +493,504 @@
             </Property>
           </Properties>
         </Component>
+      </SubComponents>
+    </Container>
+    <Container class="javax.swing.JTabbedPane" name="mainTabbedPane">
+      <Events>
+        <EventHandler event="stateChanged" listener="javax.swing.event.ChangeListener" parameters="javax.swing.event.ChangeEvent" handler="mainTabbedPaneStateChanged"/>
+      </Events>
+
+      <Layout class="org.netbeans.modules.form.compat2.layouts.support.JTabbedPaneSupportLayout"/>
+      <SubComponents>
+        <Container class="javax.swing.JPanel" name="loadsTab">
+          <Constraints>
+            <Constraint layoutClass="org.netbeans.modules.form.compat2.layouts.support.JTabbedPaneSupportLayout" value="org.netbeans.modules.form.compat2.layouts.support.JTabbedPaneSupportLayout$JTabbedPaneConstraintsDescription">
+              <JTabbedPaneConstraints tabName="Load Tracker">
+                <Property name="tabTitle" type="java.lang.String" value="Load Tracker"/>
+                <Property name="tabIcon" type="javax.swing.Icon" editor="org.netbeans.modules.form.editors2.IconEditor">
+                  <Image iconType="3" name="/com/northwind/resources/freight.png"/>
+                </Property>
+              </JTabbedPaneConstraints>
+            </Constraint>
+          </Constraints>
+
+          <Layout>
+            <DimensionLayout dim="0">
+              <Group type="103" groupAlignment="0" attributes="0">
+                  <EmptySpace min="0" pref="906" max="32767" attributes="0"/>
+              </Group>
+            </DimensionLayout>
+            <DimensionLayout dim="1">
+              <Group type="103" groupAlignment="0" attributes="0">
+                  <EmptySpace min="0" pref="653" max="32767" attributes="0"/>
+              </Group>
+            </DimensionLayout>
+          </Layout>
+        </Container>
+        <Container class="javax.swing.JPanel" name="fuelTab">
+          <Constraints>
+            <Constraint layoutClass="org.netbeans.modules.form.compat2.layouts.support.JTabbedPaneSupportLayout" value="org.netbeans.modules.form.compat2.layouts.support.JTabbedPaneSupportLayout$JTabbedPaneConstraintsDescription">
+              <JTabbedPaneConstraints tabName="Fuel Journal">
+                <Property name="tabTitle" type="java.lang.String" value="Fuel Journal"/>
+                <Property name="tabIcon" type="javax.swing.Icon" editor="org.netbeans.modules.form.editors2.IconEditor">
+                  <Image iconType="3" name="/com/northwind/resources/GasPump.png"/>
+                </Property>
+              </JTabbedPaneConstraints>
+            </Constraint>
+          </Constraints>
+
+          <Layout>
+            <DimensionLayout dim="0">
+              <Group type="103" groupAlignment="0" attributes="0">
+                  <EmptySpace min="0" pref="906" max="32767" attributes="0"/>
+              </Group>
+            </DimensionLayout>
+            <DimensionLayout dim="1">
+              <Group type="103" groupAlignment="0" attributes="0">
+                  <EmptySpace min="0" pref="653" max="32767" attributes="0"/>
+              </Group>
+            </DimensionLayout>
+          </Layout>
+        </Container>
+        <Container class="javax.swing.JPanel" name="servicesTab">
+          <Constraints>
+            <Constraint layoutClass="org.netbeans.modules.form.compat2.layouts.support.JTabbedPaneSupportLayout" value="org.netbeans.modules.form.compat2.layouts.support.JTabbedPaneSupportLayout$JTabbedPaneConstraintsDescription">
+              <JTabbedPaneConstraints tabName="Service Journal">
+                <Property name="tabTitle" type="java.lang.String" value="Service Journal"/>
+                <Property name="tabIcon" type="javax.swing.Icon" editor="org.netbeans.modules.form.editors2.IconEditor">
+                  <Image iconType="3" name="/com/northwind/resources/Wrench.png"/>
+                </Property>
+              </JTabbedPaneConstraints>
+            </Constraint>
+          </Constraints>
+
+          <Layout>
+            <DimensionLayout dim="0">
+              <Group type="103" groupAlignment="0" attributes="0">
+                  <EmptySpace min="0" pref="906" max="32767" attributes="0"/>
+              </Group>
+            </DimensionLayout>
+            <DimensionLayout dim="1">
+              <Group type="103" groupAlignment="0" attributes="0">
+                  <EmptySpace min="0" pref="653" max="32767" attributes="0"/>
+              </Group>
+            </DimensionLayout>
+          </Layout>
+        </Container>
+        <Container class="javax.swing.JPanel" name="vehiclesTab">
+          <Constraints>
+            <Constraint layoutClass="org.netbeans.modules.form.compat2.layouts.support.JTabbedPaneSupportLayout" value="org.netbeans.modules.form.compat2.layouts.support.JTabbedPaneSupportLayout$JTabbedPaneConstraintsDescription">
+              <JTabbedPaneConstraints tabName="Vehicle Tracker">
+                <Property name="tabTitle" type="java.lang.String" value="Vehicle Tracker"/>
+                <Property name="tabIcon" type="javax.swing.Icon" editor="org.netbeans.modules.form.editors2.IconEditor">
+                  <Image iconType="3" name="/com/northwind/resources/Delivery.png"/>
+                </Property>
+              </JTabbedPaneConstraints>
+            </Constraint>
+          </Constraints>
+
+          <Layout>
+            <DimensionLayout dim="0">
+              <Group type="103" groupAlignment="0" attributes="0">
+                  <EmptySpace min="0" pref="906" max="32767" attributes="0"/>
+              </Group>
+            </DimensionLayout>
+            <DimensionLayout dim="1">
+              <Group type="103" groupAlignment="0" attributes="0">
+                  <EmptySpace min="0" pref="653" max="32767" attributes="0"/>
+              </Group>
+            </DimensionLayout>
+          </Layout>
+        </Container>
+        <Container class="javax.swing.JPanel" name="customersTab">
+          <Constraints>
+            <Constraint layoutClass="org.netbeans.modules.form.compat2.layouts.support.JTabbedPaneSupportLayout" value="org.netbeans.modules.form.compat2.layouts.support.JTabbedPaneSupportLayout$JTabbedPaneConstraintsDescription">
+              <JTabbedPaneConstraints tabName="Customer Tracker">
+                <Property name="tabTitle" type="java.lang.String" value="Customer Tracker"/>
+                <Property name="tabIcon" type="javax.swing.Icon" editor="org.netbeans.modules.form.editors2.IconEditor">
+                  <Image iconType="3" name="/com/northwind/resources/users.png"/>
+                </Property>
+              </JTabbedPaneConstraints>
+            </Constraint>
+          </Constraints>
+
+          <Layout>
+            <DimensionLayout dim="0">
+              <Group type="103" groupAlignment="0" attributes="0">
+                  <Component id="jScrollPane2" alignment="0" pref="906" max="32767" attributes="0"/>
+              </Group>
+            </DimensionLayout>
+            <DimensionLayout dim="1">
+              <Group type="103" groupAlignment="0" attributes="0">
+                  <Component id="jScrollPane2" alignment="0" pref="653" max="32767" attributes="0"/>
+              </Group>
+            </DimensionLayout>
+          </Layout>
+          <SubComponents>
+            <Container class="javax.swing.JScrollPane" name="jScrollPane2">
+              <AuxValues>
+                <AuxValue name="autoScrollPane" type="java.lang.Boolean" value="true"/>
+              </AuxValues>
+
+              <Layout class="org.netbeans.modules.form.compat2.layouts.support.JScrollPaneSupportLayout"/>
+              <SubComponents>
+                <Component class="org.jdesktop.swingx.JXTable" name="customers">
+                  <Properties>
+                    <Property name="model" type="javax.swing.table.TableModel" editor="org.netbeans.modules.form.editors2.TableModelEditor">
+                      <Table columnCount="4" rowCount="4">
+                        <Column editable="true" title="Title 1" type="java.lang.Object"/>
+                        <Column editable="true" title="Title 2" type="java.lang.Object"/>
+                        <Column editable="true" title="Title 3" type="java.lang.Object"/>
+                        <Column editable="true" title="Title 4" type="java.lang.Object"/>
+                      </Table>
+                    </Property>
+                  </Properties>
+                </Component>
+              </SubComponents>
+            </Container>
+          </SubComponents>
+        </Container>
+        <Container class="javax.swing.JPanel" name="employeesTab">
+          <Constraints>
+            <Constraint layoutClass="org.netbeans.modules.form.compat2.layouts.support.JTabbedPaneSupportLayout" value="org.netbeans.modules.form.compat2.layouts.support.JTabbedPaneSupportLayout$JTabbedPaneConstraintsDescription">
+              <JTabbedPaneConstraints tabName="Employee Tracker">
+                <Property name="tabTitle" type="java.lang.String" value="Employee Tracker"/>
+                <Property name="tabIcon" type="javax.swing.Icon" editor="org.netbeans.modules.form.editors2.IconEditor">
+                  <Image iconType="3" name="/com/northwind/resources/people.png"/>
+                </Property>
+              </JTabbedPaneConstraints>
+            </Constraint>
+          </Constraints>
+
+          <Layout>
+            <DimensionLayout dim="0">
+              <Group type="103" groupAlignment="0" attributes="0">
+                  <EmptySpace min="0" pref="906" max="32767" attributes="0"/>
+              </Group>
+            </DimensionLayout>
+            <DimensionLayout dim="1">
+              <Group type="103" groupAlignment="0" attributes="0">
+                  <EmptySpace min="0" pref="653" max="32767" attributes="0"/>
+              </Group>
+            </DimensionLayout>
+          </Layout>
+        </Container>
+        <Container class="javax.swing.JPanel" name="glTab">
+          <Constraints>
+            <Constraint layoutClass="org.netbeans.modules.form.compat2.layouts.support.JTabbedPaneSupportLayout" value="org.netbeans.modules.form.compat2.layouts.support.JTabbedPaneSupportLayout$JTabbedPaneConstraintsDescription">
+              <JTabbedPaneConstraints tabName="General Ledger">
+                <Property name="tabTitle" type="java.lang.String" value="General Ledger"/>
+                <Property name="tabIcon" type="javax.swing.Icon" editor="org.netbeans.modules.form.editors2.IconEditor">
+                  <Image iconType="3" name="/com/northwind/resources/Script.png"/>
+                </Property>
+              </JTabbedPaneConstraints>
+            </Constraint>
+          </Constraints>
+
+          <Layout>
+            <DimensionLayout dim="0">
+              <Group type="103" groupAlignment="0" attributes="0">
+                  <EmptySpace min="0" pref="906" max="32767" attributes="0"/>
+              </Group>
+            </DimensionLayout>
+            <DimensionLayout dim="1">
+              <Group type="103" groupAlignment="0" attributes="0">
+                  <EmptySpace min="0" pref="653" max="32767" attributes="0"/>
+              </Group>
+            </DimensionLayout>
+          </Layout>
+        </Container>
+      </SubComponents>
+    </Container>
+    <Container class="javax.swing.JScrollPane" name="jScrollPane3">
+
+      <Layout class="org.netbeans.modules.form.compat2.layouts.support.JScrollPaneSupportLayout"/>
+      <SubComponents>
+        <Container class="org.jdesktop.swingx.JXTaskPaneContainer" name="mainTaskController">
+          <SubComponents>
+            <Component class="org.jdesktop.swingx.JXTaskPane" name="appTaskPane">
+              <Properties>
+                <Property name="autoscrolls" type="boolean" value="true"/>
+                <Property name="icon" type="javax.swing.Icon" editor="org.netbeans.modules.form.editors2.IconEditor">
+                  <Image iconType="3" name="/com/northwind/resources/Northwind16.png"/>
+                </Property>
+                <Property name="mnemonic" type="int" value="78"/>
+                <Property name="scrollOnExpand" type="boolean" value="true"/>
+                <Property name="special" type="boolean" value="true"/>
+                <Property name="title" type="java.lang.String" value="Northwind Traders Tasks"/>
+              </Properties>
+              <AuxValues>
+                <AuxValue name="JavaCodeGenerator_InitCodePost" type="java.lang.String" value="appTaskPane.add(new AbstractAction() {&#xa;{&#xa;    putValue(Action.NAME, &quot;New Data Store...&quot;);&#xa;    putValue(Action.SHORT_DESCRIPTION, &quot;Choose where to save a new data store&quot;);&#xa;    putValue(Action.SMALL_ICON, new javax.swing.ImageIcon(getClass()&#xa;            .getResource(&quot;/com/northwind/resources/newDB.png&quot;)));&#xa;}&#xa;&#xa;public void actionPerformed(ActionEvent e) {&#xa;newActionPerformed(e);&#xa;}&#xa;});&#xa;&#xa;appTaskPane.add(new AbstractAction() {&#xa;{&#xa;    putValue(Action.NAME, &quot;Open Data Store...&quot;);&#xa;    putValue(Action.SHORT_DESCRIPTION, &quot;Choose which data store to use&quot;);&#xa;    putValue(Action.SMALL_ICON, new javax.swing.ImageIcon(getClass()&#xa;            .getResource(&quot;/com/northwind/resources/openDB.png&quot;)));&#xa;}&#xa;&#xa;public void actionPerformed(ActionEvent e) {&#xa;openActionPerformed(e);&#xa;}&#xa;});&#xa;&#xa;appTaskPane.add(new JSeparator());&#xa;&#xa;appTaskPane.add(new AbstractAction() {&#xa;{&#xa;    putValue(Action.NAME, &quot;Save Data Store...&quot;);&#xa;    putValue(Action.SHORT_DESCRIPTION, &quot;Save the data store to disk&quot;);&#xa;    putValue(Action.SMALL_ICON, new javax.swing.ImageIcon(getClass().getResource(&quot;/com/northwind/resources/save-database.png&quot;)));&#xa;}&#xa;&#xa;&#xa;public void actionPerformed(ActionEvent e) {&#xa;saveActionPerformed(e);&#xa;}&#xa;});&#xa;&#xa;appTaskPane.add(new JSeparator());&#xa;&#xa;appTaskPane.add(new AbstractAction() {&#xa;{&#xa;    putValue(Action.NAME, &quot;Printer Setup...&quot;);&#xa;    putValue(Action.SHORT_DESCRIPTION, &quot;Set default options for printing&quot;);&#xa;    putValue(Action.SMALL_ICON, new javax.swing.ImageIcon(getClass().getResource(&quot;/com/northwind/resources/printersetup.png&quot;)));&#xa;}&#xa;&#xa;public void actionPerformed(ActionEvent e) {&#xa;printSetupActionPerformed(e);&#xa;}&#xa;});&#xa;&#xa;appTaskPane.add(new AbstractAction() {&#xa;{&#xa;    putValue(Action.NAME, &quot;Print&quot;);&#xa;    putValue(Action.SHORT_DESCRIPTION, &quot;Displays system print dialog to print &quot;&#xa;            + &quot;documents&quot;);&#xa;    putValue(Action.SMALL_ICON, new javax.swing.ImageIcon(getClass()&#xa;            .getResource(&quot;/com/northwind/resources/print.png&quot;)));&#xa;}&#xa;&#xa;public void actionPerformed(ActionEvent e) {&#xa;printActionPerformed(e);&#xa;}&#xa;});&#xa;&#xa;appTaskPane.add(new JSeparator());&#xa;&#xa;appTaskPane.add(new AbstractAction() {&#xa;{&#xa;    putValue(Action.NAME, &quot;Options...&quot;);&#xa;    putValue(Action.SHORT_DESCRIPTION, &quot;Displays the options dialog&quot;);&#xa;    putValue(Action.SMALL_ICON, new javax.swing.ImageIcon(getClass()&#xa;            .getResource(&quot;/com/northwind/resources/config16.png&quot;)));&#xa;}&#xa;&#xa;public void actionPerformed(ActionEvent e) {&#xa;optionsActionPerformed(e);&#xa;}&#xa;});&#xa;&#xa;appTaskPane.add(new JSeparator());&#xa;&#xa;appTaskPane.add(new AbstractAction() {&#xa;{&#xa;    putValue(Action.NAME, &quot;Exit Northwind Traders&quot;);&#xa;    putValue(Action.SHORT_DESCRIPTION, &quot;Exits the application and performs &quot;&#xa;            + &quot;housekeeping to release all resources&quot;);&#xa;    putValue(Action.SMALL_ICON, new javax.swing.ImageIcon(getClass()&#xa;            .getResource(&quot;/com/northwind/resources/Turnoff.png&quot;)));&#xa;}&#xa;&#xa;public void actionPerformed(ActionEvent e) {&#xa;exitActionPerformed(e);&#xa;}&#xa;});"/>
+              </AuxValues>
+            </Component>
+            <Component class="org.jdesktop.swingx.JXTaskPane" name="loadsTaskPane">
+              <Properties>
+                <Property name="autoscrolls" type="boolean" value="true"/>
+                <Property name="collapsed" type="boolean" value="true"/>
+                <Property name="icon" type="javax.swing.Icon" editor="org.netbeans.modules.form.editors2.IconEditor">
+                  <Image iconType="3" name="/com/northwind/resources/freight.png"/>
+                </Property>
+                <Property name="mnemonic" type="int" value="76"/>
+                <Property name="scrollOnExpand" type="boolean" value="true"/>
+                <Property name="title" type="java.lang.String" value="Load Tracker Tasks"/>
+              </Properties>
+              <Events>
+                <EventHandler event="componentResized" listener="java.awt.event.ComponentListener" parameters="java.awt.event.ComponentEvent" handler="loadsTaskPaneComponentResized"/>
+              </Events>
+              <AuxValues>
+                <AuxValue name="JavaCodeGenerator_InitCodePost" type="java.lang.String" value="loadsTaskPane.add(new AbstractAction() {&#xa;{&#xa;    putValue(Action.NAME, &quot;Close Load Tracker&quot;);&#xa;    putValue(Action.SHORT_DESCRIPTION, &quot;Closes the Load Tracker window&quot;);&#xa;    putValue(Action.SMALL_ICON, new javax.swing.ImageIcon(getClass()&#xa;            .getResource(&quot;/com/northwind/resources/Cancel.png&quot;)));&#xa;}&#xa;&#xa;public void actionPerformed(ActionEvent e) {&#xa;    if ( getValue(Action.NAME).toString().equalsIgnoreCase(&quot;Close Load Tracker&quot;) ) {&#xa;        putValue(Action.NAME, &quot;Open Load Tracker&quot;);&#xa;        putValue(Action.SHORT_DESCRIPTION, &quot;Opens the Load Tracker window&quot;);&#xa;        putValue(Action.SMALL_ICON, new javax.swing.ImageIcon(getClass()&#xa;            .getResource(&quot;/com/northwind/resources/open.png&quot;)));&#xa;        mainTabbedPane.remove(loadsTab);&#xa;        loadsTaskPane.setCollapsed(true);&#xa;    } else if ( getValue(Action.NAME).toString().equalsIgnoreCase(&quot;Open Load Tracker&quot;) ) {&#xa;        putValue(Action.NAME, &quot;Close Load Tracker&quot;);&#xa;        putValue(Action.SHORT_DESCRIPTION, &quot;Closes the Load Tracker window&quot;);&#xa;        putValue(Action.SMALL_ICON, new javax.swing.ImageIcon(getClass()&#xa;            .getResource(&quot;/com/northwind/resources/Cancel.png&quot;)));&#xa;        mainTabbedPane.addTab(&quot;Load Tracker&quot;, new javax.swing.ImageIcon(getClass().getResource(&quot;/com/northwind/resources/freight.png&quot;)), loadsTab);&#xa;    }&#xa;}&#xa;});&#xa;&#xa;loadsTaskPane.add(new JSeparator());&#xa;&#xa;loadsTaskPane.add(new AbstractAction() {&#xa;{&#xa;    putValue(Action.NAME, &quot;Book New Load...&quot;);&#xa;    putValue(Action.SHORT_DESCRIPTION, &quot;Displays the load booking dialog&quot;);&#xa;    putValue(Action.SMALL_ICON, new javax.swing.ImageIcon(getClass()&#xa;            .getResource(&quot;/com/northwind/resources/add.png&quot;)));&#xa;}&#xa;&#xa;public void actionPerformed(ActionEvent e) {&#xa;    doNewLoad();&#xa;}&#xa;});&#xa;&#xa;loadsTaskPane.add(new JSeparator());&#xa;&#xa;loadsTaskPane.add(new AbstractAction() {&#xa;{&#xa;    putValue(Action.NAME, &quot;Arrive at Stop...&quot;);&#xa;    putValue(Action.SHORT_DESCRIPTION, &quot;Displays stop arrival dialog&quot;);&#xa;    putValue(Action.SMALL_ICON, new javax.swing.ImageIcon(getClass()&#xa;            .getResource(&quot;/com/northwind/resources/Arrive.png&quot;)));&#xa;}&#xa;&#xa;public void actionPerformed(ActionEvent e) {&#xa;    if ( getValue(Action.NAME).toString().equalsIgnoreCase(&quot;Arrive at Stop...&quot;) ) {&#xa;        putValue(Action.NAME, &quot;Depart from Stop...&quot;);&#xa;        putValue(Action.SMALL_ICON, new javax.swing.ImageIcon(getClass()&#xa;            .getResource(&quot;/com/northwind/resources/Depart.png&quot;)));&#xa;        doShowArrival();&#xa;    } else if ( getValue(Action.NAME).toString().equalsIgnoreCase(&quot;Depart from Stop...&quot;) ) {&#xa;        putValue(Action.NAME, &quot;Arrive at Stop...&quot;);&#xa;        putValue(Action.SMALL_ICON, new javax.swing.ImageIcon(getClass()&#xa;            .getResource(&quot;/com/northwind/resources/Arrive.png&quot;)));&#xa;        doShowDeparture();&#xa;    }&#xa;}&#xa;});&#xa;&#xa;loadsTaskPane.add(new JSeparator());&#xa;&#xa;loadsTaskPane.add(new AbstractAction() {&#xa;{&#xa;    putValue(Action.NAME, &quot;View Loads Queue...&quot;);&#xa;    putValue(Action.SHORT_DESCRIPTION, &quot;Displays Loads Queue dialog&quot;);&#xa;    putValue(Action.SMALL_ICON, new javax.swing.ImageIcon(getClass()&#xa;            .getResource(&quot;/com/northwind/resources/freight.png&quot;)));&#xa;}&#xa;&#xa;public void actionPerformed(ActionEvent e) {&#xa;    doShowLoadsQueue();&#xa;}&#xa;});"/>
+              </AuxValues>
+            </Component>
+            <Component class="org.jdesktop.swingx.JXTaskPane" name="fuelTaskPane">
+              <Properties>
+                <Property name="autoscrolls" type="boolean" value="true"/>
+                <Property name="collapsed" type="boolean" value="true"/>
+                <Property name="icon" type="javax.swing.Icon" editor="org.netbeans.modules.form.editors2.IconEditor">
+                  <Image iconType="3" name="/com/northwind/resources/GasPump.png"/>
+                </Property>
+                <Property name="mnemonic" type="int" value="70"/>
+                <Property name="scrollOnExpand" type="boolean" value="true"/>
+                <Property name="title" type="java.lang.String" value="Fuel Journal Tasks"/>
+              </Properties>
+            </Component>
+            <Component class="org.jdesktop.swingx.JXTaskPane" name="servicesTaskPane">
+              <Properties>
+                <Property name="autoscrolls" type="boolean" value="true"/>
+                <Property name="collapsed" type="boolean" value="true"/>
+                <Property name="icon" type="javax.swing.Icon" editor="org.netbeans.modules.form.editors2.IconEditor">
+                  <Image iconType="3" name="/com/northwind/resources/Wrench.png"/>
+                </Property>
+                <Property name="mnemonic" type="int" value="83"/>
+                <Property name="scrollOnExpand" type="boolean" value="true"/>
+                <Property name="title" type="java.lang.String" value="Service Journal Tasks"/>
+              </Properties>
+            </Component>
+            <Component class="org.jdesktop.swingx.JXTaskPane" name="vehiclesTaskPane">
+              <Properties>
+                <Property name="autoscrolls" type="boolean" value="true"/>
+                <Property name="collapsed" type="boolean" value="true"/>
+                <Property name="icon" type="javax.swing.Icon" editor="org.netbeans.modules.form.editors2.IconEditor">
+                  <Image iconType="3" name="/com/northwind/resources/Delivery.png"/>
+                </Property>
+                <Property name="mnemonic" type="int" value="86"/>
+                <Property name="scrollOnExpand" type="boolean" value="true"/>
+                <Property name="title" type="java.lang.String" value="Vehicle Tracker Tasks"/>
+              </Properties>
+            </Component>
+            <Component class="org.jdesktop.swingx.JXTaskPane" name="customersTaskPane">
+              <Properties>
+                <Property name="autoscrolls" type="boolean" value="true"/>
+                <Property name="collapsed" type="boolean" value="true"/>
+                <Property name="icon" type="javax.swing.Icon" editor="org.netbeans.modules.form.editors2.IconEditor">
+                  <Image iconType="3" name="/com/northwind/resources/users.png"/>
+                </Property>
+                <Property name="mnemonic" type="int" value="67"/>
+                <Property name="scrollOnExpand" type="boolean" value="true"/>
+                <Property name="title" type="java.lang.String" value="Customer Tracker Tasks"/>
+              </Properties>
+              <AuxValues>
+                <AuxValue name="JavaCodeGenerator_InitCodePost" type="java.lang.String" value="customersTaskPane.add(new AbstractAction() {&#xa;{&#xa;    putValue(Action.NAME, &quot;Close Customers List&quot;);&#xa;    putValue(Action.SHORT_DESCRIPTION, &quot;Close Customers List&quot;);&#xa;    putValue(Action.SMALL_ICON, new javax.swing.ImageIcon(getClass().getResource(&quot;/com/northwind/resources/Cancel.png&quot;)));&#xa;}&#xa;&#xa;public void actionPerformed(ActionEvent e) {&#xa;    if ( getValue(Action.NAME).toString().equalsIgnoreCase(&quot;Close Customers List&quot;) ) {&#xa;        putValue(Action.NAME, &quot;Open Customers List&quot;);&#xa;        putValue(Action.SMALL_ICON, new javax.swing.ImageIcon(getClass().getResource(&quot;/com/northwind/resources/open.png&quot;)));&#xa;        mainTabbedPane.remove(customersTab);&#xa;    } else if ( getValue(Action.NAME).toString().equalsIgnoreCase(&quot;Open Customers List&quot;) ) {&#xa;        putValue(Action.NAME, &quot;Close Customers List&quot;);&#xa;        putValue(Action.SMALL_ICON, new javax.swing.ImageIcon(getClass().getResource(&quot;/com/northwind/resources/Cancel.png&quot;)));&#xa;        mainTabbedPane.addTab(&quot;Customer List&quot;, new javax.swing.ImageIcon(getClass().getResource(&quot;/com/northwind/resources/users.png&quot;)), customersTab, null );&#xa;    }&#xa;}&#xa;});&#xa;&#xa;customersTaskPane.add(new JXLabel(&quot;    &quot;));&#xa;&#xa;customersTaskPane.add(new AbstractAction() {&#xa;{&#xa;    putValue(Action.NAME, &quot;Add New Customer&quot;);&#xa;    putValue(Action.SHORT_DESCRIPTION, &quot;Adds a new customer record&quot;);&#xa;    putValue(Action.SMALL_ICON, new javax.swing.ImageIcon(getClass().getResource(&quot;/com/northwind/resources/add.png&quot;)));&#xa;}&#xa;&#xa;public void actionPerformed(ActionEvent e) {&#xa;    CustomerEntryDlg dlg = new CustomerEntryDlg(null, true);&#xa;    dlg.pack();&#xa;    dlg.setVisible(true);&#xa;}&#xa;});"/>
+              </AuxValues>
+            </Component>
+            <Component class="org.jdesktop.swingx.JXTaskPane" name="employeesTaskPane">
+              <Properties>
+                <Property name="autoscrolls" type="boolean" value="true"/>
+                <Property name="collapsed" type="boolean" value="true"/>
+                <Property name="icon" type="javax.swing.Icon" editor="org.netbeans.modules.form.editors2.IconEditor">
+                  <Image iconType="3" name="/com/northwind/resources/people.png"/>
+                </Property>
+                <Property name="mnemonic" type="int" value="69"/>
+                <Property name="scrollOnExpand" type="boolean" value="true"/>
+                <Property name="title" type="java.lang.String" value="Employee Tracker Tasks"/>
+              </Properties>
+            </Component>
+            <Component class="org.jdesktop.swingx.JXTaskPane" name="glTaskPane">
+              <Properties>
+                <Property name="autoscrolls" type="boolean" value="true"/>
+                <Property name="collapsed" type="boolean" value="true"/>
+                <Property name="icon" type="javax.swing.Icon" editor="org.netbeans.modules.form.editors2.IconEditor">
+                  <Image iconType="3" name="/com/northwind/resources/Script.png"/>
+                </Property>
+                <Property name="mnemonic" type="int" value="71"/>
+                <Property name="name" type="java.lang.String" value="" noResource="true"/>
+                <Property name="scrollOnExpand" type="boolean" value="true"/>
+                <Property name="title" type="java.lang.String" value="General Ledger Tasks"/>
+              </Properties>
+            </Component>
+          </SubComponents>
+          <LayoutCode>
+            <CodeStatement>
+              <CodeExpression id="1_verticalLayout1">
+                <CodeVariable name="verticalLayout1" type="4096" declaredType="org.jdesktop.swingx.VerticalLayout"/>
+                <ExpressionOrigin>
+                  <ExpressionProvider type="CodeConstructor">
+                    <CodeConstructor class="org.jdesktop.swingx.VerticalLayout" parameterTypes=""/>
+                  </ExpressionProvider>
+                </ExpressionOrigin>
+              </CodeExpression>
+              <StatementProvider type="CodeExpression">
+                <CodeExpression id="1_verticalLayout1"/>
+              </StatementProvider>
+            </CodeStatement>
+            <CodeStatement>
+              <CodeExpression id="1_verticalLayout1"/>
+              <StatementProvider type="CodeMethod">
+                <CodeMethod name="setGap" class="org.jdesktop.swingx.VerticalLayout" parameterTypes="int"/>
+              </StatementProvider>
+              <Parameters>
+                <CodeExpression id="2">
+                  <ExpressionOrigin>
+                    <Value type="int" value="14"/>
+                  </ExpressionOrigin>
+                </CodeExpression>
+              </Parameters>
+            </CodeStatement>
+            <CodeStatement>
+              <CodeExpression id="3_mainTaskController">
+                <CodeVariable name="mainTaskController" type="8194" declaredType="org.jdesktop.swingx.JXTaskPaneContainer"/>
+                <ExpressionOrigin>
+                  <ExpressionProvider type="ComponentRef">
+                    <ComponentRef name="mainTaskController"/>
+                  </ExpressionProvider>
+                </ExpressionOrigin>
+              </CodeExpression>
+              <StatementProvider type="CodeMethod">
+                <CodeMethod name="setLayout" class="java.awt.Container" parameterTypes="java.awt.LayoutManager"/>
+              </StatementProvider>
+              <Parameters>
+                <CodeExpression id="1_verticalLayout1"/>
+              </Parameters>
+            </CodeStatement>
+            <CodeStatement>
+              <CodeExpression id="3_mainTaskController"/>
+              <StatementProvider type="CodeMethod">
+                <CodeMethod name="add" class="java.awt.Container" parameterTypes="java.awt.Component"/>
+              </StatementProvider>
+              <Parameters>
+                <CodeExpression id="4_appTaskPane">
+                  <CodeVariable name="appTaskPane" type="8194" declaredType="org.jdesktop.swingx.JXTaskPane"/>
+                  <ExpressionOrigin>
+                    <ExpressionProvider type="ComponentRef">
+                      <ComponentRef name="appTaskPane"/>
+                    </ExpressionProvider>
+                  </ExpressionOrigin>
+                </CodeExpression>
+              </Parameters>
+            </CodeStatement>
+            <CodeStatement>
+              <CodeExpression id="3_mainTaskController"/>
+              <StatementProvider type="CodeMethod">
+                <CodeMethod name="add" class="java.awt.Container" parameterTypes="java.awt.Component"/>
+              </StatementProvider>
+              <Parameters>
+                <CodeExpression id="5_loadsTaskPane">
+                  <CodeVariable name="loadsTaskPane" type="8194" declaredType="org.jdesktop.swingx.JXTaskPane"/>
+                  <ExpressionOrigin>
+                    <ExpressionProvider type="ComponentRef">
+                      <ComponentRef name="loadsTaskPane"/>
+                    </ExpressionProvider>
+                  </ExpressionOrigin>
+                </CodeExpression>
+              </Parameters>
+            </CodeStatement>
+            <CodeStatement>
+              <CodeExpression id="3_mainTaskController"/>
+              <StatementProvider type="CodeMethod">
+                <CodeMethod name="add" class="java.awt.Container" parameterTypes="java.awt.Component"/>
+              </StatementProvider>
+              <Parameters>
+                <CodeExpression id="6_fuelTaskPane">
+                  <CodeVariable name="fuelTaskPane" type="8194" declaredType="org.jdesktop.swingx.JXTaskPane"/>
+                  <ExpressionOrigin>
+                    <ExpressionProvider type="ComponentRef">
+                      <ComponentRef name="fuelTaskPane"/>
+                    </ExpressionProvider>
+                  </ExpressionOrigin>
+                </CodeExpression>
+              </Parameters>
+            </CodeStatement>
+            <CodeStatement>
+              <CodeExpression id="3_mainTaskController"/>
+              <StatementProvider type="CodeMethod">
+                <CodeMethod name="add" class="java.awt.Container" parameterTypes="java.awt.Component"/>
+              </StatementProvider>
+              <Parameters>
+                <CodeExpression id="7_servicesTaskPane">
+                  <CodeVariable name="servicesTaskPane" type="8194" declaredType="org.jdesktop.swingx.JXTaskPane"/>
+                  <ExpressionOrigin>
+                    <ExpressionProvider type="ComponentRef">
+                      <ComponentRef name="servicesTaskPane"/>
+                    </ExpressionProvider>
+                  </ExpressionOrigin>
+                </CodeExpression>
+              </Parameters>
+            </CodeStatement>
+            <CodeStatement>
+              <CodeExpression id="3_mainTaskController"/>
+              <StatementProvider type="CodeMethod">
+                <CodeMethod name="add" class="java.awt.Container" parameterTypes="java.awt.Component"/>
+              </StatementProvider>
+              <Parameters>
+                <CodeExpression id="8_vehiclesTaskPane">
+                  <CodeVariable name="vehiclesTaskPane" type="8194" declaredType="org.jdesktop.swingx.JXTaskPane"/>
+                  <ExpressionOrigin>
+                    <ExpressionProvider type="ComponentRef">
+                      <ComponentRef name="vehiclesTaskPane"/>
+                    </ExpressionProvider>
+                  </ExpressionOrigin>
+                </CodeExpression>
+              </Parameters>
+            </CodeStatement>
+            <CodeStatement>
+              <CodeExpression id="3_mainTaskController"/>
+              <StatementProvider type="CodeMethod">
+                <CodeMethod name="add" class="java.awt.Container" parameterTypes="java.awt.Component"/>
+              </StatementProvider>
+              <Parameters>
+                <CodeExpression id="9_customersTaskPane">
+                  <CodeVariable name="customersTaskPane" type="8194" declaredType="org.jdesktop.swingx.JXTaskPane"/>
+                  <ExpressionOrigin>
+                    <ExpressionProvider type="ComponentRef">
+                      <ComponentRef name="customersTaskPane"/>
+                    </ExpressionProvider>
+                  </ExpressionOrigin>
+                </CodeExpression>
+              </Parameters>
+            </CodeStatement>
+            <CodeStatement>
+              <CodeExpression id="3_mainTaskController"/>
+              <StatementProvider type="CodeMethod">
+                <CodeMethod name="add" class="java.awt.Container" parameterTypes="java.awt.Component"/>
+              </StatementProvider>
+              <Parameters>
+                <CodeExpression id="10_employeesTaskPane">
+                  <CodeVariable name="employeesTaskPane" type="8194" declaredType="org.jdesktop.swingx.JXTaskPane"/>
+                  <ExpressionOrigin>
+                    <ExpressionProvider type="ComponentRef">
+                      <ComponentRef name="employeesTaskPane"/>
+                    </ExpressionProvider>
+                  </ExpressionOrigin>
+                </CodeExpression>
+              </Parameters>
+            </CodeStatement>
+            <CodeStatement>
+              <CodeExpression id="3_mainTaskController"/>
+              <StatementProvider type="CodeMethod">
+                <CodeMethod name="add" class="java.awt.Container" parameterTypes="java.awt.Component"/>
+              </StatementProvider>
+              <Parameters>
+                <CodeExpression id="11_glTaskPane">
+                  <CodeVariable name="glTaskPane" type="8194" declaredType="org.jdesktop.swingx.JXTaskPane"/>
+                  <ExpressionOrigin>
+                    <ExpressionProvider type="ComponentRef">
+                      <ComponentRef name="glTaskPane"/>
+                    </ExpressionProvider>
+                  </ExpressionOrigin>
+                </CodeExpression>
+              </Parameters>
+            </CodeStatement>
+          </LayoutCode>
+        </Container>
       </SubComponents>
     </Container>
   </SubComponents>

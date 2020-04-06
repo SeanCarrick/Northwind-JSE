@@ -24,8 +24,6 @@ import java.awt.Image;
 import java.awt.event.ActionListener;
 import java.util.ArrayList;
 import java.util.List;
-import java.util.logging.Level;
-import java.util.logging.Logger;
 
 /**
  *
@@ -126,6 +124,7 @@ public class CustomerEntryDlg extends javax.swing.JDialog {
 
         setDefaultCloseOperation(javax.swing.WindowConstants.DISPOSE_ON_CLOSE);
         setTitle("Customer Entry");
+        setUndecorated(true);
 
         cancelButton.setIcon(new javax.swing.ImageIcon(getClass().getResource("/com/northwind/resources/Cancel.png"))); // NOI18N
         cancelButton.setMnemonic('n');

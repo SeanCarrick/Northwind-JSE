@@ -17,8 +17,13 @@
 package com.northwind.view;
 
 import com.northwind.actions.controller.ActionSupport;
+import com.northwind.api.db.DbConnection;
 import com.northwind.custmgr.model.Customer;
+import com.northwind.custmgr.view.CustomerEntryDlg;
+import com.northwind.custmgr.view.CustomerSelectionDialog;
 import com.northwind.custmgr.view.CustomersTableModel;
+import com.northwind.exceptions.DataStoreException;
+import com.northwind.loadmgr.view.ArrivalDialog;
 import com.northwind.settings.AppProperties;
 import com.northwind.utils.Logger;
 import java.awt.Color;
@@ -28,12 +33,21 @@ import java.awt.event.ActionEvent;
 import java.awt.event.ActionListener;
 import java.awt.event.MouseEvent;
 import java.awt.event.MouseListener;
+import java.io.File;
+import java.io.IOException;
+import java.sql.Connection;
 import java.util.ArrayList;
 import java.util.List;
 import java.util.logging.LogRecord;
+import javax.swing.AbstractAction;
+import javax.swing.Action;
+import javax.swing.JFileChooser;
 import javax.swing.JOptionPane;
+import javax.swing.JSeparator;
 import javax.swing.event.ListSelectionEvent;
 import javax.swing.event.ListSelectionListener;
+import javax.swing.filechooser.FileFilter;
+import org.jdesktop.swingx.JXLabel;
 
 /**
  *
@@ -44,6 +58,7 @@ public class MainWindow extends javax.swing.JFrame {
     private AppProperties props;
     private LogRecord record;
     private Logger log;
+    private Connection con;
     
     private ActionSupport actionSupport = new ActionSupport(this);
     
@@ -56,26 +71,23 @@ public class MainWindow extends javax.swing.JFrame {
     }
     
     public void setStatus(String msg, boolean isError) {
-        tipsLabel.setText(msg);
+        this.tipsLabel.setText(msg);
         
         if ( isError ) 
-            tipsLabel.setForeground(Color.red);
+            this.tipsLabel.setForeground(Color.red);
         else
-            tipsLabel.setForeground(SystemColor.textText);
+            this.tipsLabel.setForeground(SystemColor.textText);
     }
     
     private void enableEdit(boolean enabled) {
-        editButton.setEnabled(enabled);
         editMenuItem.setEnabled(enabled);
     }
     
     private void enableMark(boolean enabled) {
-        markButton.setEnabled(enabled);
         markMenuItem.setEnabled(enabled);
     }
     
     private void enableRemove(boolean enabled) {
-        removeButton.setEnabled(enabled);
         removeMenuItem.setEnabled(enabled);
     }
     
@@ -114,6 +126,16 @@ public class MainWindow extends javax.swing.JFrame {
         return selection;
     }
     
+//    private void showTabs() {
+//        loadsTab.setVisible(viewLoadsItem.isSelected());
+//        fuelTab.setVisible(viewFuelItem.isSelected());
+//        maintenanceTab.setVisible(viewMaintenanceItem.isSelected());
+//        vehiclesTab.setVisible(viewVehiclesItem.isSelected());
+//        customersTab.setVisible(viewCustomersItem.isSelected());
+//        employeesTab.setVisible(viewEmployeesItem.isSelected());
+//        glTab.setVisible(viewGLItem.isSelected());
+//    }
+    
     /**
      * Creates new form MainWindow
      */
@@ -127,7 +149,7 @@ public class MainWindow extends javax.swing.JFrame {
         setTitle(props.getProjectName() + " - Basic Edition");
         
         setLocationRelativeTo(null);
-        customers.setAutoCreateColumnsFromModel(false);
+        customers.setAutoCreateColumnsFromModel(true);
         FontMetrics fm = customers.getFontMetrics(customers.getFont());
         
         customers.setModel(new CustomersTableModel(new ArrayList<Customer>()));
@@ -135,8 +157,8 @@ public class MainWindow extends javax.swing.JFrame {
                 customerSelectionListener);
         enableEdit(false);
         enableRemove(false);
-        enableMark(false);
-        
+        enableMark(false); 
+                
         // Attach action listeners to the menu items.
         newMenuItem.addActionListener(actionSupport);
         openMenuItem.addActionListener(actionSupport);
@@ -147,6 +169,14 @@ public class MainWindow extends javax.swing.JFrame {
         editMenuItem.addActionListener(actionSupport);
         markMenuItem.addActionListener(actionSupport);
         removeMenuItem.addActionListener(actionSupport);
+        sortMenuItem.addActionListener(actionSupport);
+//        viewLoadsItem.addActionListener(actionSupport);
+//        viewFuelItem.addActionListener(actionSupport);
+//        viewMaintenanceItem.addActionListener(actionSupport);
+//        viewVehiclesItem.addActionListener(actionSupport);
+//        viewCustomersItem.addActionListener(actionSupport);
+//        viewEmployeesItem.addActionListener(actionSupport);
+//        viewGLItem.addActionListener(actionSupport);
         loadMenuItem.addActionListener(actionSupport);
         fuelMenuItem.addActionListener(actionSupport);
         serviceMenuItem.addActionListener(actionSupport);
@@ -159,82 +189,51 @@ public class MainWindow extends javax.swing.JFrame {
         indexMenuItem.addActionListener(actionSupport);
         aboutMenuItem.addActionListener(actionSupport);
         
-        // Attach action listeners to the toolbar buttons.
-        exitButton.addActionListener(actionSupport);
-        newButton.addActionListener(actionSupport);
-        openButton.addActionListener(actionSupport);
-        saveButton.addActionListener(actionSupport);
-        editButton.addActionListener(actionSupport);
-        markButton.addActionListener(actionSupport);
-        removeButton.addActionListener(actionSupport);
-        loadButton.addActionListener(actionSupport);
-        fuelButton.addActionListener(actionSupport);
-        serviceButton.addActionListener(actionSupport);
-        repairButton.addActionListener(actionSupport);
-        tiresButton.addActionListener(actionSupport);
-        customerButton.addActionListener(actionSupport);
-        employeeButton.addActionListener(actionSupport);
-        optionsButton.addActionListener(actionSupport);
-        helpButton.addActionListener(actionSupport);
+        // Expand/Collapse the Task Panes, as necessary.
+        mainTabbedPaneStateChanged(null);
     }
     
     private class FormListener implements ActionListener, MouseListener {
 
         @Override
         public void actionPerformed(ActionEvent e) {
-            if ( e.getSource() == exitButton ||
-                    e.getSource() == exitMenuItem )
+            if ( e.getSource() == exitMenuItem )
                 MainWindow.this.exitActionPerformed(e);
-            else if ( e.getSource() == newMenuItem ||
-                    e.getSource() == newButton )
+            else if ( e.getSource() == newMenuItem )
                 MainWindow.this.newActionPerformed(e);
-            else if ( e.getSource() == openMenuItem ||
-                    e.getSource() == openButton ) 
+            else if ( e.getSource() == openMenuItem ) 
                 MainWindow.this.openActionPerformed(e);
-            else if ( e.getSource() == saveMenuItem ||
-                    e.getSource() == saveButton )
+            else if ( e.getSource() == saveMenuItem )
                 MainWindow.this.saveActionPerformed(e);
             else if ( e.getSource() == printSetupMenu )
                 MainWindow.this.printSetupActionPerformed(e);
             else if ( e.getSource() == printMenuItem )
                 MainWindow.this.printActionPerformed(e);
-            else if ( e.getSource() == editMenuItem ||
-                    e.getSource() == editButton )
+            else if ( e.getSource() == editMenuItem )
                 MainWindow.this.editActionPerformed(e);
-            else if ( e.getSource() == markMenuItem ||
-                    e.getSource() == markButton )
+            else if ( e.getSource() == markMenuItem )
                 MainWindow.this.markActionPerformed(e);
-            else if ( e.getSource() == removeMenuItem ||
-                    e.getSource() == removeButton )
+            else if ( e.getSource() == removeMenuItem )
                 MainWindow.this.removeActionPerformed(e);
             else if ( e.getSource() == sortMenuItem )
                 MainWindow.this.sortByActionPerformed(e);
-            else if ( e.getSource() == loadMenuItem ||
-                    e.getSource() == loadButton )
+            else if ( e.getSource() == loadMenuItem )
                 MainWindow.this.loadActionPerformed(e);
-            else if ( e.getSource() == fuelMenuItem ||
-                    e.getSource() == fuelButton )
+            else if ( e.getSource() == fuelMenuItem )
                 MainWindow.this.fuelActionPerformed(e);
-            else if ( e.getSource() == serviceMenuItem ||
-                    e.getSource() == serviceButton )
+            else if ( e.getSource() == serviceMenuItem )
                 MainWindow.this.serviceActionPerformed(e);
-            else if ( e.getSource() == repairMenuItem ||
-                    e.getSource() == repairButton )
+            else if ( e.getSource() == repairMenuItem )
                 MainWindow.this.repairActionPerformed(e);
-            else if ( e.getSource() == tiresMenuItem ||
-                    e.getSource() == tiresButton )
+            else if ( e.getSource() == tiresMenuItem )
                 MainWindow.this.tiresActionPerformed(e);
-            else if ( e.getSource() == customerMenuItem ||
-                    e.getSource() == customerButton )
+            else if ( e.getSource() == customerMenuItem )
                 MainWindow.this.customerActionPerformed(e);
-            else if ( e.getSource() == employeeMenuItem ||
-                    e.getSource() == employeeButton )
+            else if ( e.getSource() == employeeMenuItem )
                 MainWindow.this.employeeActionPerformed(e);
-            else if ( e.getSource() == toolsMenu ||
-                    e.getSource() == optionsButton ) 
+            else if ( e.getSource() == toolsMenu ) 
                 MainWindow.this.optionsActionPerformed(e);
-            else if ( e.getSource() == contentsMenuItem ||
-                    e.getSource() == helpButton )
+            else if ( e.getSource() == contentsMenuItem )
                 MainWindow.this.contentsActionPerformed(e);
             else if ( e.getSource() == indexMenuItem )
                 MainWindow.this.indexActionPerformed(e);
@@ -244,18 +243,18 @@ public class MainWindow extends javax.swing.JFrame {
 
         @Override
         public void mouseClicked(MouseEvent e) {
-            if ( e.getSource() == loads )
-                MainWindow.this.loadsMouseClicked(e);
-            else if ( e.getSource() == fuelPurchases )
-                MainWindow.this.fuelMouseClicked(e);
-            else if ( e.getSource() == maintenance )
-                MainWindow.this.maintenanceMouseClicked(e);
-            else if ( e.getSource() == vehicles )
-                MainWindow.this.vehiclesMouseClicked(e);
-            else if ( e.getSource() == customers )
-                MainWindow.this.customersMouseClicked(e);
-            else if ( e.getSource() == employees )
-                MainWindow.this.employeesMouseClicked(e);
+//            if ( e.getSource() == loads )
+//                MainWindow.this.loadsMouseClicked(e);
+//            else if ( e.getSource() == fuelPurchases )
+//                MainWindow.this.fuelMouseClicked(e);
+//            else if ( e.getSource() == maintenance )
+//                MainWindow.this.maintenanceMouseClicked(e);
+//            else if ( e.getSource() == vehicles )
+//                MainWindow.this.vehiclesMouseClicked(e);
+//            else if ( e.getSource() == customers )
+//                MainWindow.this.customersMouseClicked(e);
+//            else if ( e.getSource() == employees )
+//                MainWindow.this.employeesMouseClicked(e);
         }
 
         @Override
@@ -279,6 +278,39 @@ public class MainWindow extends javax.swing.JFrame {
         }
         
     }
+    
+    private void doNewLoad() {
+        CustomerSelectionDialog dlg = new CustomerSelectionDialog(this, true);
+        dlg.pack();
+        dlg.setVisible(true);
+    }
+    
+    private void doShowArrival() {
+        ArrivalDialog dlg = new ArrivalDialog(this, true);
+        dlg.pack();
+    }
+    
+    private void doShowDeparture() {
+        
+    }
+    
+    private void doShowLoadsQueue() {
+        
+    }
+
+    private FileFilter hsqlDatabases = new FileFilter() {
+        public String getDescription() {
+            return "Task Lists - HSQLDB Databases (*.script)";
+        }
+        public boolean accept(File f) {
+            if (f.isDirectory())
+                return true;
+            else if (f.getName().endsWith(".script"))
+                return true;
+            else
+                return false;
+        }
+    };
 
     /**
      * This method is called from within the constructor to initialize the form.
@@ -289,54 +321,33 @@ public class MainWindow extends javax.swing.JFrame {
     // <editor-fold defaultstate="collapsed" desc="Generated Code">//GEN-BEGIN:initComponents
     private void initComponents() {
 
-        mainToolbar = new javax.swing.JToolBar();
-        exitButton = new javax.swing.JButton();
-        jSeparator5 = new javax.swing.JToolBar.Separator();
-        newButton = new javax.swing.JButton();
-        openButton = new javax.swing.JButton();
-        saveButton = new javax.swing.JButton();
-        jSeparator6 = new javax.swing.JToolBar.Separator();
-        editButton = new javax.swing.JButton();
-        markButton = new javax.swing.JButton();
-        removeButton = new javax.swing.JButton();
-        jSeparator7 = new javax.swing.JToolBar.Separator();
-        loadButton = new javax.swing.JButton();
-        fuelButton = new javax.swing.JButton();
-        serviceButton = new javax.swing.JButton();
-        repairButton = new javax.swing.JButton();
-        tiresButton = new javax.swing.JButton();
-        customerButton = new javax.swing.JButton();
-        employeeButton = new javax.swing.JButton();
-        jSeparator8 = new javax.swing.JToolBar.Separator();
-        optionsButton = new javax.swing.JButton();
-        jSeparator9 = new javax.swing.JToolBar.Separator();
-        helpButton = new javax.swing.JButton();
         mainStatusbar = new org.jdesktop.swingx.JXStatusBar();
         tipsLabel = new javax.swing.JLabel();
         versionLabel = new javax.swing.JLabel();
         jLabel1 = new javax.swing.JLabel();
         userLabel = new javax.swing.JLabel();
-        mainTabPane = new javax.swing.JTabbedPane();
-        loadsTab = new javax.swing.JPanel();
-        jScrollPane2 = new javax.swing.JScrollPane();
-        loads = new javax.swing.JTable();
-        fuelTab = new javax.swing.JPanel();
-        jScrollPane3 = new javax.swing.JScrollPane();
-        fuelPurchases = new javax.swing.JTable();
-        maintenanceTab = new javax.swing.JPanel();
-        jScrollPane4 = new javax.swing.JScrollPane();
-        maintenance = new javax.swing.JTable();
-        vehiclesTab = new javax.swing.JPanel();
-        jScrollPane5 = new javax.swing.JScrollPane();
-        vehicles = new javax.swing.JTable();
-        customersTab = new javax.swing.JPanel();
-        jScrollPane6 = new javax.swing.JScrollPane();
-        customers = new javax.swing.JTable();
-        employeesPanel = new javax.swing.JPanel();
-        jScrollPane7 = new javax.swing.JScrollPane();
-        employees = new javax.swing.JTable();
         jScrollPane1 = new javax.swing.JScrollPane();
         perMileBreakdown = new org.jdesktop.swingx.JXTreeTable();
+        mainTabbedPane = new javax.swing.JTabbedPane();
+        loadsTab = new javax.swing.JPanel();
+        fuelTab = new javax.swing.JPanel();
+        servicesTab = new javax.swing.JPanel();
+        vehiclesTab = new javax.swing.JPanel();
+        customersTab = new javax.swing.JPanel();
+        jScrollPane2 = new javax.swing.JScrollPane();
+        customers = new org.jdesktop.swingx.JXTable();
+        employeesTab = new javax.swing.JPanel();
+        glTab = new javax.swing.JPanel();
+        jScrollPane3 = new javax.swing.JScrollPane();
+        mainTaskController = new org.jdesktop.swingx.JXTaskPaneContainer();
+        appTaskPane = new org.jdesktop.swingx.JXTaskPane();
+        loadsTaskPane = new org.jdesktop.swingx.JXTaskPane();
+        fuelTaskPane = new org.jdesktop.swingx.JXTaskPane();
+        servicesTaskPane = new org.jdesktop.swingx.JXTaskPane();
+        vehiclesTaskPane = new org.jdesktop.swingx.JXTaskPane();
+        customersTaskPane = new org.jdesktop.swingx.JXTaskPane();
+        employeesTaskPane = new org.jdesktop.swingx.JXTaskPane();
+        glTaskPane = new org.jdesktop.swingx.JXTaskPane();
         mainMenubar = new javax.swing.JMenuBar();
         fileMenu = new javax.swing.JMenu();
         newMenuItem = new javax.swing.JMenuItem();
@@ -373,192 +384,6 @@ public class MainWindow extends javax.swing.JFrame {
 
         setDefaultCloseOperation(javax.swing.WindowConstants.EXIT_ON_CLOSE);
 
-        mainToolbar.setRollover(true);
-
-        exitButton.setIcon(new javax.swing.ImageIcon(getClass().getResource("/com/northwind/resources/Turn off.png"))); // NOI18N
-        exitButton.setFocusable(false);
-        exitButton.setHorizontalTextPosition(javax.swing.SwingConstants.CENTER);
-        exitButton.setVerticalTextPosition(javax.swing.SwingConstants.BOTTOM);
-        exitButton.addActionListener(new java.awt.event.ActionListener() {
-            public void actionPerformed(java.awt.event.ActionEvent evt) {
-                exitActionPerformed(evt);
-            }
-        });
-        mainToolbar.add(exitButton);
-        mainToolbar.add(jSeparator5);
-
-        newButton.setIcon(new javax.swing.ImageIcon(getClass().getResource("/com/northwind/resources/newDB.png"))); // NOI18N
-        newButton.setFocusable(false);
-        newButton.setHorizontalTextPosition(javax.swing.SwingConstants.CENTER);
-        newButton.setVerticalTextPosition(javax.swing.SwingConstants.BOTTOM);
-        newButton.addActionListener(new java.awt.event.ActionListener() {
-            public void actionPerformed(java.awt.event.ActionEvent evt) {
-                newActionPerformed(evt);
-            }
-        });
-        mainToolbar.add(newButton);
-
-        openButton.setIcon(new javax.swing.ImageIcon(getClass().getResource("/com/northwind/resources/openDB.png"))); // NOI18N
-        openButton.setFocusable(false);
-        openButton.setHorizontalTextPosition(javax.swing.SwingConstants.CENTER);
-        openButton.setVerticalTextPosition(javax.swing.SwingConstants.BOTTOM);
-        openButton.addActionListener(new java.awt.event.ActionListener() {
-            public void actionPerformed(java.awt.event.ActionEvent evt) {
-                openActionPerformed(evt);
-            }
-        });
-        mainToolbar.add(openButton);
-
-        saveButton.setIcon(new javax.swing.ImageIcon(getClass().getResource("/com/northwind/resources/save-database.png"))); // NOI18N
-        saveButton.setEnabled(false);
-        saveButton.setFocusable(false);
-        saveButton.setHorizontalTextPosition(javax.swing.SwingConstants.CENTER);
-        saveButton.setVerticalTextPosition(javax.swing.SwingConstants.BOTTOM);
-        saveButton.addActionListener(new java.awt.event.ActionListener() {
-            public void actionPerformed(java.awt.event.ActionEvent evt) {
-                saveActionPerformed(evt);
-            }
-        });
-        mainToolbar.add(saveButton);
-        mainToolbar.add(jSeparator6);
-
-        editButton.setIcon(new javax.swing.ImageIcon(getClass().getResource("/com/northwind/resources/edit.png"))); // NOI18N
-        editButton.setFocusable(false);
-        editButton.setHorizontalTextPosition(javax.swing.SwingConstants.CENTER);
-        editButton.setVerticalTextPosition(javax.swing.SwingConstants.BOTTOM);
-        editButton.addActionListener(new java.awt.event.ActionListener() {
-            public void actionPerformed(java.awt.event.ActionEvent evt) {
-                editActionPerformed(evt);
-            }
-        });
-        mainToolbar.add(editButton);
-
-        markButton.setIcon(new javax.swing.ImageIcon(getClass().getResource("/com/northwind/resources/mark.png"))); // NOI18N
-        markButton.setEnabled(false);
-        markButton.setFocusable(false);
-        markButton.setHorizontalTextPosition(javax.swing.SwingConstants.CENTER);
-        markButton.setVerticalTextPosition(javax.swing.SwingConstants.BOTTOM);
-        markButton.addActionListener(new java.awt.event.ActionListener() {
-            public void actionPerformed(java.awt.event.ActionEvent evt) {
-                markActionPerformed(evt);
-            }
-        });
-        mainToolbar.add(markButton);
-
-        removeButton.setIcon(new javax.swing.ImageIcon(getClass().getResource("/com/northwind/resources/delete.png"))); // NOI18N
-        removeButton.setEnabled(false);
-        removeButton.setFocusable(false);
-        removeButton.setHorizontalTextPosition(javax.swing.SwingConstants.CENTER);
-        removeButton.setVerticalTextPosition(javax.swing.SwingConstants.BOTTOM);
-        removeButton.addActionListener(new java.awt.event.ActionListener() {
-            public void actionPerformed(java.awt.event.ActionEvent evt) {
-                removeActionPerformed(evt);
-            }
-        });
-        mainToolbar.add(removeButton);
-        mainToolbar.add(jSeparator7);
-
-        loadButton.setIcon(new javax.swing.ImageIcon(getClass().getResource("/com/northwind/resources/freight.png"))); // NOI18N
-        loadButton.setFocusable(false);
-        loadButton.setHorizontalTextPosition(javax.swing.SwingConstants.CENTER);
-        loadButton.setVerticalTextPosition(javax.swing.SwingConstants.BOTTOM);
-        loadButton.addActionListener(new java.awt.event.ActionListener() {
-            public void actionPerformed(java.awt.event.ActionEvent evt) {
-                loadActionPerformed(evt);
-            }
-        });
-        mainToolbar.add(loadButton);
-
-        fuelButton.setIcon(new javax.swing.ImageIcon(getClass().getResource("/com/northwind/resources/GasPump.png"))); // NOI18N
-        fuelButton.setFocusable(false);
-        fuelButton.setHorizontalTextPosition(javax.swing.SwingConstants.CENTER);
-        fuelButton.setVerticalTextPosition(javax.swing.SwingConstants.BOTTOM);
-        fuelButton.addActionListener(new java.awt.event.ActionListener() {
-            public void actionPerformed(java.awt.event.ActionEvent evt) {
-                fuelActionPerformed(evt);
-            }
-        });
-        mainToolbar.add(fuelButton);
-
-        serviceButton.setIcon(new javax.swing.ImageIcon(getClass().getResource("/com/northwind/resources/Wrench.png"))); // NOI18N
-        serviceButton.setFocusable(false);
-        serviceButton.setHorizontalTextPosition(javax.swing.SwingConstants.CENTER);
-        serviceButton.setVerticalTextPosition(javax.swing.SwingConstants.BOTTOM);
-        serviceButton.addActionListener(new java.awt.event.ActionListener() {
-            public void actionPerformed(java.awt.event.ActionEvent evt) {
-                serviceActionPerformed(evt);
-            }
-        });
-        mainToolbar.add(serviceButton);
-
-        repairButton.setIcon(new javax.swing.ImageIcon(getClass().getResource("/com/northwind/resources/repair.png"))); // NOI18N
-        repairButton.setFocusable(false);
-        repairButton.setHorizontalTextPosition(javax.swing.SwingConstants.CENTER);
-        repairButton.setVerticalTextPosition(javax.swing.SwingConstants.BOTTOM);
-        repairButton.addActionListener(new java.awt.event.ActionListener() {
-            public void actionPerformed(java.awt.event.ActionEvent evt) {
-                repairActionPerformed(evt);
-            }
-        });
-        mainToolbar.add(repairButton);
-
-        tiresButton.setIcon(new javax.swing.ImageIcon(getClass().getResource("/com/northwind/resources/tires24.png"))); // NOI18N
-        tiresButton.setFocusable(false);
-        tiresButton.setHorizontalTextPosition(javax.swing.SwingConstants.CENTER);
-        tiresButton.setVerticalTextPosition(javax.swing.SwingConstants.BOTTOM);
-        tiresButton.addActionListener(new java.awt.event.ActionListener() {
-            public void actionPerformed(java.awt.event.ActionEvent evt) {
-                tiresActionPerformed(evt);
-            }
-        });
-        mainToolbar.add(tiresButton);
-
-        customerButton.setIcon(new javax.swing.ImageIcon(getClass().getResource("/com/northwind/resources/users.png"))); // NOI18N
-        customerButton.setFocusable(false);
-        customerButton.setHorizontalTextPosition(javax.swing.SwingConstants.CENTER);
-        customerButton.setVerticalTextPosition(javax.swing.SwingConstants.BOTTOM);
-        customerButton.addActionListener(new java.awt.event.ActionListener() {
-            public void actionPerformed(java.awt.event.ActionEvent evt) {
-                customerActionPerformed(evt);
-            }
-        });
-        mainToolbar.add(customerButton);
-
-        employeeButton.setIcon(new javax.swing.ImageIcon(getClass().getResource("/com/northwind/resources/people.png"))); // NOI18N
-        employeeButton.setFocusable(false);
-        employeeButton.setHorizontalTextPosition(javax.swing.SwingConstants.CENTER);
-        employeeButton.setVerticalTextPosition(javax.swing.SwingConstants.BOTTOM);
-        employeeButton.addActionListener(new java.awt.event.ActionListener() {
-            public void actionPerformed(java.awt.event.ActionEvent evt) {
-                employeeActionPerformed(evt);
-            }
-        });
-        mainToolbar.add(employeeButton);
-        mainToolbar.add(jSeparator8);
-
-        optionsButton.setIcon(new javax.swing.ImageIcon(getClass().getResource("/com/northwind/resources/config16.png"))); // NOI18N
-        optionsButton.setFocusable(false);
-        optionsButton.setHorizontalTextPosition(javax.swing.SwingConstants.CENTER);
-        optionsButton.setVerticalTextPosition(javax.swing.SwingConstants.BOTTOM);
-        optionsButton.addActionListener(new java.awt.event.ActionListener() {
-            public void actionPerformed(java.awt.event.ActionEvent evt) {
-                optionsActionPerformed(evt);
-            }
-        });
-        mainToolbar.add(optionsButton);
-        mainToolbar.add(jSeparator9);
-
-        helpButton.setIcon(new javax.swing.ImageIcon(getClass().getResource("/com/northwind/resources/help.png"))); // NOI18N
-        helpButton.setFocusable(false);
-        helpButton.setHorizontalTextPosition(javax.swing.SwingConstants.CENTER);
-        helpButton.setVerticalTextPosition(javax.swing.SwingConstants.BOTTOM);
-        helpButton.addActionListener(new java.awt.event.ActionListener() {
-            public void actionPerformed(java.awt.event.ActionEvent evt) {
-                helpActionPerformed(evt);
-            }
-        });
-        mainToolbar.add(helpButton);
-
         tipsLabel.setText("Watch here for helpful information...");
 
         versionLabel.setText("{Application.Name} - {Application.Edition} v. {Application.Version} build {Application.Build}");
@@ -592,129 +417,65 @@ public class MainWindow extends javax.swing.JFrame {
                     .addComponent(userLabel)))
         );
 
-        loads.setModel(new javax.swing.table.DefaultTableModel(
-            new Object [][] {
-                {null, null, null, null},
-                {null, null, null, null},
-                {null, null, null, null},
-                {null, null, null, null}
-            },
-            new String [] {
-                "Title 1", "Title 2", "Title 3", "Title 4"
-            }
-        ));
-        loads.addMouseListener(new java.awt.event.MouseAdapter() {
-            public void mouseClicked(java.awt.event.MouseEvent evt) {
-                loadsMouseClicked(evt);
+        jScrollPane1.setViewportView(perMileBreakdown);
+
+        mainTabbedPane.addChangeListener(new javax.swing.event.ChangeListener() {
+            public void stateChanged(javax.swing.event.ChangeEvent evt) {
+                mainTabbedPaneStateChanged(evt);
             }
         });
-        jScrollPane2.setViewportView(loads);
 
         javax.swing.GroupLayout loadsTabLayout = new javax.swing.GroupLayout(loadsTab);
         loadsTab.setLayout(loadsTabLayout);
         loadsTabLayout.setHorizontalGroup(
             loadsTabLayout.createParallelGroup(javax.swing.GroupLayout.Alignment.LEADING)
-            .addComponent(jScrollPane2, javax.swing.GroupLayout.DEFAULT_SIZE, 1150, Short.MAX_VALUE)
+            .addGap(0, 906, Short.MAX_VALUE)
         );
         loadsTabLayout.setVerticalGroup(
             loadsTabLayout.createParallelGroup(javax.swing.GroupLayout.Alignment.LEADING)
-            .addComponent(jScrollPane2, javax.swing.GroupLayout.DEFAULT_SIZE, 574, Short.MAX_VALUE)
+            .addGap(0, 653, Short.MAX_VALUE)
         );
 
-        mainTabPane.addTab("Loads", new javax.swing.ImageIcon(getClass().getResource("/com/northwind/resources/freight24.png")), loadsTab); // NOI18N
-
-        fuelPurchases.setModel(new javax.swing.table.DefaultTableModel(
-            new Object [][] {
-                {null, null, null, null},
-                {null, null, null, null},
-                {null, null, null, null},
-                {null, null, null, null}
-            },
-            new String [] {
-                "Title 1", "Title 2", "Title 3", "Title 4"
-            }
-        ));
-        fuelPurchases.addMouseListener(new java.awt.event.MouseAdapter() {
-            public void mouseClicked(java.awt.event.MouseEvent evt) {
-                fuelMouseClicked(evt);
-            }
-        });
-        jScrollPane3.setViewportView(fuelPurchases);
+        mainTabbedPane.addTab("Load Tracker", new javax.swing.ImageIcon(getClass().getResource("/com/northwind/resources/freight.png")), loadsTab); // NOI18N
 
         javax.swing.GroupLayout fuelTabLayout = new javax.swing.GroupLayout(fuelTab);
         fuelTab.setLayout(fuelTabLayout);
         fuelTabLayout.setHorizontalGroup(
             fuelTabLayout.createParallelGroup(javax.swing.GroupLayout.Alignment.LEADING)
-            .addComponent(jScrollPane3, javax.swing.GroupLayout.DEFAULT_SIZE, 1150, Short.MAX_VALUE)
+            .addGap(0, 906, Short.MAX_VALUE)
         );
         fuelTabLayout.setVerticalGroup(
             fuelTabLayout.createParallelGroup(javax.swing.GroupLayout.Alignment.LEADING)
-            .addComponent(jScrollPane3, javax.swing.GroupLayout.DEFAULT_SIZE, 574, Short.MAX_VALUE)
+            .addGap(0, 653, Short.MAX_VALUE)
         );
 
-        mainTabPane.addTab("Fuel", new javax.swing.ImageIcon(getClass().getResource("/com/northwind/resources/GasPump.png")), fuelTab); // NOI18N
+        mainTabbedPane.addTab("Fuel Journal", new javax.swing.ImageIcon(getClass().getResource("/com/northwind/resources/GasPump.png")), fuelTab); // NOI18N
 
-        maintenance.setModel(new javax.swing.table.DefaultTableModel(
-            new Object [][] {
-                {null, null, null, null},
-                {null, null, null, null},
-                {null, null, null, null},
-                {null, null, null, null}
-            },
-            new String [] {
-                "Title 1", "Title 2", "Title 3", "Title 4"
-            }
-        ));
-        maintenance.addMouseListener(new java.awt.event.MouseAdapter() {
-            public void mouseClicked(java.awt.event.MouseEvent evt) {
-                maintenanceMouseClicked(evt);
-            }
-        });
-        jScrollPane4.setViewportView(maintenance);
-
-        javax.swing.GroupLayout maintenanceTabLayout = new javax.swing.GroupLayout(maintenanceTab);
-        maintenanceTab.setLayout(maintenanceTabLayout);
-        maintenanceTabLayout.setHorizontalGroup(
-            maintenanceTabLayout.createParallelGroup(javax.swing.GroupLayout.Alignment.LEADING)
-            .addComponent(jScrollPane4, javax.swing.GroupLayout.DEFAULT_SIZE, 1150, Short.MAX_VALUE)
+        javax.swing.GroupLayout servicesTabLayout = new javax.swing.GroupLayout(servicesTab);
+        servicesTab.setLayout(servicesTabLayout);
+        servicesTabLayout.setHorizontalGroup(
+            servicesTabLayout.createParallelGroup(javax.swing.GroupLayout.Alignment.LEADING)
+            .addGap(0, 906, Short.MAX_VALUE)
         );
-        maintenanceTabLayout.setVerticalGroup(
-            maintenanceTabLayout.createParallelGroup(javax.swing.GroupLayout.Alignment.LEADING)
-            .addComponent(jScrollPane4, javax.swing.GroupLayout.DEFAULT_SIZE, 574, Short.MAX_VALUE)
+        servicesTabLayout.setVerticalGroup(
+            servicesTabLayout.createParallelGroup(javax.swing.GroupLayout.Alignment.LEADING)
+            .addGap(0, 653, Short.MAX_VALUE)
         );
 
-        mainTabPane.addTab("Maintenance", new javax.swing.ImageIcon(getClass().getResource("/com/northwind/resources/Wrench.png")), maintenanceTab); // NOI18N
-
-        vehicles.setModel(new javax.swing.table.DefaultTableModel(
-            new Object [][] {
-                {null, null, null, null},
-                {null, null, null, null},
-                {null, null, null, null},
-                {null, null, null, null}
-            },
-            new String [] {
-                "Title 1", "Title 2", "Title 3", "Title 4"
-            }
-        ));
-        vehicles.addMouseListener(new java.awt.event.MouseAdapter() {
-            public void mouseClicked(java.awt.event.MouseEvent evt) {
-                vehiclesMouseClicked(evt);
-            }
-        });
-        jScrollPane5.setViewportView(vehicles);
+        mainTabbedPane.addTab("Service Journal", new javax.swing.ImageIcon(getClass().getResource("/com/northwind/resources/Wrench.png")), servicesTab); // NOI18N
 
         javax.swing.GroupLayout vehiclesTabLayout = new javax.swing.GroupLayout(vehiclesTab);
         vehiclesTab.setLayout(vehiclesTabLayout);
         vehiclesTabLayout.setHorizontalGroup(
             vehiclesTabLayout.createParallelGroup(javax.swing.GroupLayout.Alignment.LEADING)
-            .addComponent(jScrollPane5, javax.swing.GroupLayout.DEFAULT_SIZE, 1150, Short.MAX_VALUE)
+            .addGap(0, 906, Short.MAX_VALUE)
         );
         vehiclesTabLayout.setVerticalGroup(
             vehiclesTabLayout.createParallelGroup(javax.swing.GroupLayout.Alignment.LEADING)
-            .addComponent(jScrollPane5, javax.swing.GroupLayout.DEFAULT_SIZE, 574, Short.MAX_VALUE)
+            .addGap(0, 653, Short.MAX_VALUE)
         );
 
-        mainTabPane.addTab("Vehicles", new javax.swing.ImageIcon(getClass().getResource("/com/northwind/resources/Delivery.png")), vehiclesTab); // NOI18N
+        mainTabbedPane.addTab("Vehicle Tracker", new javax.swing.ImageIcon(getClass().getResource("/com/northwind/resources/Delivery.png")), vehiclesTab); // NOI18N
 
         customers.setModel(new javax.swing.table.DefaultTableModel(
             new Object [][] {
@@ -727,348 +488,625 @@ public class MainWindow extends javax.swing.JFrame {
                 "Title 1", "Title 2", "Title 3", "Title 4"
             }
         ));
-        customers.addMouseListener(new java.awt.event.MouseAdapter() {
-            public void mouseClicked(java.awt.event.MouseEvent evt) {
-                customersMouseClicked(evt);
-            }
-        });
-        jScrollPane6.setViewportView(customers);
+        jScrollPane2.setViewportView(customers);
 
         javax.swing.GroupLayout customersTabLayout = new javax.swing.GroupLayout(customersTab);
         customersTab.setLayout(customersTabLayout);
         customersTabLayout.setHorizontalGroup(
             customersTabLayout.createParallelGroup(javax.swing.GroupLayout.Alignment.LEADING)
-            .addComponent(jScrollPane6, javax.swing.GroupLayout.DEFAULT_SIZE, 1150, Short.MAX_VALUE)
+            .addComponent(jScrollPane2, javax.swing.GroupLayout.DEFAULT_SIZE, 906, Short.MAX_VALUE)
         );
         customersTabLayout.setVerticalGroup(
             customersTabLayout.createParallelGroup(javax.swing.GroupLayout.Alignment.LEADING)
-            .addComponent(jScrollPane6, javax.swing.GroupLayout.DEFAULT_SIZE, 574, Short.MAX_VALUE)
+            .addComponent(jScrollPane2, javax.swing.GroupLayout.DEFAULT_SIZE, 653, Short.MAX_VALUE)
         );
 
-        mainTabPane.addTab("Customers", new javax.swing.ImageIcon(getClass().getResource("/com/northwind/resources/users.png")), customersTab); // NOI18N
+        mainTabbedPane.addTab("Customer Tracker", new javax.swing.ImageIcon(getClass().getResource("/com/northwind/resources/users.png")), customersTab); // NOI18N
 
-        employees.setModel(new javax.swing.table.DefaultTableModel(
-            new Object [][] {
-                {null, null, null, null},
-                {null, null, null, null},
-                {null, null, null, null},
-                {null, null, null, null}
-            },
-            new String [] {
-                "Title 1", "Title 2", "Title 3", "Title 4"
-            }
-        ));
-        employees.addMouseListener(new java.awt.event.MouseAdapter() {
-            public void mouseClicked(java.awt.event.MouseEvent evt) {
-                employeesMouseClicked(evt);
-            }
-        });
-        jScrollPane7.setViewportView(employees);
-
-        javax.swing.GroupLayout employeesPanelLayout = new javax.swing.GroupLayout(employeesPanel);
-        employeesPanel.setLayout(employeesPanelLayout);
-        employeesPanelLayout.setHorizontalGroup(
-            employeesPanelLayout.createParallelGroup(javax.swing.GroupLayout.Alignment.LEADING)
-            .addComponent(jScrollPane7, javax.swing.GroupLayout.DEFAULT_SIZE, 1150, Short.MAX_VALUE)
+        javax.swing.GroupLayout employeesTabLayout = new javax.swing.GroupLayout(employeesTab);
+        employeesTab.setLayout(employeesTabLayout);
+        employeesTabLayout.setHorizontalGroup(
+            employeesTabLayout.createParallelGroup(javax.swing.GroupLayout.Alignment.LEADING)
+            .addGap(0, 906, Short.MAX_VALUE)
         );
-        employeesPanelLayout.setVerticalGroup(
-            employeesPanelLayout.createParallelGroup(javax.swing.GroupLayout.Alignment.LEADING)
-            .addComponent(jScrollPane7, javax.swing.GroupLayout.DEFAULT_SIZE, 574, Short.MAX_VALUE)
+        employeesTabLayout.setVerticalGroup(
+            employeesTabLayout.createParallelGroup(javax.swing.GroupLayout.Alignment.LEADING)
+            .addGap(0, 653, Short.MAX_VALUE)
         );
 
-        mainTabPane.addTab("Employees", new javax.swing.ImageIcon(getClass().getResource("/com/northwind/resources/people.png")), employeesPanel); // NOI18N
+        mainTabbedPane.addTab("Employee Tracker", new javax.swing.ImageIcon(getClass().getResource("/com/northwind/resources/people.png")), employeesTab); // NOI18N
 
-        jScrollPane1.setViewportView(perMileBreakdown);
-
-        fileMenu.setMnemonic('F');
-        fileMenu.setText("File");
-
-        newMenuItem.setAccelerator(javax.swing.KeyStroke.getKeyStroke(java.awt.event.KeyEvent.VK_N, java.awt.event.InputEvent.CTRL_MASK));
-        newMenuItem.setIcon(new javax.swing.ImageIcon(getClass().getResource("/com/northwind/resources/newDB.png"))); // NOI18N
-        newMenuItem.setMnemonic('N');
-        newMenuItem.setText("New Data Store...");
-        newMenuItem.addActionListener(new java.awt.event.ActionListener() {
-            public void actionPerformed(java.awt.event.ActionEvent evt) {
-                newActionPerformed(evt);
-            }
-        });
-        fileMenu.add(newMenuItem);
-
-        openMenuItem.setAccelerator(javax.swing.KeyStroke.getKeyStroke(java.awt.event.KeyEvent.VK_O, java.awt.event.InputEvent.CTRL_MASK));
-        openMenuItem.setIcon(new javax.swing.ImageIcon(getClass().getResource("/com/northwind/resources/openDB.png"))); // NOI18N
-        openMenuItem.setMnemonic('O');
-        openMenuItem.setText("Open Data Store...");
-        openMenuItem.addActionListener(new java.awt.event.ActionListener() {
-            public void actionPerformed(java.awt.event.ActionEvent evt) {
-                openActionPerformed(evt);
-            }
-        });
-        fileMenu.add(openMenuItem);
-        fileMenu.add(jSeparator1);
-
-        saveMenuItem.setAccelerator(javax.swing.KeyStroke.getKeyStroke(java.awt.event.KeyEvent.VK_S, java.awt.event.InputEvent.CTRL_MASK));
-        saveMenuItem.setIcon(new javax.swing.ImageIcon(getClass().getResource("/com/northwind/resources/save-database.png"))); // NOI18N
-        saveMenuItem.setMnemonic('S');
-        saveMenuItem.setText("Save Data Store");
-        saveMenuItem.setEnabled(false);
-        saveMenuItem.addActionListener(new java.awt.event.ActionListener() {
-            public void actionPerformed(java.awt.event.ActionEvent evt) {
-                saveActionPerformed(evt);
-            }
-        });
-        fileMenu.add(saveMenuItem);
-        fileMenu.add(jSeparator2);
-
-        printSetupMenu.setIcon(new javax.swing.ImageIcon(getClass().getResource("/com/northwind/resources/printersetup.png"))); // NOI18N
-        printSetupMenu.setMnemonic('e');
-        printSetupMenu.setText("Print Setup...");
-        printSetupMenu.setEnabled(false);
-        printSetupMenu.addActionListener(new java.awt.event.ActionListener() {
-            public void actionPerformed(java.awt.event.ActionEvent evt) {
-                printSetupActionPerformed(evt);
-            }
-        });
-        fileMenu.add(printSetupMenu);
-
-        printMenuItem.setAccelerator(javax.swing.KeyStroke.getKeyStroke(java.awt.event.KeyEvent.VK_P, java.awt.event.InputEvent.CTRL_MASK));
-        printMenuItem.setIcon(new javax.swing.ImageIcon(getClass().getResource("/com/northwind/resources/print.png"))); // NOI18N
-        printMenuItem.setMnemonic('P');
-        printMenuItem.setText("Print...");
-        printMenuItem.setEnabled(false);
-        printMenuItem.addActionListener(new java.awt.event.ActionListener() {
-            public void actionPerformed(java.awt.event.ActionEvent evt) {
-                printActionPerformed(evt);
-            }
-        });
-        fileMenu.add(printMenuItem);
-        fileMenu.add(jSeparator3);
-
-        exitMenuItem.setAccelerator(javax.swing.KeyStroke.getKeyStroke(java.awt.event.KeyEvent.VK_F4, java.awt.event.InputEvent.ALT_MASK));
-        exitMenuItem.setIcon(new javax.swing.ImageIcon(getClass().getResource("/com/northwind/resources/Turn off.png"))); // NOI18N
-        exitMenuItem.setMnemonic('x');
-        exitMenuItem.setText("Exit");
-        exitMenuItem.addActionListener(new java.awt.event.ActionListener() {
-            public void actionPerformed(java.awt.event.ActionEvent evt) {
-                exitActionPerformed(evt);
-            }
-        });
-        fileMenu.add(exitMenuItem);
-
-        mainMenubar.add(fileMenu);
-
-        editMenu.setMnemonic('E');
-        editMenu.setText("Edit");
-
-        editMenuItem.setAccelerator(javax.swing.KeyStroke.getKeyStroke(java.awt.event.KeyEvent.VK_ENTER, java.awt.event.InputEvent.ALT_MASK));
-        editMenuItem.setIcon(new javax.swing.ImageIcon(getClass().getResource("/com/northwind/resources/edit.png"))); // NOI18N
-        editMenuItem.setMnemonic('E');
-        editMenuItem.setText("Edit Selected Item...");
-        editMenuItem.addActionListener(new java.awt.event.ActionListener() {
-            public void actionPerformed(java.awt.event.ActionEvent evt) {
-                editActionPerformed(evt);
-            }
-        });
-        editMenu.add(editMenuItem);
-
-        markMenuItem.setAccelerator(javax.swing.KeyStroke.getKeyStroke(java.awt.event.KeyEvent.VK_SPACE, java.awt.event.InputEvent.CTRL_MASK));
-        markMenuItem.setIcon(new javax.swing.ImageIcon(getClass().getResource("/com/northwind/resources/mark.png"))); // NOI18N
-        markMenuItem.setMnemonic('M');
-        markMenuItem.setText("Mark Selected Item(s)");
-        markMenuItem.setEnabled(false);
-        markMenuItem.addActionListener(new java.awt.event.ActionListener() {
-            public void actionPerformed(java.awt.event.ActionEvent evt) {
-                markActionPerformed(evt);
-            }
-        });
-        editMenu.add(markMenuItem);
-
-        removeMenuItem.setAccelerator(javax.swing.KeyStroke.getKeyStroke(java.awt.event.KeyEvent.VK_DELETE, 0));
-        removeMenuItem.setIcon(new javax.swing.ImageIcon(getClass().getResource("/com/northwind/resources/delete.png"))); // NOI18N
-        removeMenuItem.setMnemonic('R');
-        removeMenuItem.setText("Remove Seleted Item(s)");
-        removeMenuItem.setEnabled(false);
-        removeMenuItem.addActionListener(new java.awt.event.ActionListener() {
-            public void actionPerformed(java.awt.event.ActionEvent evt) {
-                removeActionPerformed(evt);
-            }
-        });
-        editMenu.add(removeMenuItem);
-
-        mainMenubar.add(editMenu);
-
-        viewMenu.setMnemonic('V');
-        viewMenu.setText("View");
-
-        sortMenuItem.setText("Sort By...");
-        sortMenuItem.addActionListener(new java.awt.event.ActionListener() {
-            public void actionPerformed(java.awt.event.ActionEvent evt) {
-                sortByActionPerformed(evt);
-            }
-        });
-        viewMenu.add(sortMenuItem);
-
-        mainMenubar.add(viewMenu);
-
-        maintainMenu.setMnemonic('M');
-        maintainMenu.setText("Maintain");
-
-        addMenuItem.setIcon(new javax.swing.ImageIcon(getClass().getResource("/com/northwind/resources/add.png"))); // NOI18N
-        addMenuItem.setMnemonic('A');
-        addMenuItem.setText("Add New");
-
-        loadMenuItem.setIcon(new javax.swing.ImageIcon(getClass().getResource("/com/northwind/resources/freight.png"))); // NOI18N
-        loadMenuItem.setMnemonic('L');
-        loadMenuItem.setText("Load");
-        loadMenuItem.addActionListener(new java.awt.event.ActionListener() {
-            public void actionPerformed(java.awt.event.ActionEvent evt) {
-                loadActionPerformed(evt);
-            }
-        });
-        addMenuItem.add(loadMenuItem);
-
-        fuelMenuItem.setIcon(new javax.swing.ImageIcon(getClass().getResource("/com/northwind/resources/GasPump.png"))); // NOI18N
-        fuelMenuItem.setMnemonic('F');
-        fuelMenuItem.setText("Fuel Purchase...");
-        fuelMenuItem.addActionListener(new java.awt.event.ActionListener() {
-            public void actionPerformed(java.awt.event.ActionEvent evt) {
-                fuelActionPerformed(evt);
-            }
-        });
-        addMenuItem.add(fuelMenuItem);
-
-        serviceMenuItem.setIcon(new javax.swing.ImageIcon(getClass().getResource("/com/northwind/resources/Wrench.png"))); // NOI18N
-        serviceMenuItem.setMnemonic('S');
-        serviceMenuItem.setText("Service...");
-        serviceMenuItem.addActionListener(new java.awt.event.ActionListener() {
-            public void actionPerformed(java.awt.event.ActionEvent evt) {
-                serviceActionPerformed(evt);
-            }
-        });
-        addMenuItem.add(serviceMenuItem);
-
-        repairMenuItem.setIcon(new javax.swing.ImageIcon(getClass().getResource("/com/northwind/resources/repair.png"))); // NOI18N
-        repairMenuItem.setMnemonic('R');
-        repairMenuItem.setText("Repair...");
-        repairMenuItem.addActionListener(new java.awt.event.ActionListener() {
-            public void actionPerformed(java.awt.event.ActionEvent evt) {
-                repairActionPerformed(evt);
-            }
-        });
-        addMenuItem.add(repairMenuItem);
-
-        tiresMenuItem.setIcon(new javax.swing.ImageIcon(getClass().getResource("/com/northwind/resources/tires.png"))); // NOI18N
-        tiresMenuItem.setMnemonic('T');
-        tiresMenuItem.setText("Tire Purchase...");
-        tiresMenuItem.addActionListener(new java.awt.event.ActionListener() {
-            public void actionPerformed(java.awt.event.ActionEvent evt) {
-                tiresActionPerformed(evt);
-            }
-        });
-        addMenuItem.add(tiresMenuItem);
-
-        customerMenuItem.setIcon(new javax.swing.ImageIcon(getClass().getResource("/com/northwind/resources/users.png"))); // NOI18N
-        customerMenuItem.setMnemonic('C');
-        customerMenuItem.setText("Customer...");
-        customerMenuItem.addActionListener(new java.awt.event.ActionListener() {
-            public void actionPerformed(java.awt.event.ActionEvent evt) {
-                customerActionPerformed(evt);
-            }
-        });
-        addMenuItem.add(customerMenuItem);
-
-        employeeMenuItem.setIcon(new javax.swing.ImageIcon(getClass().getResource("/com/northwind/resources/people.png"))); // NOI18N
-        employeeMenuItem.setMnemonic('E');
-        employeeMenuItem.setText("Employee...");
-        employeeMenuItem.addActionListener(new java.awt.event.ActionListener() {
-            public void actionPerformed(java.awt.event.ActionEvent evt) {
-                employeeActionPerformed(evt);
-            }
-        });
-        addMenuItem.add(employeeMenuItem);
-
-        maintainMenu.add(addMenuItem);
-
-        mainMenubar.add(maintainMenu);
-
-        toolsMenu.setMnemonic('T');
-        toolsMenu.setText("Tools");
-
-        optionsMenuItem.setAccelerator(javax.swing.KeyStroke.getKeyStroke(java.awt.event.KeyEvent.VK_F5, 0));
-        optionsMenuItem.setIcon(new javax.swing.ImageIcon(getClass().getResource("/com/northwind/resources/config16.png"))); // NOI18N
-        optionsMenuItem.setMnemonic('O');
-        optionsMenuItem.setText("Options");
-        optionsMenuItem.addActionListener(new java.awt.event.ActionListener() {
-            public void actionPerformed(java.awt.event.ActionEvent evt) {
-                optionsActionPerformed(evt);
-            }
-        });
-        toolsMenu.add(optionsMenuItem);
-
-        mainMenubar.add(toolsMenu);
-
-        helpMenu.setMnemonic('H');
-        helpMenu.setText("Help");
-
-        contentsMenuItem.setIcon(new javax.swing.ImageIcon(getClass().getResource("/com/northwind/resources/help.png"))); // NOI18N
-        contentsMenuItem.setMnemonic('C');
-        contentsMenuItem.setText("Help Contents");
-        contentsMenuItem.addActionListener(new java.awt.event.ActionListener() {
-            public void actionPerformed(java.awt.event.ActionEvent evt) {
-                contentsActionPerformed(evt);
-            }
-        });
-        helpMenu.add(contentsMenuItem);
-
-        indexMenuItem.setIcon(new javax.swing.ImageIcon(getClass().getResource("/com/northwind/resources/help-idx.png"))); // NOI18N
-        indexMenuItem.setMnemonic('I');
-        indexMenuItem.setText("Help Index...");
-        indexMenuItem.addActionListener(new java.awt.event.ActionListener() {
-            public void actionPerformed(java.awt.event.ActionEvent evt) {
-                indexActionPerformed(evt);
-            }
-        });
-        helpMenu.add(indexMenuItem);
-        helpMenu.add(jSeparator4);
-
-        aboutMenuItem.setIcon(new javax.swing.ImageIcon(getClass().getResource("/com/northwind/resources/info.png"))); // NOI18N
-        aboutMenuItem.setMnemonic('N');
-        aboutMenuItem.setText("About Northwind");
-        aboutMenuItem.addActionListener(new java.awt.event.ActionListener() {
-            public void actionPerformed(java.awt.event.ActionEvent evt) {
-                aboutActionPerformed(evt);
-            }
-        });
-        helpMenu.add(aboutMenuItem);
-
-        mainMenubar.add(helpMenu);
-
-        setJMenuBar(mainMenubar);
-
-        javax.swing.GroupLayout layout = new javax.swing.GroupLayout(getContentPane());
-        getContentPane().setLayout(layout);
-        layout.setHorizontalGroup(
-            layout.createParallelGroup(javax.swing.GroupLayout.Alignment.LEADING)
-            .addComponent(mainToolbar, javax.swing.GroupLayout.DEFAULT_SIZE, javax.swing.GroupLayout.DEFAULT_SIZE, Short.MAX_VALUE)
-            .addComponent(mainStatusbar, javax.swing.GroupLayout.DEFAULT_SIZE, javax.swing.GroupLayout.DEFAULT_SIZE, Short.MAX_VALUE)
-            .addGroup(layout.createSequentialGroup()
-                .addComponent(mainTabPane, javax.swing.GroupLayout.PREFERRED_SIZE, 1150, javax.swing.GroupLayout.PREFERRED_SIZE)
-                .addPreferredGap(javax.swing.LayoutStyle.ComponentPlacement.RELATED)
-                .addComponent(jScrollPane1, javax.swing.GroupLayout.DEFAULT_SIZE, 245, Short.MAX_VALUE)
-                .addContainerGap())
+        javax.swing.GroupLayout glTabLayout = new javax.swing.GroupLayout(glTab);
+        glTab.setLayout(glTabLayout);
+        glTabLayout.setHorizontalGroup(
+            glTabLayout.createParallelGroup(javax.swing.GroupLayout.Alignment.LEADING)
+            .addGap(0, 906, Short.MAX_VALUE)
         );
-        layout.setVerticalGroup(
-            layout.createParallelGroup(javax.swing.GroupLayout.Alignment.LEADING)
-            .addGroup(layout.createSequentialGroup()
-                .addComponent(mainToolbar, javax.swing.GroupLayout.PREFERRED_SIZE, 25, javax.swing.GroupLayout.PREFERRED_SIZE)
-                .addPreferredGap(javax.swing.LayoutStyle.ComponentPlacement.RELATED)
-                .addGroup(layout.createParallelGroup(javax.swing.GroupLayout.Alignment.LEADING)
-                    .addComponent(jScrollPane1)
-                    .addComponent(mainTabPane, javax.swing.GroupLayout.DEFAULT_SIZE, 607, Short.MAX_VALUE))
-                .addPreferredGap(javax.swing.LayoutStyle.ComponentPlacement.RELATED)
-                .addComponent(mainStatusbar, javax.swing.GroupLayout.PREFERRED_SIZE, javax.swing.GroupLayout.DEFAULT_SIZE, javax.swing.GroupLayout.PREFERRED_SIZE))
+        glTabLayout.setVerticalGroup(
+            glTabLayout.createParallelGroup(javax.swing.GroupLayout.Alignment.LEADING)
+            .addGap(0, 653, Short.MAX_VALUE)
         );
 
-        pack();
+        mainTabbedPane.addTab("General Ledger", new javax.swing.ImageIcon(getClass().getResource("/com/northwind/resources/Script.png")), glTab); // NOI18N
+
+        appTaskPane.setAutoscrolls(true);
+        appTaskPane.setIcon(new javax.swing.ImageIcon(getClass().getResource("/com/northwind/resources/Northwind16.png"))); // NOI18N
+        appTaskPane.setMnemonic('N');
+        appTaskPane.setScrollOnExpand(true);
+        appTaskPane.setSpecial(true);
+        appTaskPane.setTitle("Northwind Traders Tasks");
+        appTaskPane.add(new AbstractAction() {
+            {
+                putValue(Action.NAME, "New Data Store...");
+                putValue(Action.SHORT_DESCRIPTION, "Choose where to save a new data store");
+                putValue(Action.SMALL_ICON, new javax.swing.ImageIcon(getClass()
+                    .getResource("/com/northwind/resources/newDB.png")));
+        }
+
+        public void actionPerformed(ActionEvent e) {
+            newActionPerformed(e);
+        }
+    });
+
+    appTaskPane.add(new AbstractAction() {
+        {
+            putValue(Action.NAME, "Open Data Store...");
+            putValue(Action.SHORT_DESCRIPTION, "Choose which data store to use");
+            putValue(Action.SMALL_ICON, new javax.swing.ImageIcon(getClass()
+                .getResource("/com/northwind/resources/openDB.png")));
+    }
+
+    public void actionPerformed(ActionEvent e) {
+        openActionPerformed(e);
+    }
+    });
+
+    appTaskPane.add(new JSeparator());
+
+    appTaskPane.add(new AbstractAction() {
+        {
+            putValue(Action.NAME, "Save Data Store...");
+            putValue(Action.SHORT_DESCRIPTION, "Save the data store to disk");
+            putValue(Action.SMALL_ICON, new javax.swing.ImageIcon(getClass().getResource("/com/northwind/resources/save-database.png")));
+        }
+
+        public void actionPerformed(ActionEvent e) {
+            saveActionPerformed(e);
+        }
+    });
+
+    appTaskPane.add(new JSeparator());
+
+    appTaskPane.add(new AbstractAction() {
+        {
+            putValue(Action.NAME, "Printer Setup...");
+            putValue(Action.SHORT_DESCRIPTION, "Set default options for printing");
+            putValue(Action.SMALL_ICON, new javax.swing.ImageIcon(getClass().getResource("/com/northwind/resources/printersetup.png")));
+        }
+
+        public void actionPerformed(ActionEvent e) {
+            printSetupActionPerformed(e);
+        }
+    });
+
+    appTaskPane.add(new AbstractAction() {
+        {
+            putValue(Action.NAME, "Print");
+            putValue(Action.SHORT_DESCRIPTION, "Displays system print dialog to print "
+                + "documents");
+            putValue(Action.SMALL_ICON, new javax.swing.ImageIcon(getClass()
+                .getResource("/com/northwind/resources/print.png")));
+    }
+
+    public void actionPerformed(ActionEvent e) {
+        printActionPerformed(e);
+    }
+    });
+
+    appTaskPane.add(new JSeparator());
+
+    appTaskPane.add(new AbstractAction() {
+        {
+            putValue(Action.NAME, "Options...");
+            putValue(Action.SHORT_DESCRIPTION, "Displays the options dialog");
+            putValue(Action.SMALL_ICON, new javax.swing.ImageIcon(getClass()
+                .getResource("/com/northwind/resources/config16.png")));
+    }
+
+    public void actionPerformed(ActionEvent e) {
+        optionsActionPerformed(e);
+    }
+    });
+
+    appTaskPane.add(new JSeparator());
+
+    appTaskPane.add(new AbstractAction() {
+        {
+            putValue(Action.NAME, "Exit Northwind Traders");
+            putValue(Action.SHORT_DESCRIPTION, "Exits the application and performs "
+                + "housekeeping to release all resources");
+            putValue(Action.SMALL_ICON, new javax.swing.ImageIcon(getClass()
+                .getResource("/com/northwind/resources/Turnoff.png")));
+    }
+
+    public void actionPerformed(ActionEvent e) {
+        exitActionPerformed(e);
+    }
+    });
+    mainTaskController.add(appTaskPane);
+
+    loadsTaskPane.setAutoscrolls(true);
+    loadsTaskPane.setCollapsed(true);
+    loadsTaskPane.setIcon(new javax.swing.ImageIcon(getClass().getResource("/com/northwind/resources/freight.png"))); // NOI18N
+    loadsTaskPane.setMnemonic('L');
+    loadsTaskPane.setScrollOnExpand(true);
+    loadsTaskPane.setTitle("Load Tracker Tasks");
+    loadsTaskPane.add(new AbstractAction() {
+        {
+            putValue(Action.NAME, "Close Load Tracker");
+            putValue(Action.SHORT_DESCRIPTION, "Closes the Load Tracker window");
+            putValue(Action.SMALL_ICON, new javax.swing.ImageIcon(getClass()
+                .getResource("/com/northwind/resources/Cancel.png")));
+    }
+
+    public void actionPerformed(ActionEvent e) {
+        if ( getValue(Action.NAME).toString().equalsIgnoreCase("Close Load Tracker") ) {
+            putValue(Action.NAME, "Open Load Tracker");
+            putValue(Action.SHORT_DESCRIPTION, "Opens the Load Tracker window");
+            putValue(Action.SMALL_ICON, new javax.swing.ImageIcon(getClass()
+                .getResource("/com/northwind/resources/open.png")));
+        mainTabbedPane.remove(loadsTab);
+        loadsTaskPane.setCollapsed(true);
+    } else if ( getValue(Action.NAME).toString().equalsIgnoreCase("Open Load Tracker") ) {
+        putValue(Action.NAME, "Close Load Tracker");
+        putValue(Action.SHORT_DESCRIPTION, "Closes the Load Tracker window");
+        putValue(Action.SMALL_ICON, new javax.swing.ImageIcon(getClass()
+            .getResource("/com/northwind/resources/Cancel.png")));
+    mainTabbedPane.addTab("Load Tracker", new javax.swing.ImageIcon(getClass().getResource("/com/northwind/resources/freight.png")), loadsTab);
+    }
+    }
+    });
+
+    loadsTaskPane.add(new JSeparator());
+
+    loadsTaskPane.add(new AbstractAction() {
+        {
+            putValue(Action.NAME, "Book New Load...");
+            putValue(Action.SHORT_DESCRIPTION, "Displays the load booking dialog");
+            putValue(Action.SMALL_ICON, new javax.swing.ImageIcon(getClass()
+                .getResource("/com/northwind/resources/add.png")));
+    }
+
+    public void actionPerformed(ActionEvent e) {
+        doNewLoad();
+    }
+    });
+
+    loadsTaskPane.add(new JSeparator());
+
+    loadsTaskPane.add(new AbstractAction() {
+        {
+            putValue(Action.NAME, "Arrive at Stop...");
+            putValue(Action.SHORT_DESCRIPTION, "Displays stop arrival dialog");
+            putValue(Action.SMALL_ICON, new javax.swing.ImageIcon(getClass()
+                .getResource("/com/northwind/resources/Arrive.png")));
+    }
+
+    public void actionPerformed(ActionEvent e) {
+        if ( getValue(Action.NAME).toString().equalsIgnoreCase("Arrive at Stop...") ) {
+            putValue(Action.NAME, "Depart from Stop...");
+            putValue(Action.SMALL_ICON, new javax.swing.ImageIcon(getClass()
+                .getResource("/com/northwind/resources/Depart.png")));
+        doShowArrival();
+    } else if ( getValue(Action.NAME).toString().equalsIgnoreCase("Depart from Stop...") ) {
+        putValue(Action.NAME, "Arrive at Stop...");
+        putValue(Action.SMALL_ICON, new javax.swing.ImageIcon(getClass()
+            .getResource("/com/northwind/resources/Arrive.png")));
+    doShowDeparture();
+    }
+    }
+    });
+
+    loadsTaskPane.add(new JSeparator());
+
+    loadsTaskPane.add(new AbstractAction() {
+        {
+            putValue(Action.NAME, "View Loads Queue...");
+            putValue(Action.SHORT_DESCRIPTION, "Displays Loads Queue dialog");
+            putValue(Action.SMALL_ICON, new javax.swing.ImageIcon(getClass()
+                .getResource("/com/northwind/resources/freight.png")));
+    }
+
+    public void actionPerformed(ActionEvent e) {
+        doShowLoadsQueue();
+    }
+    });
+    loadsTaskPane.addComponentListener(new java.awt.event.ComponentAdapter() {
+        public void componentResized(java.awt.event.ComponentEvent evt) {
+            loadsTaskPaneComponentResized(evt);
+        }
+    });
+    mainTaskController.add(loadsTaskPane);
+
+    fuelTaskPane.setAutoscrolls(true);
+    fuelTaskPane.setCollapsed(true);
+    fuelTaskPane.setIcon(new javax.swing.ImageIcon(getClass().getResource("/com/northwind/resources/GasPump.png"))); // NOI18N
+    fuelTaskPane.setMnemonic('F');
+    fuelTaskPane.setScrollOnExpand(true);
+    fuelTaskPane.setTitle("Fuel Journal Tasks");
+    mainTaskController.add(fuelTaskPane);
+
+    servicesTaskPane.setAutoscrolls(true);
+    servicesTaskPane.setCollapsed(true);
+    servicesTaskPane.setIcon(new javax.swing.ImageIcon(getClass().getResource("/com/northwind/resources/Wrench.png"))); // NOI18N
+    servicesTaskPane.setMnemonic('S');
+    servicesTaskPane.setScrollOnExpand(true);
+    servicesTaskPane.setTitle("Service Journal Tasks");
+    mainTaskController.add(servicesTaskPane);
+
+    vehiclesTaskPane.setAutoscrolls(true);
+    vehiclesTaskPane.setCollapsed(true);
+    vehiclesTaskPane.setIcon(new javax.swing.ImageIcon(getClass().getResource("/com/northwind/resources/Delivery.png"))); // NOI18N
+    vehiclesTaskPane.setMnemonic('V');
+    vehiclesTaskPane.setScrollOnExpand(true);
+    vehiclesTaskPane.setTitle("Vehicle Tracker Tasks");
+    mainTaskController.add(vehiclesTaskPane);
+
+    customersTaskPane.setAutoscrolls(true);
+    customersTaskPane.setCollapsed(true);
+    customersTaskPane.setIcon(new javax.swing.ImageIcon(getClass().getResource("/com/northwind/resources/users.png"))); // NOI18N
+    customersTaskPane.setMnemonic('C');
+    customersTaskPane.setScrollOnExpand(true);
+    customersTaskPane.setTitle("Customer Tracker Tasks");
+    customersTaskPane.add(new AbstractAction() {
+        {
+            putValue(Action.NAME, "Close Customers List");
+            putValue(Action.SHORT_DESCRIPTION, "Close Customers List");
+            putValue(Action.SMALL_ICON, new javax.swing.ImageIcon(getClass().getResource("/com/northwind/resources/Cancel.png")));
+        }
+
+        public void actionPerformed(ActionEvent e) {
+            if ( getValue(Action.NAME).toString().equalsIgnoreCase("Close Customers List") ) {
+                putValue(Action.NAME, "Open Customers List");
+                putValue(Action.SMALL_ICON, new javax.swing.ImageIcon(getClass().getResource("/com/northwind/resources/open.png")));
+                mainTabbedPane.remove(customersTab);
+            } else if ( getValue(Action.NAME).toString().equalsIgnoreCase("Open Customers List") ) {
+                putValue(Action.NAME, "Close Customers List");
+                putValue(Action.SMALL_ICON, new javax.swing.ImageIcon(getClass().getResource("/com/northwind/resources/Cancel.png")));
+                mainTabbedPane.addTab("Customer List", new javax.swing.ImageIcon(getClass().getResource("/com/northwind/resources/users.png")), customersTab, null );
+            }
+        }
+    });
+
+    customersTaskPane.add(new JXLabel("    "));
+
+    customersTaskPane.add(new AbstractAction() {
+        {
+            putValue(Action.NAME, "Add New Customer");
+            putValue(Action.SHORT_DESCRIPTION, "Adds a new customer record");
+            putValue(Action.SMALL_ICON, new javax.swing.ImageIcon(getClass().getResource("/com/northwind/resources/add.png")));
+        }
+
+        public void actionPerformed(ActionEvent e) {
+            CustomerEntryDlg dlg = new CustomerEntryDlg(null, true);
+            dlg.pack();
+            dlg.setVisible(true);
+        }
+    });
+    mainTaskController.add(customersTaskPane);
+
+    employeesTaskPane.setAutoscrolls(true);
+    employeesTaskPane.setCollapsed(true);
+    employeesTaskPane.setIcon(new javax.swing.ImageIcon(getClass().getResource("/com/northwind/resources/people.png"))); // NOI18N
+    employeesTaskPane.setMnemonic('E');
+    employeesTaskPane.setScrollOnExpand(true);
+    employeesTaskPane.setTitle("Employee Tracker Tasks");
+    mainTaskController.add(employeesTaskPane);
+
+    glTaskPane.setAutoscrolls(true);
+    glTaskPane.setCollapsed(true);
+    glTaskPane.setIcon(new javax.swing.ImageIcon(getClass().getResource("/com/northwind/resources/Script.png"))); // NOI18N
+    glTaskPane.setMnemonic('G');
+    glTaskPane.setName(""); // NOI18N
+    glTaskPane.setScrollOnExpand(true);
+    glTaskPane.setTitle("General Ledger Tasks");
+    mainTaskController.add(glTaskPane);
+
+    jScrollPane3.setViewportView(mainTaskController);
+
+    fileMenu.setMnemonic('F');
+    fileMenu.setText("File");
+
+    newMenuItem.setAccelerator(javax.swing.KeyStroke.getKeyStroke(java.awt.event.KeyEvent.VK_N, java.awt.event.InputEvent.CTRL_MASK));
+    newMenuItem.setIcon(new javax.swing.ImageIcon(getClass().getResource("/com/northwind/resources/newDB.png"))); // NOI18N
+    newMenuItem.setMnemonic('N');
+    newMenuItem.setText("New Data Store...");
+    newMenuItem.addActionListener(new java.awt.event.ActionListener() {
+        public void actionPerformed(java.awt.event.ActionEvent evt) {
+            newActionPerformed(evt);
+        }
+    });
+    fileMenu.add(newMenuItem);
+
+    openMenuItem.setAccelerator(javax.swing.KeyStroke.getKeyStroke(java.awt.event.KeyEvent.VK_O, java.awt.event.InputEvent.CTRL_MASK));
+    openMenuItem.setIcon(new javax.swing.ImageIcon(getClass().getResource("/com/northwind/resources/openDB.png"))); // NOI18N
+    openMenuItem.setMnemonic('O');
+    openMenuItem.setText("Open Data Store...");
+    openMenuItem.addActionListener(new java.awt.event.ActionListener() {
+        public void actionPerformed(java.awt.event.ActionEvent evt) {
+            openActionPerformed(evt);
+        }
+    });
+    fileMenu.add(openMenuItem);
+    fileMenu.add(jSeparator1);
+
+    saveMenuItem.setAccelerator(javax.swing.KeyStroke.getKeyStroke(java.awt.event.KeyEvent.VK_S, java.awt.event.InputEvent.CTRL_MASK));
+    saveMenuItem.setIcon(new javax.swing.ImageIcon(getClass().getResource("/com/northwind/resources/save-database.png"))); // NOI18N
+    saveMenuItem.setMnemonic('S');
+    saveMenuItem.setText("Save Data Store");
+    saveMenuItem.setEnabled(false);
+    saveMenuItem.addActionListener(new java.awt.event.ActionListener() {
+        public void actionPerformed(java.awt.event.ActionEvent evt) {
+            saveActionPerformed(evt);
+        }
+    });
+    fileMenu.add(saveMenuItem);
+    fileMenu.add(jSeparator2);
+
+    printSetupMenu.setIcon(new javax.swing.ImageIcon(getClass().getResource("/com/northwind/resources/printersetup.png"))); // NOI18N
+    printSetupMenu.setMnemonic('e');
+    printSetupMenu.setText("Print Setup...");
+    printSetupMenu.setEnabled(false);
+    printSetupMenu.addActionListener(new java.awt.event.ActionListener() {
+        public void actionPerformed(java.awt.event.ActionEvent evt) {
+            printSetupActionPerformed(evt);
+        }
+    });
+    fileMenu.add(printSetupMenu);
+
+    printMenuItem.setAccelerator(javax.swing.KeyStroke.getKeyStroke(java.awt.event.KeyEvent.VK_P, java.awt.event.InputEvent.CTRL_MASK));
+    printMenuItem.setIcon(new javax.swing.ImageIcon(getClass().getResource("/com/northwind/resources/print.png"))); // NOI18N
+    printMenuItem.setMnemonic('P');
+    printMenuItem.setText("Print...");
+    printMenuItem.setEnabled(false);
+    printMenuItem.addActionListener(new java.awt.event.ActionListener() {
+        public void actionPerformed(java.awt.event.ActionEvent evt) {
+            printActionPerformed(evt);
+        }
+    });
+    fileMenu.add(printMenuItem);
+    fileMenu.add(jSeparator3);
+
+    exitMenuItem.setAccelerator(javax.swing.KeyStroke.getKeyStroke(java.awt.event.KeyEvent.VK_F4, java.awt.event.InputEvent.ALT_MASK));
+    exitMenuItem.setIcon(new javax.swing.ImageIcon(getClass().getResource("/com/northwind/resources/Turnoff.png"))); // NOI18N
+    exitMenuItem.setMnemonic('x');
+    exitMenuItem.setText("Exit");
+    exitMenuItem.addActionListener(new java.awt.event.ActionListener() {
+        public void actionPerformed(java.awt.event.ActionEvent evt) {
+            exitActionPerformed(evt);
+        }
+    });
+    fileMenu.add(exitMenuItem);
+
+    mainMenubar.add(fileMenu);
+
+    editMenu.setMnemonic('E');
+    editMenu.setText("Edit");
+
+    editMenuItem.setAccelerator(javax.swing.KeyStroke.getKeyStroke(java.awt.event.KeyEvent.VK_ENTER, java.awt.event.InputEvent.ALT_MASK));
+    editMenuItem.setIcon(new javax.swing.ImageIcon(getClass().getResource("/com/northwind/resources/edit.png"))); // NOI18N
+    editMenuItem.setMnemonic('E');
+    editMenuItem.setText("Edit Selected Item...");
+    editMenuItem.addActionListener(new java.awt.event.ActionListener() {
+        public void actionPerformed(java.awt.event.ActionEvent evt) {
+            editActionPerformed(evt);
+        }
+    });
+    editMenu.add(editMenuItem);
+
+    markMenuItem.setAccelerator(javax.swing.KeyStroke.getKeyStroke(java.awt.event.KeyEvent.VK_SPACE, java.awt.event.InputEvent.CTRL_MASK));
+    markMenuItem.setIcon(new javax.swing.ImageIcon(getClass().getResource("/com/northwind/resources/mark.png"))); // NOI18N
+    markMenuItem.setMnemonic('M');
+    markMenuItem.setText("Mark Selected Item(s)");
+    markMenuItem.setEnabled(false);
+    markMenuItem.addActionListener(new java.awt.event.ActionListener() {
+        public void actionPerformed(java.awt.event.ActionEvent evt) {
+            markActionPerformed(evt);
+        }
+    });
+    editMenu.add(markMenuItem);
+
+    removeMenuItem.setAccelerator(javax.swing.KeyStroke.getKeyStroke(java.awt.event.KeyEvent.VK_DELETE, 0));
+    removeMenuItem.setIcon(new javax.swing.ImageIcon(getClass().getResource("/com/northwind/resources/delete.png"))); // NOI18N
+    removeMenuItem.setMnemonic('R');
+    removeMenuItem.setText("Remove Seleted Item(s)");
+    removeMenuItem.setEnabled(false);
+    removeMenuItem.addActionListener(new java.awt.event.ActionListener() {
+        public void actionPerformed(java.awt.event.ActionEvent evt) {
+            removeActionPerformed(evt);
+        }
+    });
+    editMenu.add(removeMenuItem);
+
+    mainMenubar.add(editMenu);
+
+    viewMenu.setMnemonic('V');
+    viewMenu.setText("View");
+
+    sortMenuItem.setIcon(new javax.swing.ImageIcon(getClass().getResource("/com/northwind/resources/sort-asc.png"))); // NOI18N
+    sortMenuItem.setText("Sort By...");
+    sortMenuItem.addActionListener(new java.awt.event.ActionListener() {
+        public void actionPerformed(java.awt.event.ActionEvent evt) {
+            sortByActionPerformed(evt);
+        }
+    });
+    viewMenu.add(sortMenuItem);
+
+    mainMenubar.add(viewMenu);
+
+    maintainMenu.setMnemonic('M');
+    maintainMenu.setText("Maintain");
+
+    addMenuItem.setIcon(new javax.swing.ImageIcon(getClass().getResource("/com/northwind/resources/add.png"))); // NOI18N
+    addMenuItem.setMnemonic('A');
+    addMenuItem.setText("Add New");
+
+    loadMenuItem.setIcon(new javax.swing.ImageIcon(getClass().getResource("/com/northwind/resources/freight.png"))); // NOI18N
+    loadMenuItem.setMnemonic('L');
+    loadMenuItem.setText("Load");
+    loadMenuItem.addActionListener(new java.awt.event.ActionListener() {
+        public void actionPerformed(java.awt.event.ActionEvent evt) {
+            loadActionPerformed(evt);
+        }
+    });
+    addMenuItem.add(loadMenuItem);
+
+    fuelMenuItem.setIcon(new javax.swing.ImageIcon(getClass().getResource("/com/northwind/resources/GasPump.png"))); // NOI18N
+    fuelMenuItem.setMnemonic('F');
+    fuelMenuItem.setText("Fuel Purchase...");
+    fuelMenuItem.addActionListener(new java.awt.event.ActionListener() {
+        public void actionPerformed(java.awt.event.ActionEvent evt) {
+            fuelActionPerformed(evt);
+        }
+    });
+    addMenuItem.add(fuelMenuItem);
+
+    serviceMenuItem.setIcon(new javax.swing.ImageIcon(getClass().getResource("/com/northwind/resources/Wrench.png"))); // NOI18N
+    serviceMenuItem.setMnemonic('S');
+    serviceMenuItem.setText("Service...");
+    serviceMenuItem.addActionListener(new java.awt.event.ActionListener() {
+        public void actionPerformed(java.awt.event.ActionEvent evt) {
+            serviceActionPerformed(evt);
+        }
+    });
+    addMenuItem.add(serviceMenuItem);
+
+    repairMenuItem.setIcon(new javax.swing.ImageIcon(getClass().getResource("/com/northwind/resources/repair.png"))); // NOI18N
+    repairMenuItem.setMnemonic('R');
+    repairMenuItem.setText("Repair...");
+    repairMenuItem.addActionListener(new java.awt.event.ActionListener() {
+        public void actionPerformed(java.awt.event.ActionEvent evt) {
+            repairActionPerformed(evt);
+        }
+    });
+    addMenuItem.add(repairMenuItem);
+
+    tiresMenuItem.setIcon(new javax.swing.ImageIcon(getClass().getResource("/com/northwind/resources/tires.png"))); // NOI18N
+    tiresMenuItem.setMnemonic('T');
+    tiresMenuItem.setText("Tire Purchase...");
+    tiresMenuItem.addActionListener(new java.awt.event.ActionListener() {
+        public void actionPerformed(java.awt.event.ActionEvent evt) {
+            tiresActionPerformed(evt);
+        }
+    });
+    addMenuItem.add(tiresMenuItem);
+
+    customerMenuItem.setIcon(new javax.swing.ImageIcon(getClass().getResource("/com/northwind/resources/users.png"))); // NOI18N
+    customerMenuItem.setMnemonic('C');
+    customerMenuItem.setText("Customer...");
+    customerMenuItem.addActionListener(new java.awt.event.ActionListener() {
+        public void actionPerformed(java.awt.event.ActionEvent evt) {
+            customerActionPerformed(evt);
+        }
+    });
+    addMenuItem.add(customerMenuItem);
+
+    employeeMenuItem.setIcon(new javax.swing.ImageIcon(getClass().getResource("/com/northwind/resources/people.png"))); // NOI18N
+    employeeMenuItem.setMnemonic('E');
+    employeeMenuItem.setText("Employee...");
+    employeeMenuItem.addActionListener(new java.awt.event.ActionListener() {
+        public void actionPerformed(java.awt.event.ActionEvent evt) {
+            employeeActionPerformed(evt);
+        }
+    });
+    addMenuItem.add(employeeMenuItem);
+
+    maintainMenu.add(addMenuItem);
+
+    mainMenubar.add(maintainMenu);
+
+    toolsMenu.setMnemonic('T');
+    toolsMenu.setText("Tools");
+
+    optionsMenuItem.setAccelerator(javax.swing.KeyStroke.getKeyStroke(java.awt.event.KeyEvent.VK_F5, 0));
+    optionsMenuItem.setIcon(new javax.swing.ImageIcon(getClass().getResource("/com/northwind/resources/config16.png"))); // NOI18N
+    optionsMenuItem.setMnemonic('O');
+    optionsMenuItem.setText("Options");
+    optionsMenuItem.addActionListener(new java.awt.event.ActionListener() {
+        public void actionPerformed(java.awt.event.ActionEvent evt) {
+            optionsActionPerformed(evt);
+        }
+    });
+    toolsMenu.add(optionsMenuItem);
+
+    mainMenubar.add(toolsMenu);
+
+    helpMenu.setMnemonic('H');
+    helpMenu.setText("Help");
+
+    contentsMenuItem.setIcon(new javax.swing.ImageIcon(getClass().getResource("/com/northwind/resources/help.png"))); // NOI18N
+    contentsMenuItem.setMnemonic('C');
+    contentsMenuItem.setText("Help Contents");
+    contentsMenuItem.addActionListener(new java.awt.event.ActionListener() {
+        public void actionPerformed(java.awt.event.ActionEvent evt) {
+            contentsActionPerformed(evt);
+        }
+    });
+    helpMenu.add(contentsMenuItem);
+
+    indexMenuItem.setIcon(new javax.swing.ImageIcon(getClass().getResource("/com/northwind/resources/help-idx.png"))); // NOI18N
+    indexMenuItem.setMnemonic('I');
+    indexMenuItem.setText("Help Index...");
+    indexMenuItem.addActionListener(new java.awt.event.ActionListener() {
+        public void actionPerformed(java.awt.event.ActionEvent evt) {
+            indexActionPerformed(evt);
+        }
+    });
+    helpMenu.add(indexMenuItem);
+    helpMenu.add(jSeparator4);
+
+    aboutMenuItem.setIcon(new javax.swing.ImageIcon(getClass().getResource("/com/northwind/resources/info.png"))); // NOI18N
+    aboutMenuItem.setMnemonic('N');
+    aboutMenuItem.setText("About Northwind");
+    aboutMenuItem.addActionListener(new java.awt.event.ActionListener() {
+        public void actionPerformed(java.awt.event.ActionEvent evt) {
+            aboutActionPerformed(evt);
+        }
+    });
+    helpMenu.add(aboutMenuItem);
+
+    mainMenubar.add(helpMenu);
+
+    setJMenuBar(mainMenubar);
+
+    javax.swing.GroupLayout layout = new javax.swing.GroupLayout(getContentPane());
+    getContentPane().setLayout(layout);
+    layout.setHorizontalGroup(
+        layout.createParallelGroup(javax.swing.GroupLayout.Alignment.LEADING)
+        .addComponent(mainStatusbar, javax.swing.GroupLayout.DEFAULT_SIZE, javax.swing.GroupLayout.DEFAULT_SIZE, Short.MAX_VALUE)
+        .addGroup(layout.createSequentialGroup()
+            .addComponent(jScrollPane3, javax.swing.GroupLayout.PREFERRED_SIZE, 238, javax.swing.GroupLayout.PREFERRED_SIZE)
+            .addPreferredGap(javax.swing.LayoutStyle.ComponentPlacement.RELATED)
+            .addComponent(mainTabbedPane)
+            .addPreferredGap(javax.swing.LayoutStyle.ComponentPlacement.RELATED)
+            .addComponent(jScrollPane1, javax.swing.GroupLayout.PREFERRED_SIZE, 245, javax.swing.GroupLayout.PREFERRED_SIZE)
+            .addContainerGap())
+    );
+    layout.setVerticalGroup(
+        layout.createParallelGroup(javax.swing.GroupLayout.Alignment.LEADING)
+        .addGroup(layout.createSequentialGroup()
+            .addGroup(layout.createParallelGroup(javax.swing.GroupLayout.Alignment.LEADING)
+                .addGroup(layout.createSequentialGroup()
+                    .addContainerGap()
+                    .addGroup(layout.createParallelGroup(javax.swing.GroupLayout.Alignment.LEADING)
+                        .addComponent(mainTabbedPane)
+                        .addComponent(jScrollPane1)))
+                .addComponent(jScrollPane3))
+            .addPreferredGap(javax.swing.LayoutStyle.ComponentPlacement.RELATED)
+            .addComponent(mainStatusbar, javax.swing.GroupLayout.PREFERRED_SIZE, javax.swing.GroupLayout.DEFAULT_SIZE, javax.swing.GroupLayout.PREFERRED_SIZE))
+    );
+
+    pack();
     }// </editor-fold>//GEN-END:initComponents
 
     private void exitActionPerformed(java.awt.event.ActionEvent evt) {//GEN-FIRST:event_exitActionPerformed
@@ -1076,11 +1114,73 @@ public class MainWindow extends javax.swing.JFrame {
     }//GEN-LAST:event_exitActionPerformed
 
     private void newActionPerformed(java.awt.event.ActionEvent evt) {//GEN-FIRST:event_newActionPerformed
-        // TODO add your handling code here:
+        JFileChooser dlg = new JFileChooser();
+        dlg.setDialogTitle("New Northwind Traders Data Store");
+        dlg.setFileFilter(hsqlDatabases);
+        File dir = new File(props.getDataFolder());
+        dlg.setCurrentDirectory(dir);
+        if ( dlg.showSaveDialog(null) == JFileChooser.APPROVE_OPTION ) {
+            File newFile = dlg.getSelectedFile();
+            props.setProperty("app.last.db", newFile.getName());
+            if ( !newFile.exists() ) {
+                try {
+                    newFile.createNewFile();
+                    
+                } catch ( IOException ex ) {
+                    this.setStatus(ex.getMessage(), true);
+                }
+            }
+
+            DbConnection connect = new DbConnection();
+            String dbName = newFile.getName();
+
+            if ( dbName.endsWith(".script") )
+                dbName = dbName.substring(0, dbName.length() - 7);
+
+            try {
+                con = connect.reconnect(dbName);
+                this.setStatus("Data store ready for use: " + newFile.getName(), 
+                        false);
+            } catch (DataStoreException ex) {
+                this.setStatus(ex.getMessage(), true);
+                con = null;
+            }
+        }
     }//GEN-LAST:event_newActionPerformed
 
     private void openActionPerformed(java.awt.event.ActionEvent evt) {//GEN-FIRST:event_openActionPerformed
-        // TODO add your handling code here:
+        JFileChooser dlg = new JFileChooser();
+        dlg.setDialogTitle("Select Northwind Traders Data Store");
+        dlg.setFileFilter(hsqlDatabases);
+        File dir = new File(props.getDataFolder());
+        dlg.setCurrentDirectory(dir);
+        if ( dlg.showOpenDialog(null) == JFileChooser.APPROVE_OPTION ) {
+            File newFile = dlg.getSelectedFile();
+            props.setProperty("app.last.db", newFile.getName());
+            if ( !newFile.exists() ) {
+                try {
+                    newFile.createNewFile();
+                    
+                } catch ( IOException ex ) {
+                    this.setStatus(ex.getMessage(), true);
+                }
+            }
+
+            DbConnection connect = new DbConnection();
+            String dbName = newFile.getName();
+
+            if ( dbName.endsWith(".script") )
+                dbName = dbName.substring(0, dbName.length() - 7);
+            
+           try {
+                con = connect.reconnect(dbName);
+                this.setStatus("Data store ready for use: " + newFile.getName(), 
+                        false);
+             } catch (DataStoreException ex) {
+                this.setStatus(ex.getMessage(), true);
+                con = null;
+            }
+        }
     }//GEN-LAST:event_openActionPerformed
 
     private void saveActionPerformed(java.awt.event.ActionEvent evt) {//GEN-FIRST:event_saveActionPerformed
@@ -1131,10 +1231,6 @@ public class MainWindow extends javax.swing.JFrame {
         // TODO add your handling code here:
     }//GEN-LAST:event_optionsActionPerformed
 
-    private void helpActionPerformed(java.awt.event.ActionEvent evt) {//GEN-FIRST:event_helpActionPerformed
-        // TODO add your handling code here:
-    }//GEN-LAST:event_helpActionPerformed
-
     private void printSetupActionPerformed(java.awt.event.ActionEvent evt) {//GEN-FIRST:event_printSetupActionPerformed
         // TODO add your handling code here:
     }//GEN-LAST:event_printSetupActionPerformed
@@ -1142,30 +1238,6 @@ public class MainWindow extends javax.swing.JFrame {
     private void printActionPerformed(java.awt.event.ActionEvent evt) {//GEN-FIRST:event_printActionPerformed
         // TODO add your handling code here:
     }//GEN-LAST:event_printActionPerformed
-
-    private void loadsMouseClicked(java.awt.event.MouseEvent evt) {//GEN-FIRST:event_loadsMouseClicked
-        // TODO add your handling code here:
-    }//GEN-LAST:event_loadsMouseClicked
-
-    private void fuelMouseClicked(java.awt.event.MouseEvent evt) {//GEN-FIRST:event_fuelMouseClicked
-        // TODO add your handling code here:
-    }//GEN-LAST:event_fuelMouseClicked
-
-    private void maintenanceMouseClicked(java.awt.event.MouseEvent evt) {//GEN-FIRST:event_maintenanceMouseClicked
-        // TODO add your handling code here:
-    }//GEN-LAST:event_maintenanceMouseClicked
-
-    private void vehiclesMouseClicked(java.awt.event.MouseEvent evt) {//GEN-FIRST:event_vehiclesMouseClicked
-        // TODO add your handling code here:
-    }//GEN-LAST:event_vehiclesMouseClicked
-
-    private void customersMouseClicked(java.awt.event.MouseEvent evt) {//GEN-FIRST:event_customersMouseClicked
-        // TODO add your handling code here:
-    }//GEN-LAST:event_customersMouseClicked
-
-    private void employeesMouseClicked(java.awt.event.MouseEvent evt) {//GEN-FIRST:event_employeesMouseClicked
-        // TODO add your handling code here:
-    }//GEN-LAST:event_employeesMouseClicked
 
     private void contentsActionPerformed(java.awt.event.ActionEvent evt) {//GEN-FIRST:event_contentsActionPerformed
         // TODO add your handling code here:
@@ -1188,6 +1260,101 @@ public class MainWindow extends javax.swing.JFrame {
         JOptionPane.showMessageDialog(this, msg, ttl, 
                 JOptionPane.INFORMATION_MESSAGE);
     }//GEN-LAST:event_aboutActionPerformed
+
+    private void loadsTaskPaneComponentResized(java.awt.event.ComponentEvent evt) {//GEN-FIRST:event_loadsTaskPaneComponentResized
+        // Make the load tracker tab active, if it is not already.
+        int oldTab = mainTabbedPane.getSelectedIndex();
+        
+        if ( !loadsTaskPane.isCollapsed() ) {
+            if ( mainTabbedPane.getSelectedIndex() != 0 )
+                mainTabbedPane.setSelectedIndex(0);
+            else 
+                mainTabbedPane.setSelectedIndex(oldTab);
+        }
+        
+        this.mainTabbedPaneStateChanged(null);
+    }//GEN-LAST:event_loadsTaskPaneComponentResized
+
+    private void mainTabbedPaneStateChanged(javax.swing.event.ChangeEvent evt) {//GEN-FIRST:event_mainTabbedPaneStateChanged
+        // When the user clicks a tab, expand that tab's task pane, and collapse
+        //+ all of the others, except Northwind Traders Tasks.
+        int selectedTab = mainTabbedPane.getSelectedIndex();
+        
+        switch ( selectedTab ) {
+            case 0: // Load Tracker tab
+                this.loadsTaskPane.setCollapsed(false);
+                this.fuelTaskPane.setCollapsed(true);
+                this.servicesTaskPane.setCollapsed(true);
+                this.vehiclesTaskPane.setCollapsed(true);
+                this.customersTaskPane.setCollapsed(true);
+                this.employeesTaskPane.setCollapsed(true);
+                this.glTaskPane.setCollapsed(true);
+                break;
+            case 1: // Fuel Journal tab
+                this.loadsTaskPane.setCollapsed(true);
+                this.fuelTaskPane.setCollapsed(false);
+                this.servicesTaskPane.setCollapsed(true);
+                this.vehiclesTaskPane.setCollapsed(true);
+                this.customersTaskPane.setCollapsed(true);
+                this.employeesTaskPane.setCollapsed(true);
+                this.glTaskPane.setCollapsed(true);
+                break;
+            case 2: // Service Journal tab
+                this.loadsTaskPane.setCollapsed(true);
+                this.fuelTaskPane.setCollapsed(true);
+                this.servicesTaskPane.setCollapsed(false);
+                this.vehiclesTaskPane.setCollapsed(true);
+                this.customersTaskPane.setCollapsed(true);
+                this.employeesTaskPane.setCollapsed(true);
+                this.glTaskPane.setCollapsed(true);
+                break;
+            case 3: // Vehicle Tracker tab
+                this.loadsTaskPane.setCollapsed(true);
+                this.fuelTaskPane.setCollapsed(true);
+                this.servicesTaskPane.setCollapsed(true);
+                this.vehiclesTaskPane.setCollapsed(false);
+                this.customersTaskPane.setCollapsed(true);
+                this.employeesTaskPane.setCollapsed(true);
+                this.glTaskPane.setCollapsed(true);
+                break;
+            case 4: // Customer Tracker tab
+                this.loadsTaskPane.setCollapsed(true);
+                this.fuelTaskPane.setCollapsed(true);
+                this.servicesTaskPane.setCollapsed(true);
+                this.vehiclesTaskPane.setCollapsed(true);
+                this.customersTaskPane.setCollapsed(false);
+                this.employeesTaskPane.setCollapsed(true);
+                this.glTaskPane.setCollapsed(true);
+                break;
+            case 5: // Employee Tracker tab
+                this.loadsTaskPane.setCollapsed(true);
+                this.fuelTaskPane.setCollapsed(true);
+                this.servicesTaskPane.setCollapsed(true);
+                this.vehiclesTaskPane.setCollapsed(true);
+                this.customersTaskPane.setCollapsed(true);
+                this.employeesTaskPane.setCollapsed(false);
+                this.glTaskPane.setCollapsed(true);
+                break;
+            case 6: // General Ledger tab
+                this.loadsTaskPane.setCollapsed(true);
+                this.fuelTaskPane.setCollapsed(true);
+                this.servicesTaskPane.setCollapsed(true);
+                this.vehiclesTaskPane.setCollapsed(true);
+                this.customersTaskPane.setCollapsed(true);
+                this.employeesTaskPane.setCollapsed(true);
+                this.glTaskPane.setCollapsed(false);
+                break;
+            default:
+                this.loadsTaskPane.setCollapsed(true);
+                this.fuelTaskPane.setCollapsed(true);
+                this.servicesTaskPane.setCollapsed(true);
+                this.vehiclesTaskPane.setCollapsed(true);
+                this.customersTaskPane.setCollapsed(true);
+                this.employeesTaskPane.setCollapsed(true);
+                this.glTaskPane.setCollapsed(true);
+                break;
+        }
+    }//GEN-LAST:event_mainTabbedPaneStateChanged
 
     /**
      * @param args the command line arguments
@@ -1227,83 +1394,62 @@ public class MainWindow extends javax.swing.JFrame {
     // Variables declaration - do not modify//GEN-BEGIN:variables
     private javax.swing.JMenuItem aboutMenuItem;
     private javax.swing.JMenu addMenuItem;
+    private org.jdesktop.swingx.JXTaskPane appTaskPane;
     private javax.swing.JMenuItem contentsMenuItem;
-    private javax.swing.JButton customerButton;
     private javax.swing.JMenuItem customerMenuItem;
-    private javax.swing.JTable customers;
+    private org.jdesktop.swingx.JXTable customers;
     private javax.swing.JPanel customersTab;
-    private javax.swing.JButton editButton;
+    private org.jdesktop.swingx.JXTaskPane customersTaskPane;
     private javax.swing.JMenu editMenu;
     private javax.swing.JMenuItem editMenuItem;
-    private javax.swing.JButton employeeButton;
     private javax.swing.JMenuItem employeeMenuItem;
-    private javax.swing.JTable employees;
-    private javax.swing.JPanel employeesPanel;
-    private javax.swing.JButton exitButton;
+    private javax.swing.JPanel employeesTab;
+    private org.jdesktop.swingx.JXTaskPane employeesTaskPane;
     private javax.swing.JMenuItem exitMenuItem;
     private javax.swing.JMenu fileMenu;
-    private javax.swing.JButton fuelButton;
     private javax.swing.JMenuItem fuelMenuItem;
-    private javax.swing.JTable fuelPurchases;
     private javax.swing.JPanel fuelTab;
-    private javax.swing.JButton helpButton;
+    private org.jdesktop.swingx.JXTaskPane fuelTaskPane;
+    private javax.swing.JPanel glTab;
+    private org.jdesktop.swingx.JXTaskPane glTaskPane;
     private javax.swing.JMenu helpMenu;
     private javax.swing.JMenuItem indexMenuItem;
     private javax.swing.JLabel jLabel1;
     private javax.swing.JScrollPane jScrollPane1;
     private javax.swing.JScrollPane jScrollPane2;
     private javax.swing.JScrollPane jScrollPane3;
-    private javax.swing.JScrollPane jScrollPane4;
-    private javax.swing.JScrollPane jScrollPane5;
-    private javax.swing.JScrollPane jScrollPane6;
-    private javax.swing.JScrollPane jScrollPane7;
     private javax.swing.JPopupMenu.Separator jSeparator1;
     private javax.swing.JPopupMenu.Separator jSeparator2;
     private javax.swing.JPopupMenu.Separator jSeparator3;
     private javax.swing.JPopupMenu.Separator jSeparator4;
-    private javax.swing.JToolBar.Separator jSeparator5;
-    private javax.swing.JToolBar.Separator jSeparator6;
-    private javax.swing.JToolBar.Separator jSeparator7;
-    private javax.swing.JToolBar.Separator jSeparator8;
-    private javax.swing.JToolBar.Separator jSeparator9;
-    private javax.swing.JButton loadButton;
     private javax.swing.JMenuItem loadMenuItem;
-    private javax.swing.JTable loads;
     private javax.swing.JPanel loadsTab;
+    private org.jdesktop.swingx.JXTaskPane loadsTaskPane;
     private javax.swing.JMenuBar mainMenubar;
     private org.jdesktop.swingx.JXStatusBar mainStatusbar;
-    private javax.swing.JTabbedPane mainTabPane;
-    private javax.swing.JToolBar mainToolbar;
+    private javax.swing.JTabbedPane mainTabbedPane;
+    private org.jdesktop.swingx.JXTaskPaneContainer mainTaskController;
     private javax.swing.JMenu maintainMenu;
-    private javax.swing.JTable maintenance;
-    private javax.swing.JPanel maintenanceTab;
-    private javax.swing.JButton markButton;
     private javax.swing.JMenuItem markMenuItem;
-    private javax.swing.JButton newButton;
     private javax.swing.JMenuItem newMenuItem;
-    private javax.swing.JButton openButton;
     private javax.swing.JMenuItem openMenuItem;
-    private javax.swing.JButton optionsButton;
     private javax.swing.JMenuItem optionsMenuItem;
     private org.jdesktop.swingx.JXTreeTable perMileBreakdown;
     private javax.swing.JMenuItem printMenuItem;
     private javax.swing.JMenuItem printSetupMenu;
-    private javax.swing.JButton removeButton;
     private javax.swing.JMenuItem removeMenuItem;
-    private javax.swing.JButton repairButton;
     private javax.swing.JMenuItem repairMenuItem;
-    private javax.swing.JButton saveButton;
     private javax.swing.JMenuItem saveMenuItem;
-    private javax.swing.JButton serviceButton;
     private javax.swing.JMenuItem serviceMenuItem;
+    private javax.swing.JPanel servicesTab;
+    private org.jdesktop.swingx.JXTaskPane servicesTaskPane;
     private javax.swing.JMenuItem sortMenuItem;
     private javax.swing.JLabel tipsLabel;
-    private javax.swing.JButton tiresButton;
     private javax.swing.JMenuItem tiresMenuItem;
     private javax.swing.JMenu toolsMenu;
     private javax.swing.JLabel userLabel;
-    private javax.swing.JTable vehicles;
     private javax.swing.JPanel vehiclesTab;
+    private org.jdesktop.swingx.JXTaskPane vehiclesTaskPane;
     private javax.swing.JLabel versionLabel;
     private javax.swing.JMenu viewMenu;
     // End of variables declaration//GEN-END:variables

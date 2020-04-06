@@ -17,12 +17,10 @@
 package com.northwind;
 
 import com.northwind.exceptions.InvalidLoggingLevelException;
+import com.northwind.settings.AppProperties;
 import com.northwind.utils.ArgumentParser;
 import com.northwind.utils.Logger;
 import com.northwind.view.MainWindow;
-import com.northwind.enums.SysExits;
-import com.northwind.settings.AppProperties;
-import java.io.File;
 import java.time.Instant;
 import java.util.logging.Level;
 import java.util.logging.LogRecord;
@@ -97,8 +95,16 @@ public class Northwind {
         String lafName;
         if (parser.isSwitchPresent("--laf") ) {
             lafName = parser.getSwitchValue("--laf");
+            
+            if ( lafName.toLowerCase().contains("cde") ||
+                    lafName.toLowerCase().contains("motif") )
+                lafName = "CDE/Motif";
         } else if ( parser.isSwitchPresent("-l") ) {
             lafName = parser.getSwitchValue("-l");
+            
+            if ( lafName.toLowerCase().contains("cde") ||
+                    lafName.toLowerCase().contains("motif") )
+                lafName = "CDE/Motif";
         } else {
             lafName = "SYSTEM";
         }
