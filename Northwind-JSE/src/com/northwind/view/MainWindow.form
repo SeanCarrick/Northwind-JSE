@@ -168,6 +168,9 @@
             <Property name="mnemonic" type="int" value="86"/>
             <Property name="text" type="java.lang.String" value="View"/>
           </Properties>
+          <Events>
+            <EventHandler event="actionPerformed" listener="java.awt.event.ActionListener" parameters="java.awt.event.ActionEvent" handler="viewMenuActionPerformed"/>
+          </Events>
           <SubComponents>
             <MenuItem class="javax.swing.JMenuItem" name="sortMenuItem">
               <Properties>
@@ -182,6 +185,102 @@
               <Events>
                 <EventHandler event="actionPerformed" listener="java.awt.event.ActionListener" parameters="java.awt.event.ActionEvent" handler="sortByActionPerformed"/>
               </Events>
+            </MenuItem>
+            <MenuItem class="javax.swing.JPopupMenu$Separator" name="jSeparator5">
+            </MenuItem>
+            <MenuItem class="javax.swing.JCheckBoxMenuItem" name="viewLoadTracker">
+              <Properties>
+                <Property name="accelerator" type="javax.swing.KeyStroke" editor="org.netbeans.modules.form.editors.KeyStrokeEditor">
+                  <KeyStroke key="F6"/>
+                </Property>
+                <Property name="mnemonic" type="int" value="76"/>
+                <Property name="selected" type="boolean" value="true"/>
+                <Property name="text" type="java.lang.String" value="Load Tracker"/>
+                <Property name="icon" type="javax.swing.Icon" editor="org.netbeans.modules.form.editors2.IconEditor">
+                  <Image iconType="3" name="/com/northwind/resources/freight.png"/>
+                </Property>
+              </Properties>
+              <Events>
+                <EventHandler event="actionPerformed" listener="java.awt.event.ActionListener" parameters="java.awt.event.ActionEvent" handler="viewLoadTrackerActionPerformed"/>
+              </Events>
+            </MenuItem>
+            <MenuItem class="javax.swing.JCheckBoxMenuItem" name="viewFuelJournal">
+              <Properties>
+                <Property name="accelerator" type="javax.swing.KeyStroke" editor="org.netbeans.modules.form.editors.KeyStrokeEditor">
+                  <KeyStroke key="F7"/>
+                </Property>
+                <Property name="mnemonic" type="int" value="70"/>
+                <Property name="selected" type="boolean" value="true"/>
+                <Property name="text" type="java.lang.String" value="Fuel Journal"/>
+                <Property name="icon" type="javax.swing.Icon" editor="org.netbeans.modules.form.editors2.IconEditor">
+                  <Image iconType="3" name="/com/northwind/resources/GasPump.png"/>
+                </Property>
+              </Properties>
+            </MenuItem>
+            <MenuItem class="javax.swing.JCheckBoxMenuItem" name="viewServiceJournal">
+              <Properties>
+                <Property name="accelerator" type="javax.swing.KeyStroke" editor="org.netbeans.modules.form.editors.KeyStrokeEditor">
+                  <KeyStroke key="F8"/>
+                </Property>
+                <Property name="mnemonic" type="int" value="83"/>
+                <Property name="selected" type="boolean" value="true"/>
+                <Property name="text" type="java.lang.String" value="Service Journal"/>
+                <Property name="icon" type="javax.swing.Icon" editor="org.netbeans.modules.form.editors2.IconEditor">
+                  <Image iconType="3" name="/com/northwind/resources/Wrench.png"/>
+                </Property>
+              </Properties>
+            </MenuItem>
+            <MenuItem class="javax.swing.JCheckBoxMenuItem" name="viewVehicleTracker">
+              <Properties>
+                <Property name="accelerator" type="javax.swing.KeyStroke" editor="org.netbeans.modules.form.editors.KeyStrokeEditor">
+                  <KeyStroke key="F9"/>
+                </Property>
+                <Property name="mnemonic" type="int" value="86"/>
+                <Property name="selected" type="boolean" value="true"/>
+                <Property name="text" type="java.lang.String" value="Vehicle Tracker"/>
+                <Property name="icon" type="javax.swing.Icon" editor="org.netbeans.modules.form.editors2.IconEditor">
+                  <Image iconType="3" name="/com/northwind/resources/Delivery.png"/>
+                </Property>
+              </Properties>
+            </MenuItem>
+            <MenuItem class="javax.swing.JCheckBoxMenuItem" name="viewCustomerTracker">
+              <Properties>
+                <Property name="accelerator" type="javax.swing.KeyStroke" editor="org.netbeans.modules.form.editors.KeyStrokeEditor">
+                  <KeyStroke key="F10"/>
+                </Property>
+                <Property name="mnemonic" type="int" value="67"/>
+                <Property name="selected" type="boolean" value="true"/>
+                <Property name="text" type="java.lang.String" value="Customer Tracker"/>
+                <Property name="icon" type="javax.swing.Icon" editor="org.netbeans.modules.form.editors2.IconEditor">
+                  <Image iconType="3" name="/com/northwind/resources/users.png"/>
+                </Property>
+              </Properties>
+            </MenuItem>
+            <MenuItem class="javax.swing.JCheckBoxMenuItem" name="viewEmployeeTracker">
+              <Properties>
+                <Property name="accelerator" type="javax.swing.KeyStroke" editor="org.netbeans.modules.form.editors.KeyStrokeEditor">
+                  <KeyStroke key="F11"/>
+                </Property>
+                <Property name="mnemonic" type="int" value="69"/>
+                <Property name="selected" type="boolean" value="true"/>
+                <Property name="text" type="java.lang.String" value="Employee Tracker"/>
+                <Property name="icon" type="javax.swing.Icon" editor="org.netbeans.modules.form.editors2.IconEditor">
+                  <Image iconType="3" name="/com/northwind/resources/people.png"/>
+                </Property>
+              </Properties>
+            </MenuItem>
+            <MenuItem class="javax.swing.JCheckBoxMenuItem" name="viewGeneralLedger">
+              <Properties>
+                <Property name="accelerator" type="javax.swing.KeyStroke" editor="org.netbeans.modules.form.editors.KeyStrokeEditor">
+                  <KeyStroke key="F12"/>
+                </Property>
+                <Property name="mnemonic" type="int" value="71"/>
+                <Property name="selected" type="boolean" value="true"/>
+                <Property name="text" type="java.lang.String" value="General Ledger"/>
+                <Property name="icon" type="javax.swing.Icon" editor="org.netbeans.modules.form.editors2.IconEditor">
+                  <Image iconType="3" name="/com/northwind/resources/Script.png"/>
+                </Property>
+              </Properties>
             </MenuItem>
           </SubComponents>
         </Menu>
@@ -1205,7 +1304,7 @@
                 <EventHandler event="componentResized" listener="java.awt.event.ComponentListener" parameters="java.awt.event.ComponentEvent" handler="loadsTaskPaneComponentResized"/>
               </Events>
               <AuxValues>
-                <AuxValue name="JavaCodeGenerator_InitCodePost" type="java.lang.String" value="//loadsTaskPane.add(new AbstractAction() {&#xa;//{&#xa;//    putValue(Action.NAME, &quot;Close Load Tracker&quot;);&#xa;//    putValue(Action.SHORT_DESCRIPTION, &quot;Closes the Load Tracker window&quot;);&#xa;//    putValue(Action.SMALL_ICON, new javax.swing.ImageIcon(getClass()&#xa;//            .getResource(&quot;/com/northwind/resources/Cancel.png&quot;)));&#xa;//}&#xa;//&#xa;//public void actionPerformed(ActionEvent e) {&#xa;//    if ( getValue(Action.NAME).toString().equalsIgnoreCase(&quot;Close Load Tracker&quot;) ) {&#xa;//        putValue(Action.NAME, &quot;Open Load Tracker&quot;);&#xa;//        putValue(Action.SHORT_DESCRIPTION, &quot;Opens the Load Tracker window&quot;);&#xa;//        putValue(Action.SMALL_ICON, new javax.swing.ImageIcon(getClass()&#xa;//            .getResource(&quot;/com/northwind/resources/Cancel.png&quot;)));&#xa;//        mainTabbedPane.remove(loadsTab);&#xa;//        loadsTaskPane.setCollapsed(true);&#xa;//    } else if ( getValue(Action.NAME).toString().equalsIgnoreCase(&quot;Open Load Tracker&quot;) ) {&#xa;//        putValue(Action.NAME, &quot;Close Load Tracker&quot;);&#xa;//        putValue(Action.SHORT_DESCRIPTION, &quot;Closes the Load Tracker window&quot;);&#xa;//        putValue(Action.SMALL_ICON, new javax.swing.ImageIcon(getClass()&#xa;//                .getResource(&quot;/com/northwind/resources/Cancel.png&quot;)));        &#xa;//        mainTabbedPane.addTab(&quot;Load Tracker&quot;, &#xa;//                new javax.swing.ImageIcon(getClass().getResource(&#xa;//                        &quot;/com/northwind/resources/freight.png&quot;)), loadsTab);&#xa;//    }&#xa;//}&#xa;//});&#xa;//&#xa;//loadsTaskPane.add(new JSeparator());&#xa;&#xa;loadsTaskPane.add(new AbstractAction() {&#xa;{&#xa;    putValue(Action.NAME, &quot;Book New Load...&quot;);&#xa;    putValue(Action.SHORT_DESCRIPTION, &quot;Displays the load booking dialog&quot;);&#xa;    putValue(Action.SMALL_ICON, new javax.swing.ImageIcon(getClass()&#xa;            .getResource(&quot;/com/northwind/resources/add.png&quot;)));&#xa;}&#xa;&#xa;public void actionPerformed(ActionEvent e) {&#xa;    doNewLoad();&#xa;}&#xa;});&#xa;&#xa;loadsTaskPane.add(new JSeparator());&#xa;&#xa;loadsTaskPane.add(new AbstractAction() {&#xa;{&#xa;    putValue(Action.NAME, &quot;Arrive at Stop...&quot;);&#xa;    putValue(Action.SHORT_DESCRIPTION, &quot;Displays stop arrival dialog&quot;);&#xa;    putValue(Action.SMALL_ICON, new javax.swing.ImageIcon(getClass()&#xa;            .getResource(&quot;/com/northwind/resources/Arrive.png&quot;)));&#xa;}&#xa;&#xa;public void actionPerformed(ActionEvent e) {&#xa;    if ( getValue(Action.NAME).toString().equalsIgnoreCase(&quot;Arrive at Stop...&quot;) ) {&#xa;        putValue(Action.NAME, &quot;Depart from Stop...&quot;);&#xa;        putValue(Action.SMALL_ICON, new javax.swing.ImageIcon(getClass()&#xa;            .getResource(&quot;/com/northwind/resources/Depart.png&quot;)));&#xa;        doShowArrival();&#xa;    } else if ( getValue(Action.NAME).toString().equalsIgnoreCase(&quot;Depart from Stop...&quot;) ) {&#xa;        putValue(Action.NAME, &quot;Arrive at Stop...&quot;);&#xa;        putValue(Action.SMALL_ICON, new javax.swing.ImageIcon(getClass()&#xa;            .getResource(&quot;/com/northwind/resources/Arrive.png&quot;)));&#xa;        doShowDeparture();&#xa;    }&#xa;}&#xa;});&#xa;&#xa;loadsTaskPane.add(new JSeparator());&#xa;&#xa;loadsTaskPane.add(new AbstractAction() {&#xa;{&#xa;    putValue(Action.NAME, &quot;View Loads Queue...&quot;);&#xa;    putValue(Action.SHORT_DESCRIPTION, &quot;Displays Loads Queue dialog&quot;);&#xa;    putValue(Action.SMALL_ICON, new javax.swing.ImageIcon(getClass()&#xa;            .getResource(&quot;/com/northwind/resources/freight.png&quot;)));&#xa;}&#xa;&#xa;public void actionPerformed(ActionEvent e) {&#xa;    doShowLoadsQueue();&#xa;}&#xa;});"/>
+                <AuxValue name="JavaCodeGenerator_InitCodePost" type="java.lang.String" value="loadsTaskPane.add(new AbstractAction() {&#xa;{&#xa;    putValue(Action.NAME, &quot;Close Load Tracker&quot;);&#xa;    putValue(Action.SHORT_DESCRIPTION, &quot;Closes the Load Tracker window&quot;);&#xa;    putValue(Action.SMALL_ICON, new javax.swing.ImageIcon(getClass()&#xa;            .getResource(&quot;/com/northwind/resources/Cancel.png&quot;)));&#xa;}&#xa;&#xa;public void actionPerformed(ActionEvent e) {&#xa;    if ( getValue(Action.NAME).toString().equalsIgnoreCase(&quot;Close Load Tracker&quot;) ) {&#xa;        putValue(Action.NAME, &quot;Open Load Tracker&quot;);&#xa;        putValue(Action.SHORT_DESCRIPTION, &quot;Opens the Load Tracker window&quot;);&#xa;        putValue(Action.SMALL_ICON, new javax.swing.ImageIcon(getClass()&#xa;            .getResource(&quot;/com/northwind/resources/Cancel.png&quot;)));&#xa;        viewLoadTrackerActionPerformed(e);&#xa;        loadsTaskPane.setCollapsed(true);&#xa;    } else if ( getValue(Action.NAME).toString().equalsIgnoreCase(&quot;Open Load Tracker&quot;) ) {&#xa;        putValue(Action.NAME, &quot;Close Load Tracker&quot;);&#xa;        putValue(Action.SHORT_DESCRIPTION, &quot;Closes the Load Tracker window&quot;);&#xa;        putValue(Action.SMALL_ICON, new javax.swing.ImageIcon(getClass()&#xa;                .getResource(&quot;/com/northwind/resources/Open.png&quot;)));        &#xa;        viewLoadTrackerActionPerformed(e);&#xa;    }&#xa;}&#xa;});&#xa;&#xa;loadsTaskPane.add(new JSeparator());&#xa;&#xa;loadsTaskPane.add(new AbstractAction() {&#xa;{&#xa;    putValue(Action.NAME, &quot;Book New Load...&quot;);&#xa;    putValue(Action.SHORT_DESCRIPTION, &quot;Displays the load booking dialog&quot;);&#xa;    putValue(Action.SMALL_ICON, new javax.swing.ImageIcon(getClass()&#xa;            .getResource(&quot;/com/northwind/resources/add.png&quot;)));&#xa;}&#xa;&#xa;public void actionPerformed(ActionEvent e) {&#xa;    doNewLoad();&#xa;}&#xa;});&#xa;&#xa;loadsTaskPane.add(new JSeparator());&#xa;&#xa;loadsTaskPane.add(new AbstractAction() {&#xa;{&#xa;    putValue(Action.NAME, &quot;Arrive at Stop...&quot;);&#xa;    putValue(Action.SHORT_DESCRIPTION, &quot;Displays stop arrival dialog&quot;);&#xa;    putValue(Action.SMALL_ICON, new javax.swing.ImageIcon(getClass()&#xa;            .getResource(&quot;/com/northwind/resources/Arrive.png&quot;)));&#xa;}&#xa;&#xa;public void actionPerformed(ActionEvent e) {&#xa;    if ( getValue(Action.NAME).toString().equalsIgnoreCase(&quot;Arrive at Stop...&quot;) ) {&#xa;        putValue(Action.NAME, &quot;Depart from Stop...&quot;);&#xa;        putValue(Action.SMALL_ICON, new javax.swing.ImageIcon(getClass()&#xa;            .getResource(&quot;/com/northwind/resources/Depart.png&quot;)));&#xa;        doShowArrival();&#xa;    } else if ( getValue(Action.NAME).toString().equalsIgnoreCase(&quot;Depart from Stop...&quot;) ) {&#xa;        putValue(Action.NAME, &quot;Arrive at Stop...&quot;);&#xa;        putValue(Action.SMALL_ICON, new javax.swing.ImageIcon(getClass()&#xa;            .getResource(&quot;/com/northwind/resources/Arrive.png&quot;)));&#xa;        doShowDeparture();&#xa;    }&#xa;}&#xa;});&#xa;&#xa;loadsTaskPane.add(new JSeparator());&#xa;&#xa;loadsTaskPane.add(new AbstractAction() {&#xa;{&#xa;    putValue(Action.NAME, &quot;View Loads Queue...&quot;);&#xa;    putValue(Action.SHORT_DESCRIPTION, &quot;Displays Loads Queue dialog&quot;);&#xa;    putValue(Action.SMALL_ICON, new javax.swing.ImageIcon(getClass()&#xa;            .getResource(&quot;/com/northwind/resources/freight.png&quot;)));&#xa;}&#xa;&#xa;public void actionPerformed(ActionEvent e) {&#xa;    doShowLoadsQueue();&#xa;}&#xa;});"/>
               </AuxValues>
             </Component>
             <Component class="org.jdesktop.swingx.JXTaskPane" name="fuelTaskPane">
@@ -1219,6 +1318,9 @@
                 <Property name="scrollOnExpand" type="boolean" value="true"/>
                 <Property name="title" type="java.lang.String" value="Fuel Journal Tasks"/>
               </Properties>
+              <Events>
+                <EventHandler event="componentResized" listener="java.awt.event.ComponentListener" parameters="java.awt.event.ComponentEvent" handler="fuelTaskPaneComponentResized"/>
+              </Events>
             </Component>
             <Component class="org.jdesktop.swingx.JXTaskPane" name="servicesTaskPane">
               <Properties>

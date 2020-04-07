@@ -27,6 +27,7 @@ import com.northwind.loadmgr.view.ArrivalDialog;
 import com.northwind.settings.AppProperties;
 import com.northwind.utils.Logger;
 import java.awt.Color;
+import java.awt.Component;
 import java.awt.FontMetrics;
 import java.awt.SystemColor;
 import java.awt.event.ActionEvent;
@@ -386,6 +387,14 @@ public class MainWindow extends javax.swing.JFrame {
         removeMenuItem = new javax.swing.JMenuItem();
         viewMenu = new javax.swing.JMenu();
         sortMenuItem = new javax.swing.JMenuItem();
+        jSeparator5 = new javax.swing.JPopupMenu.Separator();
+        viewLoadTracker = new javax.swing.JCheckBoxMenuItem();
+        viewFuelJournal = new javax.swing.JCheckBoxMenuItem();
+        viewServiceJournal = new javax.swing.JCheckBoxMenuItem();
+        viewVehicleTracker = new javax.swing.JCheckBoxMenuItem();
+        viewCustomerTracker = new javax.swing.JCheckBoxMenuItem();
+        viewEmployeeTracker = new javax.swing.JCheckBoxMenuItem();
+        viewGeneralLedger = new javax.swing.JCheckBoxMenuItem();
         maintainMenu = new javax.swing.JMenu();
         addMenuItem = new javax.swing.JMenu();
         loadMenuItem = new javax.swing.JMenuItem();
@@ -977,42 +986,40 @@ public class MainWindow extends javax.swing.JFrame {
     loadsTaskPane.setMnemonic('L');
     loadsTaskPane.setScrollOnExpand(true);
     loadsTaskPane.setTitle("Load Tracker Tasks");
-    //loadsTaskPane.add(new AbstractAction() {
-        //{
-            //    putValue(Action.NAME, "Close Load Tracker");
-            //    putValue(Action.SHORT_DESCRIPTION, "Closes the Load Tracker window");
-            //    putValue(Action.SMALL_ICON, new javax.swing.ImageIcon(getClass()
-                //            .getResource("/com/northwind/resources/Cancel.png")));
-        //}
-    //
-    //public void actionPerformed(ActionEvent e) {
-        //    if ( getValue(Action.NAME).toString().equalsIgnoreCase("Close Load Tracker") ) {
-            //        putValue(Action.NAME, "Open Load Tracker");
-            //        putValue(Action.SHORT_DESCRIPTION, "Opens the Load Tracker window");
-            //        putValue(Action.SMALL_ICON, new javax.swing.ImageIcon(getClass()
-                //            .getResource("/com/northwind/resources/Cancel.png")));
-        //        mainTabbedPane.remove(loadsTab);
-        //        loadsTaskPane.setCollapsed(true);
-        //    } else if ( getValue(Action.NAME).toString().equalsIgnoreCase("Open Load Tracker") ) {
-        //        putValue(Action.NAME, "Close Load Tracker");
-        //        putValue(Action.SHORT_DESCRIPTION, "Closes the Load Tracker window");
-        //        putValue(Action.SMALL_ICON, new javax.swing.ImageIcon(getClass()
-            //                .getResource("/com/northwind/resources/Cancel.png")));
-    //        mainTabbedPane.addTab("Load Tracker",
-        //                new javax.swing.ImageIcon(getClass().getResource(
-            //                        "/com/northwind/resources/freight.png")), loadsTab);
-//    }
-//}
-//});
-//
-//loadsTaskPane.add(new JSeparator());
+    loadsTaskPane.add(new AbstractAction() {
+        {
+            putValue(Action.NAME, "Close Load Tracker");
+            putValue(Action.SHORT_DESCRIPTION, "Closes the Load Tracker window");
+            putValue(Action.SMALL_ICON, new javax.swing.ImageIcon(getClass()
+                .getResource("/com/northwind/resources/Cancel.png")));
+    }
 
-loadsTaskPane.add(new AbstractAction() {
-    {
-        putValue(Action.NAME, "Book New Load...");
-        putValue(Action.SHORT_DESCRIPTION, "Displays the load booking dialog");
+    public void actionPerformed(ActionEvent e) {
+        if ( getValue(Action.NAME).toString().equalsIgnoreCase("Close Load Tracker") ) {
+            putValue(Action.NAME, "Open Load Tracker");
+            putValue(Action.SHORT_DESCRIPTION, "Opens the Load Tracker window");
+            putValue(Action.SMALL_ICON, new javax.swing.ImageIcon(getClass()
+                .getResource("/com/northwind/resources/Cancel.png")));
+        viewLoadTrackerActionPerformed(e);
+        loadsTaskPane.setCollapsed(true);
+    } else if ( getValue(Action.NAME).toString().equalsIgnoreCase("Open Load Tracker") ) {
+        putValue(Action.NAME, "Close Load Tracker");
+        putValue(Action.SHORT_DESCRIPTION, "Closes the Load Tracker window");
         putValue(Action.SMALL_ICON, new javax.swing.ImageIcon(getClass()
-            .getResource("/com/northwind/resources/add.png")));
+            .getResource("/com/northwind/resources/Open.png")));
+    viewLoadTrackerActionPerformed(e);
+    }
+    }
+    });
+
+    loadsTaskPane.add(new JSeparator());
+
+    loadsTaskPane.add(new AbstractAction() {
+        {
+            putValue(Action.NAME, "Book New Load...");
+            putValue(Action.SHORT_DESCRIPTION, "Displays the load booking dialog");
+            putValue(Action.SMALL_ICON, new javax.swing.ImageIcon(getClass()
+                .getResource("/com/northwind/resources/add.png")));
     }
 
     public void actionPerformed(ActionEvent e) {
@@ -1072,6 +1079,11 @@ loadsTaskPane.add(new AbstractAction() {
     fuelTaskPane.setMnemonic('F');
     fuelTaskPane.setScrollOnExpand(true);
     fuelTaskPane.setTitle("Fuel Journal Tasks");
+    fuelTaskPane.addComponentListener(new java.awt.event.ComponentAdapter() {
+        public void componentResized(java.awt.event.ComponentEvent evt) {
+            fuelTaskPaneComponentResized(evt);
+        }
+    });
     mainTaskController.add(fuelTaskPane);
 
     servicesTaskPane.setAutoscrolls(true);
@@ -1321,6 +1333,11 @@ customersTaskPane.add(new AbstractAction() {
 
     viewMenu.setMnemonic('V');
     viewMenu.setText("View");
+    viewMenu.addActionListener(new java.awt.event.ActionListener() {
+        public void actionPerformed(java.awt.event.ActionEvent evt) {
+            viewMenuActionPerformed(evt);
+        }
+    });
 
     sortMenuItem.setAccelerator(javax.swing.KeyStroke.getKeyStroke(java.awt.event.KeyEvent.VK_F3, java.awt.event.InputEvent.CTRL_MASK));
     sortMenuItem.setIcon(new javax.swing.ImageIcon(getClass().getResource("/com/northwind/resources/sort-asc.png"))); // NOI18N
@@ -1331,6 +1348,61 @@ customersTaskPane.add(new AbstractAction() {
         }
     });
     viewMenu.add(sortMenuItem);
+    viewMenu.add(jSeparator5);
+
+    viewLoadTracker.setAccelerator(javax.swing.KeyStroke.getKeyStroke(java.awt.event.KeyEvent.VK_F6, 0));
+    viewLoadTracker.setMnemonic('L');
+    viewLoadTracker.setSelected(true);
+    viewLoadTracker.setText("Load Tracker");
+    viewLoadTracker.setIcon(new javax.swing.ImageIcon(getClass().getResource("/com/northwind/resources/freight.png"))); // NOI18N
+    viewLoadTracker.addActionListener(new java.awt.event.ActionListener() {
+        public void actionPerformed(java.awt.event.ActionEvent evt) {
+            viewLoadTrackerActionPerformed(evt);
+        }
+    });
+    viewMenu.add(viewLoadTracker);
+
+    viewFuelJournal.setAccelerator(javax.swing.KeyStroke.getKeyStroke(java.awt.event.KeyEvent.VK_F7, 0));
+    viewFuelJournal.setMnemonic('F');
+    viewFuelJournal.setSelected(true);
+    viewFuelJournal.setText("Fuel Journal");
+    viewFuelJournal.setIcon(new javax.swing.ImageIcon(getClass().getResource("/com/northwind/resources/GasPump.png"))); // NOI18N
+    viewMenu.add(viewFuelJournal);
+
+    viewServiceJournal.setAccelerator(javax.swing.KeyStroke.getKeyStroke(java.awt.event.KeyEvent.VK_F8, 0));
+    viewServiceJournal.setMnemonic('S');
+    viewServiceJournal.setSelected(true);
+    viewServiceJournal.setText("Service Journal");
+    viewServiceJournal.setIcon(new javax.swing.ImageIcon(getClass().getResource("/com/northwind/resources/Wrench.png"))); // NOI18N
+    viewMenu.add(viewServiceJournal);
+
+    viewVehicleTracker.setAccelerator(javax.swing.KeyStroke.getKeyStroke(java.awt.event.KeyEvent.VK_F9, 0));
+    viewVehicleTracker.setMnemonic('V');
+    viewVehicleTracker.setSelected(true);
+    viewVehicleTracker.setText("Vehicle Tracker");
+    viewVehicleTracker.setIcon(new javax.swing.ImageIcon(getClass().getResource("/com/northwind/resources/Delivery.png"))); // NOI18N
+    viewMenu.add(viewVehicleTracker);
+
+    viewCustomerTracker.setAccelerator(javax.swing.KeyStroke.getKeyStroke(java.awt.event.KeyEvent.VK_F10, 0));
+    viewCustomerTracker.setMnemonic('C');
+    viewCustomerTracker.setSelected(true);
+    viewCustomerTracker.setText("Customer Tracker");
+    viewCustomerTracker.setIcon(new javax.swing.ImageIcon(getClass().getResource("/com/northwind/resources/users.png"))); // NOI18N
+    viewMenu.add(viewCustomerTracker);
+
+    viewEmployeeTracker.setAccelerator(javax.swing.KeyStroke.getKeyStroke(java.awt.event.KeyEvent.VK_F11, 0));
+    viewEmployeeTracker.setMnemonic('E');
+    viewEmployeeTracker.setSelected(true);
+    viewEmployeeTracker.setText("Employee Tracker");
+    viewEmployeeTracker.setIcon(new javax.swing.ImageIcon(getClass().getResource("/com/northwind/resources/people.png"))); // NOI18N
+    viewMenu.add(viewEmployeeTracker);
+
+    viewGeneralLedger.setAccelerator(javax.swing.KeyStroke.getKeyStroke(java.awt.event.KeyEvent.VK_F12, 0));
+    viewGeneralLedger.setMnemonic('G');
+    viewGeneralLedger.setSelected(true);
+    viewGeneralLedger.setText("General Ledger");
+    viewGeneralLedger.setIcon(new javax.swing.ImageIcon(getClass().getResource("/com/northwind/resources/Script.png"))); // NOI18N
+    viewMenu.add(viewGeneralLedger);
 
     mainMenubar.add(viewMenu);
 
@@ -1657,13 +1729,19 @@ customersTaskPane.add(new AbstractAction() {
 
     private void loadsTaskPaneComponentResized(java.awt.event.ComponentEvent evt) {//GEN-FIRST:event_loadsTaskPaneComponentResized
         // Make the load tracker tab active, if it is not already.
-        int oldTab = mainTabbedPane.getSelectedIndex();
+        Component oldTab = mainTabbedPane.getSelectedComponent();
         
-        if ( !loadsTaskPane.isCollapsed() ) {
-            if ( mainTabbedPane.getSelectedIndex() != 0 )
-                mainTabbedPane.setSelectedIndex(0);
-            else 
-                mainTabbedPane.setSelectedIndex(oldTab);
+        try {
+            if ( !loadsTaskPane.isCollapsed() ) {
+                if ( !mainTabbedPane.getTitleAt(
+                        mainTabbedPane.getSelectedIndex()).equalsIgnoreCase(
+                                "Load Tracker") )
+                    mainTabbedPane.setSelectedComponent(loadsTab);
+                else 
+                    mainTabbedPane.setSelectedComponent(oldTab);
+            }
+        } catch ( IllegalArgumentException ex ) {
+            loadsTaskPane.setCollapsed(true);
         }
         
         this.mainTabbedPaneStateChanged(null);
@@ -1751,6 +1829,40 @@ customersTaskPane.add(new AbstractAction() {
         }
     }//GEN-LAST:event_mainTabbedPaneStateChanged
 
+    private void fuelTaskPaneComponentResized(java.awt.event.ComponentEvent evt) {//GEN-FIRST:event_fuelTaskPaneComponentResized
+        // Make the load tracker tab active, if it is not already.
+        Component oldTab = mainTabbedPane.getSelectedComponent();
+        
+        try {
+            if ( !fuelTaskPane.isCollapsed() ) {
+                if ( !mainTabbedPane.getTitleAt(
+                        mainTabbedPane.getSelectedIndex()).equalsIgnoreCase(
+                                "Fuel Journal") )
+                    mainTabbedPane.setSelectedComponent(fuelTab);
+                else 
+                    mainTabbedPane.setSelectedComponent(oldTab);
+            }
+        } catch ( IllegalArgumentException ex ) {
+            fuelTaskPane.setCollapsed(true);
+        }
+        
+        this.mainTabbedPaneStateChanged(null);
+    }//GEN-LAST:event_fuelTaskPaneComponentResized
+
+    private void viewLoadTrackerActionPerformed(java.awt.event.ActionEvent evt) {//GEN-FIRST:event_viewLoadTrackerActionPerformed
+        if ( viewLoadTracker.isSelected() ) {
+            mainTabbedPane.addTab("Load Tracker", 
+                new javax.swing.ImageIcon(getClass().getResource(
+                        "/com/northwind/resources/freight.png")), loadsTab);
+        } else {
+            mainTabbedPane.remove(loadsTab);
+        }
+    }//GEN-LAST:event_viewLoadTrackerActionPerformed
+
+    private void viewMenuActionPerformed(java.awt.event.ActionEvent evt) {//GEN-FIRST:event_viewMenuActionPerformed
+        // TODO add your handling code here:
+    }//GEN-LAST:event_viewMenuActionPerformed
+
     /**
      * @param args the command line arguments
      */
@@ -1828,6 +1940,7 @@ customersTaskPane.add(new AbstractAction() {
     private javax.swing.JPopupMenu.Separator jSeparator2;
     private javax.swing.JPopupMenu.Separator jSeparator3;
     private javax.swing.JPopupMenu.Separator jSeparator4;
+    private javax.swing.JPopupMenu.Separator jSeparator5;
     private javax.swing.JTextPane jTextPane1;
     private javax.swing.JMenuItem loadMenuItem;
     private javax.swing.JTable loads;
@@ -1864,6 +1977,13 @@ customersTaskPane.add(new AbstractAction() {
     private javax.swing.JPanel vehiclesTab;
     private org.jdesktop.swingx.JXTaskPane vehiclesTaskPane;
     private javax.swing.JLabel versionLabel;
+    private javax.swing.JCheckBoxMenuItem viewCustomerTracker;
+    private javax.swing.JCheckBoxMenuItem viewEmployeeTracker;
+    private javax.swing.JCheckBoxMenuItem viewFuelJournal;
+    private javax.swing.JCheckBoxMenuItem viewGeneralLedger;
+    private javax.swing.JCheckBoxMenuItem viewLoadTracker;
     private javax.swing.JMenu viewMenu;
+    private javax.swing.JCheckBoxMenuItem viewServiceJournal;
+    private javax.swing.JCheckBoxMenuItem viewVehicleTracker;
     // End of variables declaration//GEN-END:variables
 }
