@@ -47,7 +47,6 @@ import javax.swing.JSeparator;
 import javax.swing.event.ListSelectionEvent;
 import javax.swing.event.ListSelectionListener;
 import javax.swing.filechooser.FileFilter;
-import org.jdesktop.swingx.JXLabel;
 
 /**
  *
@@ -149,7 +148,7 @@ public class MainWindow extends javax.swing.JFrame {
         setTitle(props.getProjectName() + " - Basic Edition");
         
         setLocationRelativeTo(null);
-        customers.setAutoCreateColumnsFromModel(true);
+        customers.setAutoCreateColumnsFromModel(false);
         FontMetrics fm = customers.getFontMetrics(customers.getFont());
         
         customers.setModel(new CustomersTableModel(new ArrayList<Customer>()));
@@ -287,11 +286,15 @@ public class MainWindow extends javax.swing.JFrame {
     
     private void doShowArrival() {
         ArrivalDialog dlg = new ArrivalDialog(this, true);
+        
         dlg.pack();
     }
     
     private void doShowDeparture() {
         
+    }
+    
+    private void doExpandLoads(ActionEvent e) {
     }
     
     private void doShowLoadsQueue() {
@@ -326,18 +329,28 @@ public class MainWindow extends javax.swing.JFrame {
         versionLabel = new javax.swing.JLabel();
         jLabel1 = new javax.swing.JLabel();
         userLabel = new javax.swing.JLabel();
-        jScrollPane1 = new javax.swing.JScrollPane();
-        perMileBreakdown = new org.jdesktop.swingx.JXTreeTable();
         mainTabbedPane = new javax.swing.JTabbedPane();
         loadsTab = new javax.swing.JPanel();
+        jScrollPane4 = new javax.swing.JScrollPane();
+        loads = new javax.swing.JTable();
         fuelTab = new javax.swing.JPanel();
+        jScrollPane5 = new javax.swing.JScrollPane();
+        fuel = new javax.swing.JTable();
         servicesTab = new javax.swing.JPanel();
+        jScrollPane6 = new javax.swing.JScrollPane();
+        service = new javax.swing.JTable();
         vehiclesTab = new javax.swing.JPanel();
+        jScrollPane7 = new javax.swing.JScrollPane();
+        vehicles = new javax.swing.JTable();
         customersTab = new javax.swing.JPanel();
         jScrollPane2 = new javax.swing.JScrollPane();
         customers = new org.jdesktop.swingx.JXTable();
         employeesTab = new javax.swing.JPanel();
+        jScrollPane8 = new javax.swing.JScrollPane();
+        employees = new javax.swing.JTable();
         glTab = new javax.swing.JPanel();
+        jScrollPane9 = new javax.swing.JScrollPane();
+        generalLedger = new javax.swing.JTable();
         jScrollPane3 = new javax.swing.JScrollPane();
         mainTaskController = new org.jdesktop.swingx.JXTaskPaneContainer();
         appTaskPane = new org.jdesktop.swingx.JXTaskPane();
@@ -348,6 +361,14 @@ public class MainWindow extends javax.swing.JFrame {
         customersTaskPane = new org.jdesktop.swingx.JXTaskPane();
         employeesTaskPane = new org.jdesktop.swingx.JXTaskPane();
         glTaskPane = new org.jdesktop.swingx.JXTaskPane();
+        lowRightPanel = new javax.swing.JPanel();
+        jScrollPane10 = new javax.swing.JScrollPane();
+        jTextPane1 = new javax.swing.JTextPane();
+        highRightPanel = new javax.swing.JPanel();
+        rightTabbedPane = new javax.swing.JTabbedPane();
+        perMileBreakdownTab = new javax.swing.JPanel();
+        jScrollPane1 = new javax.swing.JScrollPane();
+        perMileBreakdown = new org.jdesktop.swingx.JXTreeTable();
         mainMenubar = new javax.swing.JMenuBar();
         fileMenu = new javax.swing.JMenu();
         newMenuItem = new javax.swing.JMenuItem();
@@ -397,7 +418,7 @@ public class MainWindow extends javax.swing.JFrame {
         mainStatusbarLayout.setHorizontalGroup(
             mainStatusbarLayout.createParallelGroup(javax.swing.GroupLayout.Alignment.LEADING)
             .addGroup(mainStatusbarLayout.createSequentialGroup()
-                .addComponent(tipsLabel, javax.swing.GroupLayout.DEFAULT_SIZE, javax.swing.GroupLayout.DEFAULT_SIZE, Short.MAX_VALUE)
+                .addComponent(tipsLabel, javax.swing.GroupLayout.DEFAULT_SIZE, 746, Short.MAX_VALUE)
                 .addGap(18, 18, 18)
                 .addComponent(versionLabel)
                 .addGap(24, 24, 24)
@@ -417,67 +438,192 @@ public class MainWindow extends javax.swing.JFrame {
                     .addComponent(userLabel)))
         );
 
-        jScrollPane1.setViewportView(perMileBreakdown);
-
         mainTabbedPane.addChangeListener(new javax.swing.event.ChangeListener() {
             public void stateChanged(javax.swing.event.ChangeEvent evt) {
                 mainTabbedPaneStateChanged(evt);
             }
         });
 
+        loads.setModel(new javax.swing.table.DefaultTableModel(
+            new Object [][] {
+                {null, null, null, null, null, null, null, null},
+                {null, null, null, null, null, null, null, null},
+                {null, null, null, null, null, null, null, null},
+                {null, null, null, null, null, null, null, null}
+            },
+            new String [] {
+                "Order Number", "Trip Number", "Pickup Date", "Shipper", "Delivery Date", "Consignee", "Revenue", "Miles"
+            }
+        ) {
+            Class[] types = new Class [] {
+                java.lang.String.class, java.lang.String.class, java.lang.Object.class, java.lang.String.class, java.lang.Object.class, java.lang.String.class, java.lang.Double.class, java.lang.Integer.class
+            };
+            boolean[] canEdit = new boolean [] {
+                false, false, false, false, false, false, false, false
+            };
+
+            public Class getColumnClass(int columnIndex) {
+                return types [columnIndex];
+            }
+
+            public boolean isCellEditable(int rowIndex, int columnIndex) {
+                return canEdit [columnIndex];
+            }
+        });
+        jScrollPane4.setViewportView(loads);
+        if (loads.getColumnModel().getColumnCount() > 0) {
+            loads.getColumnModel().getColumn(0).setResizable(false);
+            loads.getColumnModel().getColumn(0).setPreferredWidth(25);
+            loads.getColumnModel().getColumn(1).setResizable(false);
+            loads.getColumnModel().getColumn(1).setPreferredWidth(25);
+            loads.getColumnModel().getColumn(2).setResizable(false);
+            loads.getColumnModel().getColumn(2).setPreferredWidth(20);
+            loads.getColumnModel().getColumn(4).setResizable(false);
+            loads.getColumnModel().getColumn(4).setPreferredWidth(20);
+            loads.getColumnModel().getColumn(6).setResizable(false);
+            loads.getColumnModel().getColumn(6).setPreferredWidth(15);
+            loads.getColumnModel().getColumn(7).setResizable(false);
+            loads.getColumnModel().getColumn(7).setPreferredWidth(8);
+        }
+
         javax.swing.GroupLayout loadsTabLayout = new javax.swing.GroupLayout(loadsTab);
         loadsTab.setLayout(loadsTabLayout);
         loadsTabLayout.setHorizontalGroup(
             loadsTabLayout.createParallelGroup(javax.swing.GroupLayout.Alignment.LEADING)
-            .addGap(0, 906, Short.MAX_VALUE)
+            .addGap(0, 966, Short.MAX_VALUE)
+            .addGroup(loadsTabLayout.createParallelGroup(javax.swing.GroupLayout.Alignment.LEADING)
+                .addComponent(jScrollPane4, javax.swing.GroupLayout.DEFAULT_SIZE, 966, Short.MAX_VALUE))
         );
         loadsTabLayout.setVerticalGroup(
             loadsTabLayout.createParallelGroup(javax.swing.GroupLayout.Alignment.LEADING)
             .addGap(0, 653, Short.MAX_VALUE)
+            .addGroup(loadsTabLayout.createParallelGroup(javax.swing.GroupLayout.Alignment.LEADING)
+                .addComponent(jScrollPane4, javax.swing.GroupLayout.DEFAULT_SIZE, 653, Short.MAX_VALUE))
         );
 
         mainTabbedPane.addTab("Load Tracker", new javax.swing.ImageIcon(getClass().getResource("/com/northwind/resources/freight.png")), loadsTab); // NOI18N
+
+        fuel.setModel(new javax.swing.table.DefaultTableModel(
+            new Object [][] {
+                {null, null, null, null, null},
+                {null, null, null, null, null},
+                {null, null, null, null, null},
+                {null, null, null, null, null}
+            },
+            new String [] {
+                "Purchase Date", "Odometer", "Location", "Gallons", "Total"
+            }
+        ) {
+            Class[] types = new Class [] {
+                java.lang.Object.class, java.lang.Integer.class, java.lang.String.class, java.lang.Double.class, java.lang.Double.class
+            };
+            boolean[] canEdit = new boolean [] {
+                false, false, false, false, false
+            };
+
+            public Class getColumnClass(int columnIndex) {
+                return types [columnIndex];
+            }
+
+            public boolean isCellEditable(int rowIndex, int columnIndex) {
+                return canEdit [columnIndex];
+            }
+        });
+        jScrollPane5.setViewportView(fuel);
+        if (fuel.getColumnModel().getColumnCount() > 0) {
+            fuel.getColumnModel().getColumn(0).setResizable(false);
+            fuel.getColumnModel().getColumn(0).setPreferredWidth(20);
+            fuel.getColumnModel().getColumn(1).setResizable(false);
+            fuel.getColumnModel().getColumn(1).setPreferredWidth(20);
+            fuel.getColumnModel().getColumn(2).setResizable(false);
+            fuel.getColumnModel().getColumn(2).setPreferredWidth(30);
+            fuel.getColumnModel().getColumn(3).setResizable(false);
+            fuel.getColumnModel().getColumn(3).setPreferredWidth(15);
+            fuel.getColumnModel().getColumn(4).setResizable(false);
+            fuel.getColumnModel().getColumn(4).setPreferredWidth(15);
+        }
 
         javax.swing.GroupLayout fuelTabLayout = new javax.swing.GroupLayout(fuelTab);
         fuelTab.setLayout(fuelTabLayout);
         fuelTabLayout.setHorizontalGroup(
             fuelTabLayout.createParallelGroup(javax.swing.GroupLayout.Alignment.LEADING)
-            .addGap(0, 906, Short.MAX_VALUE)
+            .addGap(0, 966, Short.MAX_VALUE)
+            .addGroup(fuelTabLayout.createParallelGroup(javax.swing.GroupLayout.Alignment.LEADING)
+                .addComponent(jScrollPane5, javax.swing.GroupLayout.DEFAULT_SIZE, 966, Short.MAX_VALUE))
         );
         fuelTabLayout.setVerticalGroup(
             fuelTabLayout.createParallelGroup(javax.swing.GroupLayout.Alignment.LEADING)
             .addGap(0, 653, Short.MAX_VALUE)
+            .addGroup(fuelTabLayout.createParallelGroup(javax.swing.GroupLayout.Alignment.LEADING)
+                .addComponent(jScrollPane5, javax.swing.GroupLayout.DEFAULT_SIZE, 653, Short.MAX_VALUE))
         );
 
         mainTabbedPane.addTab("Fuel Journal", new javax.swing.ImageIcon(getClass().getResource("/com/northwind/resources/GasPump.png")), fuelTab); // NOI18N
+
+        service.setModel(new javax.swing.table.DefaultTableModel(
+            new Object [][] {
+                {null, null, null, null, null, null, null, null},
+                {null, null, null, null, null, null, null, null},
+                {null, null, null, null, null, null, null, null},
+                {null, null, null, null, null, null, null, null}
+            },
+            new String [] {
+                "Svc. Date", "Location", "Unit Number", "Odometer", "Breakdown", "Road Call", "Towed", "Total Chg."
+            }
+        ) {
+            Class[] types = new Class [] {
+                java.lang.Object.class, java.lang.String.class, java.lang.String.class, java.lang.Integer.class, java.lang.Boolean.class, java.lang.Boolean.class, java.lang.Boolean.class, java.lang.Double.class
+            };
+            boolean[] canEdit = new boolean [] {
+                false, false, false, false, false, false, false, false
+            };
+
+            public Class getColumnClass(int columnIndex) {
+                return types [columnIndex];
+            }
+
+            public boolean isCellEditable(int rowIndex, int columnIndex) {
+                return canEdit [columnIndex];
+            }
+        });
+        jScrollPane6.setViewportView(service);
+        if (service.getColumnModel().getColumnCount() > 0) {
+            service.getColumnModel().getColumn(0).setResizable(false);
+            service.getColumnModel().getColumn(0).setPreferredWidth(20);
+            service.getColumnModel().getColumn(1).setResizable(false);
+            service.getColumnModel().getColumn(1).setPreferredWidth(30);
+            service.getColumnModel().getColumn(2).setResizable(false);
+            service.getColumnModel().getColumn(2).setPreferredWidth(20);
+            service.getColumnModel().getColumn(3).setResizable(false);
+            service.getColumnModel().getColumn(3).setPreferredWidth(15);
+            service.getColumnModel().getColumn(4).setResizable(false);
+            service.getColumnModel().getColumn(4).setPreferredWidth(8);
+            service.getColumnModel().getColumn(5).setResizable(false);
+            service.getColumnModel().getColumn(5).setPreferredWidth(8);
+            service.getColumnModel().getColumn(6).setResizable(false);
+            service.getColumnModel().getColumn(6).setPreferredWidth(8);
+            service.getColumnModel().getColumn(7).setResizable(false);
+            service.getColumnModel().getColumn(7).setPreferredWidth(15);
+        }
 
         javax.swing.GroupLayout servicesTabLayout = new javax.swing.GroupLayout(servicesTab);
         servicesTab.setLayout(servicesTabLayout);
         servicesTabLayout.setHorizontalGroup(
             servicesTabLayout.createParallelGroup(javax.swing.GroupLayout.Alignment.LEADING)
-            .addGap(0, 906, Short.MAX_VALUE)
+            .addGap(0, 966, Short.MAX_VALUE)
+            .addGroup(servicesTabLayout.createParallelGroup(javax.swing.GroupLayout.Alignment.LEADING)
+                .addComponent(jScrollPane6, javax.swing.GroupLayout.DEFAULT_SIZE, 966, Short.MAX_VALUE))
         );
         servicesTabLayout.setVerticalGroup(
             servicesTabLayout.createParallelGroup(javax.swing.GroupLayout.Alignment.LEADING)
             .addGap(0, 653, Short.MAX_VALUE)
+            .addGroup(servicesTabLayout.createParallelGroup(javax.swing.GroupLayout.Alignment.LEADING)
+                .addComponent(jScrollPane6, javax.swing.GroupLayout.DEFAULT_SIZE, 653, Short.MAX_VALUE))
         );
 
         mainTabbedPane.addTab("Service Journal", new javax.swing.ImageIcon(getClass().getResource("/com/northwind/resources/Wrench.png")), servicesTab); // NOI18N
 
-        javax.swing.GroupLayout vehiclesTabLayout = new javax.swing.GroupLayout(vehiclesTab);
-        vehiclesTab.setLayout(vehiclesTabLayout);
-        vehiclesTabLayout.setHorizontalGroup(
-            vehiclesTabLayout.createParallelGroup(javax.swing.GroupLayout.Alignment.LEADING)
-            .addGap(0, 906, Short.MAX_VALUE)
-        );
-        vehiclesTabLayout.setVerticalGroup(
-            vehiclesTabLayout.createParallelGroup(javax.swing.GroupLayout.Alignment.LEADING)
-            .addGap(0, 653, Short.MAX_VALUE)
-        );
-
-        mainTabbedPane.addTab("Vehicle Tracker", new javax.swing.ImageIcon(getClass().getResource("/com/northwind/resources/Delivery.png")), vehiclesTab); // NOI18N
-
-        customers.setModel(new javax.swing.table.DefaultTableModel(
+        vehicles.setModel(new javax.swing.table.DefaultTableModel(
             new Object [][] {
                 {null, null, null, null},
                 {null, null, null, null},
@@ -485,16 +631,106 @@ public class MainWindow extends javax.swing.JFrame {
                 {null, null, null, null}
             },
             new String [] {
-                "Title 1", "Title 2", "Title 3", "Title 4"
+                "Unit #", "Make", "Model", "VIN"
             }
-        ));
+        ) {
+            Class[] types = new Class [] {
+                java.lang.String.class, java.lang.String.class, java.lang.String.class, java.lang.String.class
+            };
+            boolean[] canEdit = new boolean [] {
+                false, false, false, false
+            };
+
+            public Class getColumnClass(int columnIndex) {
+                return types [columnIndex];
+            }
+
+            public boolean isCellEditable(int rowIndex, int columnIndex) {
+                return canEdit [columnIndex];
+            }
+        });
+        jScrollPane7.setViewportView(vehicles);
+        if (vehicles.getColumnModel().getColumnCount() > 0) {
+            vehicles.getColumnModel().getColumn(0).setResizable(false);
+            vehicles.getColumnModel().getColumn(0).setPreferredWidth(15);
+            vehicles.getColumnModel().getColumn(1).setResizable(false);
+            vehicles.getColumnModel().getColumn(1).setPreferredWidth(30);
+            vehicles.getColumnModel().getColumn(2).setResizable(false);
+            vehicles.getColumnModel().getColumn(2).setPreferredWidth(30);
+        }
+
+        javax.swing.GroupLayout vehiclesTabLayout = new javax.swing.GroupLayout(vehiclesTab);
+        vehiclesTab.setLayout(vehiclesTabLayout);
+        vehiclesTabLayout.setHorizontalGroup(
+            vehiclesTabLayout.createParallelGroup(javax.swing.GroupLayout.Alignment.LEADING)
+            .addGap(0, 966, Short.MAX_VALUE)
+            .addGroup(vehiclesTabLayout.createParallelGroup(javax.swing.GroupLayout.Alignment.LEADING)
+                .addComponent(jScrollPane7, javax.swing.GroupLayout.DEFAULT_SIZE, 966, Short.MAX_VALUE))
+        );
+        vehiclesTabLayout.setVerticalGroup(
+            vehiclesTabLayout.createParallelGroup(javax.swing.GroupLayout.Alignment.LEADING)
+            .addGap(0, 653, Short.MAX_VALUE)
+            .addGroup(vehiclesTabLayout.createParallelGroup(javax.swing.GroupLayout.Alignment.LEADING)
+                .addComponent(jScrollPane7, javax.swing.GroupLayout.DEFAULT_SIZE, 653, Short.MAX_VALUE))
+        );
+
+        mainTabbedPane.addTab("Vehicle Tracker", new javax.swing.ImageIcon(getClass().getResource("/com/northwind/resources/Delivery.png")), vehiclesTab); // NOI18N
+
+        customers.setModel(new javax.swing.table.DefaultTableModel(
+            new Object [][] {
+                {null, null, null, null, null, null, null, null, null, null},
+                {null, null, null, null, null, null, null, null, null, null},
+                {null, null, null, null, null, null, null, null, null, null},
+                {null, null, null, null, null, null, null, null, null, null}
+            },
+            new String [] {
+                "Company Name", "Street Address", "Suite", "City", "State", "Zip Code", "Contact Name", "Phone Number", "Fax Number", "Active"
+            }
+        ) {
+            Class[] types = new Class [] {
+                java.lang.String.class, java.lang.String.class, java.lang.String.class, java.lang.String.class, java.lang.String.class, java.lang.String.class, java.lang.String.class, java.lang.String.class, java.lang.String.class, java.lang.Boolean.class
+            };
+            boolean[] canEdit = new boolean [] {
+                false, false, false, false, false, false, false, false, false, false
+            };
+
+            public Class getColumnClass(int columnIndex) {
+                return types [columnIndex];
+            }
+
+            public boolean isCellEditable(int rowIndex, int columnIndex) {
+                return canEdit [columnIndex];
+            }
+        });
         jScrollPane2.setViewportView(customers);
+        if (customers.getColumnModel().getColumnCount() > 0) {
+            customers.getColumnModel().getColumn(0).setResizable(false);
+            customers.getColumnModel().getColumn(0).setPreferredWidth(40);
+            customers.getColumnModel().getColumn(1).setResizable(false);
+            customers.getColumnModel().getColumn(1).setPreferredWidth(50);
+            customers.getColumnModel().getColumn(2).setResizable(false);
+            customers.getColumnModel().getColumn(2).setPreferredWidth(15);
+            customers.getColumnModel().getColumn(3).setResizable(false);
+            customers.getColumnModel().getColumn(3).setPreferredWidth(30);
+            customers.getColumnModel().getColumn(4).setResizable(false);
+            customers.getColumnModel().getColumn(4).setPreferredWidth(5);
+            customers.getColumnModel().getColumn(5).setResizable(false);
+            customers.getColumnModel().getColumn(5).setPreferredWidth(10);
+            customers.getColumnModel().getColumn(6).setResizable(false);
+            customers.getColumnModel().getColumn(6).setPreferredWidth(40);
+            customers.getColumnModel().getColumn(7).setResizable(false);
+            customers.getColumnModel().getColumn(7).setPreferredWidth(15);
+            customers.getColumnModel().getColumn(8).setResizable(false);
+            customers.getColumnModel().getColumn(8).setPreferredWidth(15);
+            customers.getColumnModel().getColumn(9).setResizable(false);
+            customers.getColumnModel().getColumn(9).setPreferredWidth(5);
+        }
 
         javax.swing.GroupLayout customersTabLayout = new javax.swing.GroupLayout(customersTab);
         customersTab.setLayout(customersTabLayout);
         customersTabLayout.setHorizontalGroup(
             customersTabLayout.createParallelGroup(javax.swing.GroupLayout.Alignment.LEADING)
-            .addComponent(jScrollPane2, javax.swing.GroupLayout.DEFAULT_SIZE, 906, Short.MAX_VALUE)
+            .addComponent(jScrollPane2, javax.swing.GroupLayout.DEFAULT_SIZE, 966, Short.MAX_VALUE)
         );
         customersTabLayout.setVerticalGroup(
             customersTabLayout.createParallelGroup(javax.swing.GroupLayout.Alignment.LEADING)
@@ -503,31 +739,131 @@ public class MainWindow extends javax.swing.JFrame {
 
         mainTabbedPane.addTab("Customer Tracker", new javax.swing.ImageIcon(getClass().getResource("/com/northwind/resources/users.png")), customersTab); // NOI18N
 
+        employees.setModel(new javax.swing.table.DefaultTableModel(
+            new Object [][] {
+                {null, null, null, null, null, null},
+                {null, null, null, null, null, null},
+                {null, null, null, null, null, null},
+                {null, null, null, null, null, null}
+            },
+            new String [] {
+                "Last Name", "First Name", "Phone Number", "Email Address", "Hire Date", "Active"
+            }
+        ) {
+            Class[] types = new Class [] {
+                java.lang.String.class, java.lang.String.class, java.lang.String.class, java.lang.String.class, java.lang.Object.class, java.lang.Boolean.class
+            };
+            boolean[] canEdit = new boolean [] {
+                false, false, false, false, false, false
+            };
+
+            public Class getColumnClass(int columnIndex) {
+                return types [columnIndex];
+            }
+
+            public boolean isCellEditable(int rowIndex, int columnIndex) {
+                return canEdit [columnIndex];
+            }
+        });
+        jScrollPane8.setViewportView(employees);
+        if (employees.getColumnModel().getColumnCount() > 0) {
+            employees.getColumnModel().getColumn(0).setResizable(false);
+            employees.getColumnModel().getColumn(0).setPreferredWidth(25);
+            employees.getColumnModel().getColumn(1).setResizable(false);
+            employees.getColumnModel().getColumn(1).setPreferredWidth(20);
+            employees.getColumnModel().getColumn(2).setResizable(false);
+            employees.getColumnModel().getColumn(2).setPreferredWidth(15);
+            employees.getColumnModel().getColumn(3).setResizable(false);
+            employees.getColumnModel().getColumn(3).setPreferredWidth(50);
+            employees.getColumnModel().getColumn(4).setResizable(false);
+            employees.getColumnModel().getColumn(4).setPreferredWidth(15);
+            employees.getColumnModel().getColumn(5).setResizable(false);
+            employees.getColumnModel().getColumn(5).setPreferredWidth(5);
+        }
+
         javax.swing.GroupLayout employeesTabLayout = new javax.swing.GroupLayout(employeesTab);
         employeesTab.setLayout(employeesTabLayout);
         employeesTabLayout.setHorizontalGroup(
             employeesTabLayout.createParallelGroup(javax.swing.GroupLayout.Alignment.LEADING)
-            .addGap(0, 906, Short.MAX_VALUE)
+            .addGap(0, 966, Short.MAX_VALUE)
+            .addGroup(employeesTabLayout.createParallelGroup(javax.swing.GroupLayout.Alignment.LEADING)
+                .addComponent(jScrollPane8, javax.swing.GroupLayout.DEFAULT_SIZE, 966, Short.MAX_VALUE))
         );
         employeesTabLayout.setVerticalGroup(
             employeesTabLayout.createParallelGroup(javax.swing.GroupLayout.Alignment.LEADING)
             .addGap(0, 653, Short.MAX_VALUE)
+            .addGroup(employeesTabLayout.createParallelGroup(javax.swing.GroupLayout.Alignment.LEADING)
+                .addComponent(jScrollPane8, javax.swing.GroupLayout.DEFAULT_SIZE, 653, Short.MAX_VALUE))
         );
 
         mainTabbedPane.addTab("Employee Tracker", new javax.swing.ImageIcon(getClass().getResource("/com/northwind/resources/people.png")), employeesTab); // NOI18N
+
+        generalLedger.setModel(new javax.swing.table.DefaultTableModel(
+            new Object [][] {
+                {null, null, null, null, null, null, null, null},
+                {null, null, null, null, null, null, null, null},
+                {null, null, null, null, null, null, null, null},
+                {null, null, null, null, null, null, null, null}
+            },
+            new String [] {
+                "Tx Date", "Type", "Description", "From Acct", "To Acct", "Amount", "Tax", "Balanced"
+            }
+        ) {
+            Class[] types = new Class [] {
+                java.lang.Object.class, java.lang.String.class, java.lang.String.class, java.lang.String.class, java.lang.String.class, java.lang.Double.class, java.lang.Boolean.class, java.lang.Boolean.class
+            };
+            boolean[] canEdit = new boolean [] {
+                false, false, false, false, false, false, false, false
+            };
+
+            public Class getColumnClass(int columnIndex) {
+                return types [columnIndex];
+            }
+
+            public boolean isCellEditable(int rowIndex, int columnIndex) {
+                return canEdit [columnIndex];
+            }
+        });
+        jScrollPane9.setViewportView(generalLedger);
+        if (generalLedger.getColumnModel().getColumnCount() > 0) {
+            generalLedger.getColumnModel().getColumn(0).setResizable(false);
+            generalLedger.getColumnModel().getColumn(0).setPreferredWidth(15);
+            generalLedger.getColumnModel().getColumn(1).setResizable(false);
+            generalLedger.getColumnModel().getColumn(1).setPreferredWidth(5);
+            generalLedger.getColumnModel().getColumn(2).setResizable(false);
+            generalLedger.getColumnModel().getColumn(2).setPreferredWidth(75);
+            generalLedger.getColumnModel().getColumn(3).setResizable(false);
+            generalLedger.getColumnModel().getColumn(3).setPreferredWidth(25);
+            generalLedger.getColumnModel().getColumn(4).setResizable(false);
+            generalLedger.getColumnModel().getColumn(4).setPreferredWidth(25);
+            generalLedger.getColumnModel().getColumn(5).setResizable(false);
+            generalLedger.getColumnModel().getColumn(5).setPreferredWidth(10);
+            generalLedger.getColumnModel().getColumn(6).setResizable(false);
+            generalLedger.getColumnModel().getColumn(6).setPreferredWidth(5);
+            generalLedger.getColumnModel().getColumn(7).setResizable(false);
+            generalLedger.getColumnModel().getColumn(7).setPreferredWidth(5);
+        }
 
         javax.swing.GroupLayout glTabLayout = new javax.swing.GroupLayout(glTab);
         glTab.setLayout(glTabLayout);
         glTabLayout.setHorizontalGroup(
             glTabLayout.createParallelGroup(javax.swing.GroupLayout.Alignment.LEADING)
-            .addGap(0, 906, Short.MAX_VALUE)
+            .addGap(0, 966, Short.MAX_VALUE)
+            .addGroup(glTabLayout.createParallelGroup(javax.swing.GroupLayout.Alignment.LEADING)
+                .addComponent(jScrollPane9, javax.swing.GroupLayout.DEFAULT_SIZE, 966, Short.MAX_VALUE))
         );
         glTabLayout.setVerticalGroup(
             glTabLayout.createParallelGroup(javax.swing.GroupLayout.Alignment.LEADING)
             .addGap(0, 653, Short.MAX_VALUE)
+            .addGroup(glTabLayout.createParallelGroup(javax.swing.GroupLayout.Alignment.LEADING)
+                .addComponent(jScrollPane9, javax.swing.GroupLayout.DEFAULT_SIZE, 653, Short.MAX_VALUE))
         );
 
         mainTabbedPane.addTab("General Ledger", new javax.swing.ImageIcon(getClass().getResource("/com/northwind/resources/Script.png")), glTab); // NOI18N
+
+        org.jdesktop.swingx.VerticalLayout verticalLayout1 = new org.jdesktop.swingx.VerticalLayout();
+        verticalLayout1.setGap(14);
+        mainTaskController.setLayout(verticalLayout1);
 
         appTaskPane.setAutoscrolls(true);
         appTaskPane.setIcon(new javax.swing.ImageIcon(getClass().getResource("/com/northwind/resources/Northwind16.png"))); // NOI18N
@@ -641,40 +977,42 @@ public class MainWindow extends javax.swing.JFrame {
     loadsTaskPane.setMnemonic('L');
     loadsTaskPane.setScrollOnExpand(true);
     loadsTaskPane.setTitle("Load Tracker Tasks");
-    loadsTaskPane.add(new AbstractAction() {
-        {
-            putValue(Action.NAME, "Close Load Tracker");
-            putValue(Action.SHORT_DESCRIPTION, "Closes the Load Tracker window");
-            putValue(Action.SMALL_ICON, new javax.swing.ImageIcon(getClass()
-                .getResource("/com/northwind/resources/Cancel.png")));
-    }
+    //loadsTaskPane.add(new AbstractAction() {
+        //{
+            //    putValue(Action.NAME, "Close Load Tracker");
+            //    putValue(Action.SHORT_DESCRIPTION, "Closes the Load Tracker window");
+            //    putValue(Action.SMALL_ICON, new javax.swing.ImageIcon(getClass()
+                //            .getResource("/com/northwind/resources/Cancel.png")));
+        //}
+    //
+    //public void actionPerformed(ActionEvent e) {
+        //    if ( getValue(Action.NAME).toString().equalsIgnoreCase("Close Load Tracker") ) {
+            //        putValue(Action.NAME, "Open Load Tracker");
+            //        putValue(Action.SHORT_DESCRIPTION, "Opens the Load Tracker window");
+            //        putValue(Action.SMALL_ICON, new javax.swing.ImageIcon(getClass()
+                //            .getResource("/com/northwind/resources/Cancel.png")));
+        //        mainTabbedPane.remove(loadsTab);
+        //        loadsTaskPane.setCollapsed(true);
+        //    } else if ( getValue(Action.NAME).toString().equalsIgnoreCase("Open Load Tracker") ) {
+        //        putValue(Action.NAME, "Close Load Tracker");
+        //        putValue(Action.SHORT_DESCRIPTION, "Closes the Load Tracker window");
+        //        putValue(Action.SMALL_ICON, new javax.swing.ImageIcon(getClass()
+            //                .getResource("/com/northwind/resources/Cancel.png")));
+    //        mainTabbedPane.addTab("Load Tracker",
+        //                new javax.swing.ImageIcon(getClass().getResource(
+            //                        "/com/northwind/resources/freight.png")), loadsTab);
+//    }
+//}
+//});
+//
+//loadsTaskPane.add(new JSeparator());
 
-    public void actionPerformed(ActionEvent e) {
-        if ( getValue(Action.NAME).toString().equalsIgnoreCase("Close Load Tracker") ) {
-            putValue(Action.NAME, "Open Load Tracker");
-            putValue(Action.SHORT_DESCRIPTION, "Opens the Load Tracker window");
-            putValue(Action.SMALL_ICON, new javax.swing.ImageIcon(getClass()
-                .getResource("/com/northwind/resources/open.png")));
-        mainTabbedPane.remove(loadsTab);
-        loadsTaskPane.setCollapsed(true);
-    } else if ( getValue(Action.NAME).toString().equalsIgnoreCase("Open Load Tracker") ) {
-        putValue(Action.NAME, "Close Load Tracker");
-        putValue(Action.SHORT_DESCRIPTION, "Closes the Load Tracker window");
+loadsTaskPane.add(new AbstractAction() {
+    {
+        putValue(Action.NAME, "Book New Load...");
+        putValue(Action.SHORT_DESCRIPTION, "Displays the load booking dialog");
         putValue(Action.SMALL_ICON, new javax.swing.ImageIcon(getClass()
-            .getResource("/com/northwind/resources/Cancel.png")));
-    mainTabbedPane.addTab("Load Tracker", new javax.swing.ImageIcon(getClass().getResource("/com/northwind/resources/freight.png")), loadsTab);
-    }
-    }
-    });
-
-    loadsTaskPane.add(new JSeparator());
-
-    loadsTaskPane.add(new AbstractAction() {
-        {
-            putValue(Action.NAME, "Book New Load...");
-            putValue(Action.SHORT_DESCRIPTION, "Displays the load booking dialog");
-            putValue(Action.SMALL_ICON, new javax.swing.ImageIcon(getClass()
-                .getResource("/com/northwind/resources/add.png")));
+            .getResource("/com/northwind/resources/add.png")));
     }
 
     public void actionPerformed(ActionEvent e) {
@@ -758,40 +1096,40 @@ public class MainWindow extends javax.swing.JFrame {
     customersTaskPane.setMnemonic('C');
     customersTaskPane.setScrollOnExpand(true);
     customersTaskPane.setTitle("Customer Tracker Tasks");
-    customersTaskPane.add(new AbstractAction() {
-        {
-            putValue(Action.NAME, "Close Customers List");
-            putValue(Action.SHORT_DESCRIPTION, "Close Customers List");
-            putValue(Action.SMALL_ICON, new javax.swing.ImageIcon(getClass().getResource("/com/northwind/resources/Cancel.png")));
-        }
+    //customersTaskPane.add(new AbstractAction() {
+        //{
+            //    putValue(Action.NAME, "Close Customers List");
+            //    putValue(Action.SHORT_DESCRIPTION, "Close Customers List");
+            //    putValue(Action.SMALL_ICON, new javax.swing.ImageIcon(getClass().getResource("/com/northwind/resources/Cancel.png")));
+            //}
+        //
+        //public void actionPerformed(ActionEvent e) {
+            //    if ( getValue(Action.NAME).toString().equalsIgnoreCase("Close Customers List") ) {
+                //        putValue(Action.NAME, "Open Customers List");
+                //        putValue(Action.SMALL_ICON, new javax.swing.ImageIcon(getClass().getResource("/com/northwind/resources/open.png")));
+                //        mainTabbedPane.remove(customersTab);
+                //    } else if ( getValue(Action.NAME).toString().equalsIgnoreCase("Open Customers List") ) {
+                //        putValue(Action.NAME, "Close Customers List");
+                //        putValue(Action.SMALL_ICON, new javax.swing.ImageIcon(getClass().getResource("/com/northwind/resources/Cancel.png")));
+                //        mainTabbedPane.addTab("Customer List", new javax.swing.ImageIcon(getClass().getResource("/com/northwind/resources/users.png")), customersTab, null );
+                //    }
+            //}
+        //});
+//
+//customersTaskPane.add(new JSeparator());
 
-        public void actionPerformed(ActionEvent e) {
-            if ( getValue(Action.NAME).toString().equalsIgnoreCase("Close Customers List") ) {
-                putValue(Action.NAME, "Open Customers List");
-                putValue(Action.SMALL_ICON, new javax.swing.ImageIcon(getClass().getResource("/com/northwind/resources/open.png")));
-                mainTabbedPane.remove(customersTab);
-            } else if ( getValue(Action.NAME).toString().equalsIgnoreCase("Open Customers List") ) {
-                putValue(Action.NAME, "Close Customers List");
-                putValue(Action.SMALL_ICON, new javax.swing.ImageIcon(getClass().getResource("/com/northwind/resources/Cancel.png")));
-                mainTabbedPane.addTab("Customer List", new javax.swing.ImageIcon(getClass().getResource("/com/northwind/resources/users.png")), customersTab, null );
-            }
-        }
-    });
+customersTaskPane.add(new AbstractAction() {
+    {
+        putValue(Action.NAME, "Add New Customer");
+        putValue(Action.SHORT_DESCRIPTION, "Adds a new customer record");
+        putValue(Action.SMALL_ICON, new javax.swing.ImageIcon(getClass().getResource("/com/northwind/resources/add.png")));
+    }
 
-    customersTaskPane.add(new JXLabel("    "));
-
-    customersTaskPane.add(new AbstractAction() {
-        {
-            putValue(Action.NAME, "Add New Customer");
-            putValue(Action.SHORT_DESCRIPTION, "Adds a new customer record");
-            putValue(Action.SMALL_ICON, new javax.swing.ImageIcon(getClass().getResource("/com/northwind/resources/add.png")));
-        }
-
-        public void actionPerformed(ActionEvent e) {
-            CustomerEntryDlg dlg = new CustomerEntryDlg(null, true);
-            dlg.pack();
-            dlg.setVisible(true);
-        }
+    public void actionPerformed(ActionEvent e) {
+        CustomerEntryDlg dlg = new CustomerEntryDlg(null, true);
+        dlg.pack();
+        dlg.setVisible(true);
+    }
     });
     mainTaskController.add(customersTaskPane);
 
@@ -813,6 +1151,57 @@ public class MainWindow extends javax.swing.JFrame {
     mainTaskController.add(glTaskPane);
 
     jScrollPane3.setViewportView(mainTaskController);
+
+    jTextPane1.setContentType("text/html"); // NOI18N
+    jTextPane1.setText("<html>\n  <head>\n\n  </head>\n  <body>\n    <h3>Information Panel</h3>\n    <p style=\"margin-top: 0\">\n      This information panel will provide information that will help you get the most out of Northwind Traders. Whenever you are doing anything in the application, look here first if you have questions.\n    </p>\n  </body>\n</html>\n");
+    jScrollPane10.setViewportView(jTextPane1);
+
+    javax.swing.GroupLayout lowRightPanelLayout = new javax.swing.GroupLayout(lowRightPanel);
+    lowRightPanel.setLayout(lowRightPanelLayout);
+    lowRightPanelLayout.setHorizontalGroup(
+        lowRightPanelLayout.createParallelGroup(javax.swing.GroupLayout.Alignment.LEADING)
+        .addComponent(jScrollPane10, javax.swing.GroupLayout.Alignment.TRAILING, javax.swing.GroupLayout.DEFAULT_SIZE, 220, Short.MAX_VALUE)
+    );
+    lowRightPanelLayout.setVerticalGroup(
+        lowRightPanelLayout.createParallelGroup(javax.swing.GroupLayout.Alignment.LEADING)
+        .addComponent(jScrollPane10, javax.swing.GroupLayout.DEFAULT_SIZE, 243, Short.MAX_VALUE)
+    );
+
+    jScrollPane1.setViewportView(perMileBreakdown);
+
+    javax.swing.GroupLayout perMileBreakdownTabLayout = new javax.swing.GroupLayout(perMileBreakdownTab);
+    perMileBreakdownTab.setLayout(perMileBreakdownTabLayout);
+    perMileBreakdownTabLayout.setHorizontalGroup(
+        perMileBreakdownTabLayout.createParallelGroup(javax.swing.GroupLayout.Alignment.LEADING)
+        .addGap(0, 220, Short.MAX_VALUE)
+        .addGroup(perMileBreakdownTabLayout.createParallelGroup(javax.swing.GroupLayout.Alignment.LEADING)
+            .addComponent(jScrollPane1, javax.swing.GroupLayout.DEFAULT_SIZE, 220, Short.MAX_VALUE))
+    );
+    perMileBreakdownTabLayout.setVerticalGroup(
+        perMileBreakdownTabLayout.createParallelGroup(javax.swing.GroupLayout.Alignment.LEADING)
+        .addGap(0, 404, Short.MAX_VALUE)
+        .addGroup(perMileBreakdownTabLayout.createParallelGroup(javax.swing.GroupLayout.Alignment.LEADING)
+            .addComponent(jScrollPane1, javax.swing.GroupLayout.Alignment.TRAILING, javax.swing.GroupLayout.DEFAULT_SIZE, 404, Short.MAX_VALUE))
+    );
+
+    rightTabbedPane.addTab("Per Mile Breakdown", new javax.swing.ImageIcon(getClass().getResource("/com/northwind/resources/Accounting.png")), perMileBreakdownTab); // NOI18N
+
+    javax.swing.GroupLayout highRightPanelLayout = new javax.swing.GroupLayout(highRightPanel);
+    highRightPanel.setLayout(highRightPanelLayout);
+    highRightPanelLayout.setHorizontalGroup(
+        highRightPanelLayout.createParallelGroup(javax.swing.GroupLayout.Alignment.LEADING)
+        .addGap(0, 0, Short.MAX_VALUE)
+        .addGroup(highRightPanelLayout.createParallelGroup(javax.swing.GroupLayout.Alignment.LEADING)
+            .addComponent(rightTabbedPane, javax.swing.GroupLayout.DEFAULT_SIZE, 220, Short.MAX_VALUE))
+    );
+    highRightPanelLayout.setVerticalGroup(
+        highRightPanelLayout.createParallelGroup(javax.swing.GroupLayout.Alignment.LEADING)
+        .addGap(0, 0, Short.MAX_VALUE)
+        .addGroup(highRightPanelLayout.createParallelGroup(javax.swing.GroupLayout.Alignment.LEADING)
+            .addGroup(highRightPanelLayout.createSequentialGroup()
+                .addContainerGap()
+                .addComponent(rightTabbedPane, javax.swing.GroupLayout.DEFAULT_SIZE, 437, Short.MAX_VALUE)))
+    );
 
     fileMenu.setMnemonic('F');
     fileMenu.setText("File");
@@ -933,6 +1322,7 @@ public class MainWindow extends javax.swing.JFrame {
     viewMenu.setMnemonic('V');
     viewMenu.setText("View");
 
+    sortMenuItem.setAccelerator(javax.swing.KeyStroke.getKeyStroke(java.awt.event.KeyEvent.VK_F3, java.awt.event.InputEvent.CTRL_MASK));
     sortMenuItem.setIcon(new javax.swing.ImageIcon(getClass().getResource("/com/northwind/resources/sort-asc.png"))); // NOI18N
     sortMenuItem.setText("Sort By...");
     sortMenuItem.addActionListener(new java.awt.event.ActionListener() {
@@ -1089,19 +1479,23 @@ public class MainWindow extends javax.swing.JFrame {
             .addPreferredGap(javax.swing.LayoutStyle.ComponentPlacement.RELATED)
             .addComponent(mainTabbedPane)
             .addPreferredGap(javax.swing.LayoutStyle.ComponentPlacement.RELATED)
-            .addComponent(jScrollPane1, javax.swing.GroupLayout.PREFERRED_SIZE, 245, javax.swing.GroupLayout.PREFERRED_SIZE)
+            .addGroup(layout.createParallelGroup(javax.swing.GroupLayout.Alignment.LEADING, false)
+                .addComponent(lowRightPanel, javax.swing.GroupLayout.DEFAULT_SIZE, javax.swing.GroupLayout.DEFAULT_SIZE, Short.MAX_VALUE)
+                .addComponent(highRightPanel, javax.swing.GroupLayout.DEFAULT_SIZE, javax.swing.GroupLayout.DEFAULT_SIZE, Short.MAX_VALUE))
             .addContainerGap())
     );
     layout.setVerticalGroup(
         layout.createParallelGroup(javax.swing.GroupLayout.Alignment.LEADING)
         .addGroup(layout.createSequentialGroup()
             .addGroup(layout.createParallelGroup(javax.swing.GroupLayout.Alignment.LEADING)
+                .addComponent(jScrollPane3)
                 .addGroup(layout.createSequentialGroup()
                     .addContainerGap()
-                    .addGroup(layout.createParallelGroup(javax.swing.GroupLayout.Alignment.LEADING)
-                        .addComponent(mainTabbedPane)
-                        .addComponent(jScrollPane1)))
-                .addComponent(jScrollPane3))
+                    .addComponent(mainTabbedPane))
+                .addGroup(javax.swing.GroupLayout.Alignment.TRAILING, layout.createSequentialGroup()
+                    .addComponent(highRightPanel, javax.swing.GroupLayout.DEFAULT_SIZE, javax.swing.GroupLayout.DEFAULT_SIZE, Short.MAX_VALUE)
+                    .addPreferredGap(javax.swing.LayoutStyle.ComponentPlacement.RELATED)
+                    .addComponent(lowRightPanel, javax.swing.GroupLayout.PREFERRED_SIZE, javax.swing.GroupLayout.DEFAULT_SIZE, javax.swing.GroupLayout.PREFERRED_SIZE)))
             .addPreferredGap(javax.swing.LayoutStyle.ComponentPlacement.RELATED)
             .addComponent(mainStatusbar, javax.swing.GroupLayout.PREFERRED_SIZE, javax.swing.GroupLayout.DEFAULT_SIZE, javax.swing.GroupLayout.PREFERRED_SIZE))
     );
@@ -1278,10 +1672,11 @@ public class MainWindow extends javax.swing.JFrame {
     private void mainTabbedPaneStateChanged(javax.swing.event.ChangeEvent evt) {//GEN-FIRST:event_mainTabbedPaneStateChanged
         // When the user clicks a tab, expand that tab's task pane, and collapse
         //+ all of the others, except Northwind Traders Tasks.
-        int selectedTab = mainTabbedPane.getSelectedIndex();
+        String selectedTab = mainTabbedPane.getTitleAt(
+                mainTabbedPane.getSelectedIndex());
         
         switch ( selectedTab ) {
-            case 0: // Load Tracker tab
+            case "Load Tracker":
                 this.loadsTaskPane.setCollapsed(false);
                 this.fuelTaskPane.setCollapsed(true);
                 this.servicesTaskPane.setCollapsed(true);
@@ -1290,7 +1685,7 @@ public class MainWindow extends javax.swing.JFrame {
                 this.employeesTaskPane.setCollapsed(true);
                 this.glTaskPane.setCollapsed(true);
                 break;
-            case 1: // Fuel Journal tab
+            case "Fuel Journal":
                 this.loadsTaskPane.setCollapsed(true);
                 this.fuelTaskPane.setCollapsed(false);
                 this.servicesTaskPane.setCollapsed(true);
@@ -1299,7 +1694,7 @@ public class MainWindow extends javax.swing.JFrame {
                 this.employeesTaskPane.setCollapsed(true);
                 this.glTaskPane.setCollapsed(true);
                 break;
-            case 2: // Service Journal tab
+            case "Service Journal":
                 this.loadsTaskPane.setCollapsed(true);
                 this.fuelTaskPane.setCollapsed(true);
                 this.servicesTaskPane.setCollapsed(false);
@@ -1308,7 +1703,7 @@ public class MainWindow extends javax.swing.JFrame {
                 this.employeesTaskPane.setCollapsed(true);
                 this.glTaskPane.setCollapsed(true);
                 break;
-            case 3: // Vehicle Tracker tab
+            case "Vehicle Tracker":
                 this.loadsTaskPane.setCollapsed(true);
                 this.fuelTaskPane.setCollapsed(true);
                 this.servicesTaskPane.setCollapsed(true);
@@ -1317,7 +1712,7 @@ public class MainWindow extends javax.swing.JFrame {
                 this.employeesTaskPane.setCollapsed(true);
                 this.glTaskPane.setCollapsed(true);
                 break;
-            case 4: // Customer Tracker tab
+            case "Customer Tracker":
                 this.loadsTaskPane.setCollapsed(true);
                 this.fuelTaskPane.setCollapsed(true);
                 this.servicesTaskPane.setCollapsed(true);
@@ -1326,7 +1721,7 @@ public class MainWindow extends javax.swing.JFrame {
                 this.employeesTaskPane.setCollapsed(true);
                 this.glTaskPane.setCollapsed(true);
                 break;
-            case 5: // Employee Tracker tab
+            case "Employee Tracker":
                 this.loadsTaskPane.setCollapsed(true);
                 this.fuelTaskPane.setCollapsed(true);
                 this.servicesTaskPane.setCollapsed(true);
@@ -1335,7 +1730,7 @@ public class MainWindow extends javax.swing.JFrame {
                 this.employeesTaskPane.setCollapsed(false);
                 this.glTaskPane.setCollapsed(true);
                 break;
-            case 6: // General Ledger tab
+            case "General Ledger":
                 this.loadsTaskPane.setCollapsed(true);
                 this.fuelTaskPane.setCollapsed(true);
                 this.servicesTaskPane.setCollapsed(true);
@@ -1403,28 +1798,42 @@ public class MainWindow extends javax.swing.JFrame {
     private javax.swing.JMenu editMenu;
     private javax.swing.JMenuItem editMenuItem;
     private javax.swing.JMenuItem employeeMenuItem;
+    private javax.swing.JTable employees;
     private javax.swing.JPanel employeesTab;
     private org.jdesktop.swingx.JXTaskPane employeesTaskPane;
     private javax.swing.JMenuItem exitMenuItem;
     private javax.swing.JMenu fileMenu;
+    private javax.swing.JTable fuel;
     private javax.swing.JMenuItem fuelMenuItem;
     private javax.swing.JPanel fuelTab;
     private org.jdesktop.swingx.JXTaskPane fuelTaskPane;
+    private javax.swing.JTable generalLedger;
     private javax.swing.JPanel glTab;
     private org.jdesktop.swingx.JXTaskPane glTaskPane;
     private javax.swing.JMenu helpMenu;
+    private javax.swing.JPanel highRightPanel;
     private javax.swing.JMenuItem indexMenuItem;
     private javax.swing.JLabel jLabel1;
     private javax.swing.JScrollPane jScrollPane1;
+    private javax.swing.JScrollPane jScrollPane10;
     private javax.swing.JScrollPane jScrollPane2;
     private javax.swing.JScrollPane jScrollPane3;
+    private javax.swing.JScrollPane jScrollPane4;
+    private javax.swing.JScrollPane jScrollPane5;
+    private javax.swing.JScrollPane jScrollPane6;
+    private javax.swing.JScrollPane jScrollPane7;
+    private javax.swing.JScrollPane jScrollPane8;
+    private javax.swing.JScrollPane jScrollPane9;
     private javax.swing.JPopupMenu.Separator jSeparator1;
     private javax.swing.JPopupMenu.Separator jSeparator2;
     private javax.swing.JPopupMenu.Separator jSeparator3;
     private javax.swing.JPopupMenu.Separator jSeparator4;
+    private javax.swing.JTextPane jTextPane1;
     private javax.swing.JMenuItem loadMenuItem;
+    private javax.swing.JTable loads;
     private javax.swing.JPanel loadsTab;
     private org.jdesktop.swingx.JXTaskPane loadsTaskPane;
+    private javax.swing.JPanel lowRightPanel;
     private javax.swing.JMenuBar mainMenubar;
     private org.jdesktop.swingx.JXStatusBar mainStatusbar;
     private javax.swing.JTabbedPane mainTabbedPane;
@@ -1435,11 +1844,14 @@ public class MainWindow extends javax.swing.JFrame {
     private javax.swing.JMenuItem openMenuItem;
     private javax.swing.JMenuItem optionsMenuItem;
     private org.jdesktop.swingx.JXTreeTable perMileBreakdown;
+    private javax.swing.JPanel perMileBreakdownTab;
     private javax.swing.JMenuItem printMenuItem;
     private javax.swing.JMenuItem printSetupMenu;
     private javax.swing.JMenuItem removeMenuItem;
     private javax.swing.JMenuItem repairMenuItem;
+    private javax.swing.JTabbedPane rightTabbedPane;
     private javax.swing.JMenuItem saveMenuItem;
+    private javax.swing.JTable service;
     private javax.swing.JMenuItem serviceMenuItem;
     private javax.swing.JPanel servicesTab;
     private org.jdesktop.swingx.JXTaskPane servicesTaskPane;
@@ -1448,6 +1860,7 @@ public class MainWindow extends javax.swing.JFrame {
     private javax.swing.JMenuItem tiresMenuItem;
     private javax.swing.JMenu toolsMenu;
     private javax.swing.JLabel userLabel;
+    private javax.swing.JTable vehicles;
     private javax.swing.JPanel vehiclesTab;
     private org.jdesktop.swingx.JXTaskPane vehiclesTaskPane;
     private javax.swing.JLabel versionLabel;

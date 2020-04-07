@@ -16,18 +16,28 @@
  */
 package com.northwind.loadmgr.view;
 
+import com.northwind.utils.ScreenUtils;
+import javax.swing.ImageIcon;
+
 /**
  *
  * @author Sean Carrick &lt;sean at pekinsoft dot com&gt;
  */
 public class DepartureDialog extends javax.swing.JDialog {
-
+        
     /**
      * Creates new form DepartureDialog
+     * @param parent
+     * @param modal
      */
     public DepartureDialog(java.awt.Frame parent, boolean modal) {
         super(parent, modal);
         initComponents();
+        setIconImage(new ImageIcon(getClass().getResource(
+                "/com/northwind/resoureces/Arrive.png")).getImage());
+        setLocation(ScreenUtils.centerDialog(this));
+        getRootPane().setDefaultButton(acceptButton);
+        
     }
     
     public void setPickup(boolean isPickup) {
@@ -49,16 +59,41 @@ public class DepartureDialog extends javax.swing.JDialog {
         jLabel1 = new javax.swing.JLabel();
         loadIdList = new javax.swing.JComboBox<>();
         isShipper = new javax.swing.JCheckBox();
+        jLabel2 = new javax.swing.JLabel();
+        departDate = new org.jdesktop.swingx.JXDatePicker();
+        departTime = new javax.swing.JFormattedTextField();
+        jLabel3 = new javax.swing.JLabel();
+        shipperPanel = new javax.swing.JPanel();
+        jLabel4 = new javax.swing.JLabel();
+        billOfLading = new javax.swing.JTextField();
+        jLabel5 = new javax.swing.JLabel();
+        pieceCount = new javax.swing.JSpinner();
+        jLabel6 = new javax.swing.JLabel();
+        actualWeight = new javax.swing.JFormattedTextField();
+        jLabel7 = new javax.swing.JLabel();
+        nextStop = new javax.swing.JComboBox<>();
+        jLabel8 = new javax.swing.JLabel();
+        nextStopArrivalDate = new org.jdesktop.swingx.JXDatePicker();
+        jLabel9 = new javax.swing.JLabel();
+        nextStopArrivalTime = new javax.swing.JFormattedTextField();
+        consigneePanel = new javax.swing.JPanel();
+        jLabel10 = new javax.swing.JLabel();
+        bolSignedBy = new javax.swing.JTextField();
+        isOverage = new javax.swing.JCheckBox();
+        isShortage = new javax.swing.JCheckBox();
+        isDamage = new javax.swing.JCheckBox();
 
         setDefaultCloseOperation(javax.swing.WindowConstants.DISPOSE_ON_CLOSE);
+        setTitle("Arrive at Stop");
 
         cancelButton.setIcon(new javax.swing.ImageIcon(getClass().getResource("/com/northwind/resources/Cancel.png"))); // NOI18N
         cancelButton.setMnemonic('C');
         cancelButton.setText("Cancel");
 
-        acceptButton.setIcon(new javax.swing.ImageIcon(getClass().getResource("/com/northwind/resources/Cancel.png"))); // NOI18N
+        acceptButton.setIcon(new javax.swing.ImageIcon(getClass().getResource("/com/northwind/resources/Apply.png"))); // NOI18N
         acceptButton.setMnemonic('A');
         acceptButton.setText("Accept");
+        acceptButton.setEnabled(false);
 
         javax.swing.GroupLayout commandPanelLayout = new javax.swing.GroupLayout(commandPanel);
         commandPanel.setLayout(commandPanelLayout);
@@ -85,7 +120,147 @@ public class DepartureDialog extends javax.swing.JDialog {
 
         loadIdList.setModel(new javax.swing.DefaultComboBoxModel<>(new String[] { "Item 1", "Item 2", "Item 3", "Item 4" }));
 
+        isShipper.setSelected(true);
         isShipper.setText("Shipper");
+        isShipper.addChangeListener(new javax.swing.event.ChangeListener() {
+            public void stateChanged(javax.swing.event.ChangeEvent evt) {
+                isShipperStateChanged(evt);
+            }
+        });
+
+        jLabel2.setText("Date:");
+
+        departTime.setFormatterFactory(new javax.swing.text.DefaultFormatterFactory(new javax.swing.text.DateFormatter(new java.text.SimpleDateFormat("HH:mm"))));
+
+        jLabel3.setText("Time:");
+
+        shipperPanel.setBorder(javax.swing.BorderFactory.createTitledBorder("Shipper Departure Information"));
+
+        jLabel4.setText("Bill of Lading #:");
+
+        jLabel5.setText("Piece Count:");
+
+        jLabel6.setText("Actual Weight:");
+
+        actualWeight.setFormatterFactory(new javax.swing.text.DefaultFormatterFactory(new javax.swing.text.NumberFormatter(new java.text.DecimalFormat("#,##0.##"))));
+
+        jLabel7.setText("Next Stop:");
+
+        nextStop.setModel(new javax.swing.DefaultComboBoxModel<>(new String[] { "Item 1", "Item 2", "Item 3", "Item 4" }));
+
+        jLabel8.setText("Arrival Date:");
+
+        jLabel9.setText("Arrival Time:");
+
+        nextStopArrivalTime.setFormatterFactory(new javax.swing.text.DefaultFormatterFactory(new javax.swing.text.DateFormatter(new java.text.SimpleDateFormat("HH:mm"))));
+
+        javax.swing.GroupLayout shipperPanelLayout = new javax.swing.GroupLayout(shipperPanel);
+        shipperPanel.setLayout(shipperPanelLayout);
+        shipperPanelLayout.setHorizontalGroup(
+            shipperPanelLayout.createParallelGroup(javax.swing.GroupLayout.Alignment.LEADING)
+            .addGroup(shipperPanelLayout.createSequentialGroup()
+                .addContainerGap()
+                .addGroup(shipperPanelLayout.createParallelGroup(javax.swing.GroupLayout.Alignment.TRAILING)
+                    .addComponent(jLabel8)
+                    .addComponent(jLabel6)
+                    .addComponent(jLabel4))
+                .addPreferredGap(javax.swing.LayoutStyle.ComponentPlacement.RELATED)
+                .addGroup(shipperPanelLayout.createParallelGroup(javax.swing.GroupLayout.Alignment.LEADING)
+                    .addGroup(shipperPanelLayout.createSequentialGroup()
+                        .addGroup(shipperPanelLayout.createParallelGroup(javax.swing.GroupLayout.Alignment.LEADING, false)
+                            .addGroup(shipperPanelLayout.createSequentialGroup()
+                                .addComponent(billOfLading, javax.swing.GroupLayout.PREFERRED_SIZE, 200, javax.swing.GroupLayout.PREFERRED_SIZE)
+                                .addGap(18, 18, 18)
+                                .addComponent(jLabel5)
+                                .addPreferredGap(javax.swing.LayoutStyle.ComponentPlacement.RELATED)
+                                .addComponent(pieceCount, javax.swing.GroupLayout.PREFERRED_SIZE, javax.swing.GroupLayout.DEFAULT_SIZE, javax.swing.GroupLayout.PREFERRED_SIZE))
+                            .addGroup(shipperPanelLayout.createSequentialGroup()
+                                .addComponent(actualWeight, javax.swing.GroupLayout.PREFERRED_SIZE, 74, javax.swing.GroupLayout.PREFERRED_SIZE)
+                                .addGap(18, 18, 18)
+                                .addComponent(jLabel7)
+                                .addPreferredGap(javax.swing.LayoutStyle.ComponentPlacement.RELATED)
+                                .addComponent(nextStop, 0, javax.swing.GroupLayout.DEFAULT_SIZE, Short.MAX_VALUE)))
+                        .addGap(0, 0, Short.MAX_VALUE))
+                    .addGroup(shipperPanelLayout.createSequentialGroup()
+                        .addComponent(nextStopArrivalDate, javax.swing.GroupLayout.DEFAULT_SIZE, javax.swing.GroupLayout.DEFAULT_SIZE, Short.MAX_VALUE)
+                        .addGap(18, 18, 18)
+                        .addComponent(jLabel9)
+                        .addPreferredGap(javax.swing.LayoutStyle.ComponentPlacement.RELATED)
+                        .addComponent(nextStopArrivalTime, javax.swing.GroupLayout.PREFERRED_SIZE, 78, javax.swing.GroupLayout.PREFERRED_SIZE)))
+                .addContainerGap())
+        );
+        shipperPanelLayout.setVerticalGroup(
+            shipperPanelLayout.createParallelGroup(javax.swing.GroupLayout.Alignment.LEADING)
+            .addGroup(shipperPanelLayout.createSequentialGroup()
+                .addGroup(shipperPanelLayout.createParallelGroup(javax.swing.GroupLayout.Alignment.BASELINE)
+                    .addComponent(jLabel4)
+                    .addComponent(billOfLading, javax.swing.GroupLayout.PREFERRED_SIZE, javax.swing.GroupLayout.DEFAULT_SIZE, javax.swing.GroupLayout.PREFERRED_SIZE)
+                    .addComponent(jLabel5)
+                    .addComponent(pieceCount, javax.swing.GroupLayout.PREFERRED_SIZE, javax.swing.GroupLayout.DEFAULT_SIZE, javax.swing.GroupLayout.PREFERRED_SIZE))
+                .addPreferredGap(javax.swing.LayoutStyle.ComponentPlacement.RELATED)
+                .addGroup(shipperPanelLayout.createParallelGroup(javax.swing.GroupLayout.Alignment.BASELINE)
+                    .addComponent(jLabel6)
+                    .addComponent(actualWeight, javax.swing.GroupLayout.PREFERRED_SIZE, javax.swing.GroupLayout.DEFAULT_SIZE, javax.swing.GroupLayout.PREFERRED_SIZE)
+                    .addComponent(jLabel7)
+                    .addComponent(nextStop, javax.swing.GroupLayout.PREFERRED_SIZE, javax.swing.GroupLayout.DEFAULT_SIZE, javax.swing.GroupLayout.PREFERRED_SIZE))
+                .addPreferredGap(javax.swing.LayoutStyle.ComponentPlacement.UNRELATED)
+                .addGroup(shipperPanelLayout.createParallelGroup(javax.swing.GroupLayout.Alignment.BASELINE)
+                    .addComponent(jLabel8)
+                    .addComponent(nextStopArrivalDate, javax.swing.GroupLayout.PREFERRED_SIZE, javax.swing.GroupLayout.DEFAULT_SIZE, javax.swing.GroupLayout.PREFERRED_SIZE)
+                    .addComponent(jLabel9)
+                    .addComponent(nextStopArrivalTime, javax.swing.GroupLayout.PREFERRED_SIZE, javax.swing.GroupLayout.DEFAULT_SIZE, javax.swing.GroupLayout.PREFERRED_SIZE)))
+        );
+
+        consigneePanel.setBorder(javax.swing.BorderFactory.createTitledBorder("Consignee Departure Information"));
+        consigneePanel.setEnabled(false);
+
+        jLabel10.setText("BoL Signed By:");
+        jLabel10.setEnabled(false);
+
+        bolSignedBy.setEnabled(false);
+
+        isOverage.setText("Overage");
+        isOverage.setEnabled(false);
+
+        isShortage.setText("Shortage");
+        isShortage.setEnabled(false);
+
+        isDamage.setText("Damage");
+        isDamage.setEnabled(false);
+
+        javax.swing.GroupLayout consigneePanelLayout = new javax.swing.GroupLayout(consigneePanel);
+        consigneePanel.setLayout(consigneePanelLayout);
+        consigneePanelLayout.setHorizontalGroup(
+            consigneePanelLayout.createParallelGroup(javax.swing.GroupLayout.Alignment.LEADING)
+            .addGroup(consigneePanelLayout.createSequentialGroup()
+                .addContainerGap()
+                .addComponent(jLabel10)
+                .addPreferredGap(javax.swing.LayoutStyle.ComponentPlacement.UNRELATED)
+                .addGroup(consigneePanelLayout.createParallelGroup(javax.swing.GroupLayout.Alignment.LEADING)
+                    .addGroup(consigneePanelLayout.createSequentialGroup()
+                        .addComponent(isOverage)
+                        .addGap(18, 18, 18)
+                        .addComponent(isShortage)
+                        .addGap(18, 18, 18)
+                        .addComponent(isDamage)
+                        .addGap(0, 0, Short.MAX_VALUE))
+                    .addComponent(bolSignedBy))
+                .addContainerGap())
+        );
+        consigneePanelLayout.setVerticalGroup(
+            consigneePanelLayout.createParallelGroup(javax.swing.GroupLayout.Alignment.LEADING)
+            .addGroup(consigneePanelLayout.createSequentialGroup()
+                .addContainerGap()
+                .addGroup(consigneePanelLayout.createParallelGroup(javax.swing.GroupLayout.Alignment.BASELINE)
+                    .addComponent(jLabel10)
+                    .addComponent(bolSignedBy, javax.swing.GroupLayout.PREFERRED_SIZE, javax.swing.GroupLayout.DEFAULT_SIZE, javax.swing.GroupLayout.PREFERRED_SIZE))
+                .addPreferredGap(javax.swing.LayoutStyle.ComponentPlacement.RELATED)
+                .addGroup(consigneePanelLayout.createParallelGroup(javax.swing.GroupLayout.Alignment.BASELINE)
+                    .addComponent(isOverage)
+                    .addComponent(isShortage)
+                    .addComponent(isDamage))
+                .addContainerGap(javax.swing.GroupLayout.DEFAULT_SIZE, Short.MAX_VALUE))
+        );
 
         javax.swing.GroupLayout layout = new javax.swing.GroupLayout(getContentPane());
         getContentPane().setLayout(layout);
@@ -96,11 +271,24 @@ public class DepartureDialog extends javax.swing.JDialog {
                 .addComponent(commandPanel, javax.swing.GroupLayout.PREFERRED_SIZE, javax.swing.GroupLayout.DEFAULT_SIZE, javax.swing.GroupLayout.PREFERRED_SIZE))
             .addGroup(layout.createSequentialGroup()
                 .addContainerGap()
-                .addComponent(jLabel1)
-                .addPreferredGap(javax.swing.LayoutStyle.ComponentPlacement.RELATED)
-                .addComponent(loadIdList, javax.swing.GroupLayout.PREFERRED_SIZE, 155, javax.swing.GroupLayout.PREFERRED_SIZE)
-                .addPreferredGap(javax.swing.LayoutStyle.ComponentPlacement.RELATED, 213, Short.MAX_VALUE)
-                .addComponent(isShipper)
+                .addGroup(layout.createParallelGroup(javax.swing.GroupLayout.Alignment.LEADING)
+                    .addGroup(layout.createSequentialGroup()
+                        .addGroup(layout.createParallelGroup(javax.swing.GroupLayout.Alignment.TRAILING)
+                            .addComponent(jLabel2)
+                            .addComponent(jLabel1))
+                        .addPreferredGap(javax.swing.LayoutStyle.ComponentPlacement.RELATED)
+                        .addGroup(layout.createParallelGroup(javax.swing.GroupLayout.Alignment.LEADING)
+                            .addComponent(loadIdList, javax.swing.GroupLayout.PREFERRED_SIZE, 155, javax.swing.GroupLayout.PREFERRED_SIZE)
+                            .addComponent(departDate, javax.swing.GroupLayout.PREFERRED_SIZE, 180, javax.swing.GroupLayout.PREFERRED_SIZE))
+                        .addPreferredGap(javax.swing.LayoutStyle.ComponentPlacement.RELATED, javax.swing.GroupLayout.DEFAULT_SIZE, Short.MAX_VALUE)
+                        .addGroup(layout.createParallelGroup(javax.swing.GroupLayout.Alignment.TRAILING)
+                            .addComponent(isShipper)
+                            .addGroup(layout.createSequentialGroup()
+                                .addComponent(jLabel3)
+                                .addPreferredGap(javax.swing.LayoutStyle.ComponentPlacement.RELATED)
+                                .addComponent(departTime, javax.swing.GroupLayout.PREFERRED_SIZE, 79, javax.swing.GroupLayout.PREFERRED_SIZE))))
+                    .addComponent(shipperPanel, javax.swing.GroupLayout.DEFAULT_SIZE, javax.swing.GroupLayout.DEFAULT_SIZE, Short.MAX_VALUE)
+                    .addComponent(consigneePanel, javax.swing.GroupLayout.DEFAULT_SIZE, javax.swing.GroupLayout.DEFAULT_SIZE, Short.MAX_VALUE))
                 .addContainerGap())
         );
         layout.setVerticalGroup(
@@ -111,12 +299,44 @@ public class DepartureDialog extends javax.swing.JDialog {
                     .addComponent(jLabel1)
                     .addComponent(loadIdList, javax.swing.GroupLayout.PREFERRED_SIZE, javax.swing.GroupLayout.DEFAULT_SIZE, javax.swing.GroupLayout.PREFERRED_SIZE)
                     .addComponent(isShipper))
-                .addPreferredGap(javax.swing.LayoutStyle.ComponentPlacement.RELATED, 302, Short.MAX_VALUE)
+                .addPreferredGap(javax.swing.LayoutStyle.ComponentPlacement.UNRELATED)
+                .addGroup(layout.createParallelGroup(javax.swing.GroupLayout.Alignment.BASELINE)
+                    .addComponent(jLabel2)
+                    .addComponent(departDate, javax.swing.GroupLayout.PREFERRED_SIZE, javax.swing.GroupLayout.DEFAULT_SIZE, javax.swing.GroupLayout.PREFERRED_SIZE)
+                    .addComponent(departTime, javax.swing.GroupLayout.PREFERRED_SIZE, javax.swing.GroupLayout.DEFAULT_SIZE, javax.swing.GroupLayout.PREFERRED_SIZE)
+                    .addComponent(jLabel3))
+                .addPreferredGap(javax.swing.LayoutStyle.ComponentPlacement.UNRELATED)
+                .addComponent(shipperPanel, javax.swing.GroupLayout.PREFERRED_SIZE, javax.swing.GroupLayout.DEFAULT_SIZE, javax.swing.GroupLayout.PREFERRED_SIZE)
+                .addPreferredGap(javax.swing.LayoutStyle.ComponentPlacement.RELATED)
+                .addComponent(consigneePanel, javax.swing.GroupLayout.PREFERRED_SIZE, javax.swing.GroupLayout.DEFAULT_SIZE, javax.swing.GroupLayout.PREFERRED_SIZE)
+                .addPreferredGap(javax.swing.LayoutStyle.ComponentPlacement.RELATED, javax.swing.GroupLayout.DEFAULT_SIZE, Short.MAX_VALUE)
                 .addComponent(commandPanel, javax.swing.GroupLayout.PREFERRED_SIZE, javax.swing.GroupLayout.DEFAULT_SIZE, javax.swing.GroupLayout.PREFERRED_SIZE))
         );
 
         pack();
     }// </editor-fold>//GEN-END:initComponents
+
+    private void isShipperStateChanged(javax.swing.event.ChangeEvent evt) {//GEN-FIRST:event_isShipperStateChanged
+        this.isDamage.setEnabled(!this.isShipper.isSelected());
+        this.isOverage.setEnabled(!this.isShipper.isSelected());
+        this.isShortage.setEnabled(!this.isShipper.isSelected());
+        this.bolSignedBy.setEnabled(!this.isShipper.isSelected());
+        this.jLabel10.setEnabled(!this.isShipper.isSelected());
+        this.consigneePanel.setEnabled(!this.isShipper.isSelected());
+        this.shipperPanel.setEnabled(this.isShipper.isSelected());
+        this.jLabel4.setEnabled(this.isShipper.isSelected());
+        this.billOfLading.setEnabled(this.isShipper.isSelected());
+        this.jLabel5.setEnabled(this.isShipper.isSelected());
+        this.pieceCount.setEnabled(this.isShipper.isSelected());
+        this.jLabel6.setEnabled(this.isShipper.isSelected());
+        this.actualWeight.setEnabled(this.isShipper.isSelected());
+        this.jLabel7.setEnabled(this.isShipper.isSelected());
+        this.nextStop.setEnabled(this.isShipper.isSelected());
+        this.jLabel8.setEnabled(this.isShipper.isSelected());
+        this.nextStopArrivalDate.setEnabled(this.isShipper.isSelected());
+        this.jLabel9.setEnabled(this.isShipper.isSelected());
+        this.nextStopArrivalTime.setEnabled(this.isShipper.isSelected());
+    }//GEN-LAST:event_isShipperStateChanged
 
     /**
      * @param args the command line arguments
@@ -162,10 +382,33 @@ public class DepartureDialog extends javax.swing.JDialog {
 
     // Variables declaration - do not modify//GEN-BEGIN:variables
     private javax.swing.JButton acceptButton;
+    private javax.swing.JFormattedTextField actualWeight;
+    private javax.swing.JTextField billOfLading;
+    private javax.swing.JTextField bolSignedBy;
     private javax.swing.JButton cancelButton;
     private javax.swing.JPanel commandPanel;
+    private javax.swing.JPanel consigneePanel;
+    private org.jdesktop.swingx.JXDatePicker departDate;
+    private javax.swing.JFormattedTextField departTime;
+    private javax.swing.JCheckBox isDamage;
+    private javax.swing.JCheckBox isOverage;
     private javax.swing.JCheckBox isShipper;
+    private javax.swing.JCheckBox isShortage;
     private javax.swing.JLabel jLabel1;
+    private javax.swing.JLabel jLabel10;
+    private javax.swing.JLabel jLabel2;
+    private javax.swing.JLabel jLabel3;
+    private javax.swing.JLabel jLabel4;
+    private javax.swing.JLabel jLabel5;
+    private javax.swing.JLabel jLabel6;
+    private javax.swing.JLabel jLabel7;
+    private javax.swing.JLabel jLabel8;
+    private javax.swing.JLabel jLabel9;
     private javax.swing.JComboBox<String> loadIdList;
+    private javax.swing.JComboBox<String> nextStop;
+    private org.jdesktop.swingx.JXDatePicker nextStopArrivalDate;
+    private javax.swing.JFormattedTextField nextStopArrivalTime;
+    private javax.swing.JSpinner pieceCount;
+    private javax.swing.JPanel shipperPanel;
     // End of variables declaration//GEN-END:variables
 }
