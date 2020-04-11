@@ -18,6 +18,7 @@ package com.northwind;
 
 import com.northwind.exceptions.InvalidLoggingLevelException;
 import com.northwind.settings.AppProperties;
+import com.northwind.settings.VersionCalculator;
 import com.northwind.utils.ArgumentParser;
 import com.northwind.utils.Logger;
 import com.northwind.view.MainWindow;
@@ -64,7 +65,6 @@ public class Northwind {
         record.setMessage("Parsing the command-line arguments");
         log.debug(record);
         ArgumentParser parser = new ArgumentParser(args);
-        
         record.setMessage("Checking logging level...");
         log.debug(record);
         int levelToSet = 0;
@@ -79,8 +79,18 @@ public class Northwind {
             level = "CONFIG";
         }
         
+        record.setMessage("Calculating or getting the application version...");
+        record.setSourceClassName(Northwind.class.getName());
+        record.setSourceMethodName("main");
+        record.setParameters(args);
+        log.debug(record);
+        VersionCalculator version = new VersionCalculator();
+        
         record.setMessage("Setting logging level to: " + level + " (" 
                 + levelToSet + ")");
+        log.debug(record);
+        
+        record.setMessage("Application Version: " + props.getVersion());
         log.debug(record);
         
         try {

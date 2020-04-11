@@ -8,13 +8,12 @@ package com.northwind.settings;
 import com.northwind.enums.SysExits;
 import com.northwind.utils.Logger;
 import java.io.File;
-import java.io.FileOutputStream;
 import java.io.FileReader;
 import java.io.FileWriter;
 import java.io.IOException;
+import java.util.Properties;
 import java.util.logging.Level;
 import java.util.logging.LogRecord;
-import java.util.Properties;
 
 /**
  *
@@ -22,11 +21,11 @@ import java.util.Properties;
  */
 public class AppProperties {
     
-    // Private fields for versioning of the software.
-    private static final int MAJOR;
-    private static final int MINOR;
-    private static final int REVISION;
-    private static final long BUILD;
+    // Application folder structure fields.
+    public static final String APP_DIR;
+    private static final String LOG_DIR;
+    private static final String ERR_DIR;
+    private static final String DATA_DIR;
     
     // Private fields for the softare and Project information.
     private static final String NAME = "Northwind Traders Complete Accounting "
@@ -38,12 +37,6 @@ public class AppProperties {
     private static final String VENDOR_PHONE = "(309) 989-0672";
     private static final String PROJECT_LEAD = "Sean Carrick";
     private static final String PROJECT_EMAIL = "sean@pekinsoft.com";
-    
-    // Application folder structure fields.
-    public static final String APP_DIR;
-    private static final String LOG_DIR;
-    private static final String ERR_DIR;
-    private static final String DATA_DIR;
     
     private static final Properties props;
     private static final Logger log = Logger.getInstance();
@@ -113,60 +106,7 @@ public class AppProperties {
             log.debug(record);
         }
         
-        record.setMessage("Calculating application version.");
-        log.debug(record);
-        long bui = Long.valueOf(props.getProperty("app.build", "1903"));
-        int rev = Integer.valueOf(props.getProperty("app.revision", "0"));
-        int min = Integer.valueOf(props.getProperty("app.minor", "1"));
-        int maj = Integer.valueOf(props.getProperty("app.major", "0"));
-        
-        if ( Boolean.parseBoolean(props.getProperty("debugging", "true")) ) {
-            if ( bui <= 1903 ) {
-                String sysTime = String.valueOf(System.currentTimeMillis());
-                bui = Long.valueOf(sysTime.substring((sysTime.length() / 3) * 2, 
-                        sysTime.length()));
-            } else {
-                System.out.println("Current System Time in milliseconds: " +
-                        System.currentTimeMillis());
-                bui += (System.currentTimeMillis() / 900000);
-            }
-            
-            if ( bui >= 9999999 ) {
-                bui = 0;
-                rev++; props.setProperty("app.revision", String.valueOf(rev));
-            }
-            
-            if ( rev >= 49 ) {
-                rev = 0;
-                min++; props.setProperty("app.minor", String.valueOf(min));
-            }
-            
-            if ( min >= 9 ) {
-                min = 0;
-                maj++; props.setProperty("app.major", String.valueOf(maj));
-            }
-        }
-        
-        MAJOR = maj;
-        MINOR = min;
-        REVISION = rev;
-        BUILD = bui;
-
-        try {
-            props.store(new FileOutputStream(new File(APP_DIR + NAME.replace(
-                    ' ', '_') + ".conf")), "Written from static initializer "
-                            + "to create a configuration file.");
-        } catch (IOException ex1) {
-            System.err.println(ex1.getMessage());
-            ex1.printStackTrace(System.err);
-        }
-        
-        record.setMessage("Application version calculated at: " 
-                + MAJOR + "." + MINOR + "." + REVISION + " build " + BUILD);
-        log.debug(record);
-        record.setMessage("Initializing complete!");
-        log.exit(record, null);
-    }
+}
     
     private AppProperties() { /* to prevent instantiation */ }
     
@@ -575,10 +515,10 @@ public class AppProperties {
         record.setMessage("Entering the `exit` procedure.");
         log.enter(record);
         
-        props.setProperty("app.major", String.valueOf(MAJOR));
-        props.setProperty("app.minor", String.valueOf(MINOR));
-        props.setProperty("app.revision", String.valueOf(REVISION));
-        props.setProperty("app.build", String.valueOf(BUILD));
+        props.setProperty("app.major", String.valueOf(VersionCalculator.MAJOR));
+        props.setProperty("app.minor", String.valueOf(VersionCalculator.MINOR));
+        props.setProperty("app.revision", String.valueOf(VersionCalculator.REVISION));
+        props.setProperty("app.build", String.valueOf(VersionCalculator.BUILD));
         
         // Any time that a property is changed anywhere in the application, it
         //+ should be immediately stored back to the properties list. Therefore,
@@ -643,11 +583,13 @@ public class AppProperties {
     }
     
     public String getVersion() {
-        return "v. " + MAJOR + "." + MINOR + "." + REVISION + " build " + BUILD;
+        return "v. " + VersionCalculator.MAJOR + "." + VersionCalculator.MINOR 
+                + "." + VersionCalculator.REVISION + " build " 
+                + VersionCalculator.BUILD;
     }
     
     public String getBuild() {
-        return String.valueOf(BUILD);
+        return String.valueOf(VersionCalculator.BUILD);
     }
     
     public String getComments() {
