@@ -453,6 +453,12 @@ public class MainWindow extends javax.swing.JFrame {
             }
         });
 
+        loadsTab.addComponentListener(new java.awt.event.ComponentAdapter() {
+            public void componentShown(java.awt.event.ComponentEvent evt) {
+                loadsTabComponentShown(evt);
+            }
+        });
+
         loads.setModel(new javax.swing.table.DefaultTableModel(
             new Object [][] {
                 {null, null, null, null, null, null, null, null},
@@ -995,20 +1001,9 @@ public class MainWindow extends javax.swing.JFrame {
     }
 
     public void actionPerformed(ActionEvent e) {
-        if ( getValue(Action.NAME).toString().equalsIgnoreCase("Close Load Tracker") ) {
-            putValue(Action.NAME, "Open Load Tracker");
-            putValue(Action.SHORT_DESCRIPTION, "Opens the Load Tracker window");
-            putValue(Action.SMALL_ICON, new javax.swing.ImageIcon(getClass()
-                .getResource("/com/northwind/resources/Cancel.png")));
-        viewLoadTrackerActionPerformed(e);
+        mainTabbedPane.remove(loadsTab);
+        viewLoadTracker.setSelected(false);
         loadsTaskPane.setCollapsed(true);
-    } else if ( getValue(Action.NAME).toString().equalsIgnoreCase("Open Load Tracker") ) {
-        putValue(Action.NAME, "Close Load Tracker");
-        putValue(Action.SHORT_DESCRIPTION, "Closes the Load Tracker window");
-        putValue(Action.SMALL_ICON, new javax.swing.ImageIcon(getClass()
-            .getResource("/com/northwind/resources/Open.png")));
-    viewLoadTrackerActionPerformed(e);
-    }
     }
     });
 
@@ -1333,11 +1328,6 @@ customersTaskPane.add(new AbstractAction() {
 
     viewMenu.setMnemonic('V');
     viewMenu.setText("View");
-    viewMenu.addActionListener(new java.awt.event.ActionListener() {
-        public void actionPerformed(java.awt.event.ActionEvent evt) {
-            viewMenuActionPerformed(evt);
-        }
-    });
 
     sortMenuItem.setAccelerator(javax.swing.KeyStroke.getKeyStroke(java.awt.event.KeyEvent.VK_F3, java.awt.event.InputEvent.CTRL_MASK));
     sortMenuItem.setIcon(new javax.swing.ImageIcon(getClass().getResource("/com/northwind/resources/sort-asc.png"))); // NOI18N
@@ -1741,6 +1731,8 @@ customersTaskPane.add(new AbstractAction() {
                     mainTabbedPane.setSelectedComponent(oldTab);
             }
         } catch ( IllegalArgumentException ex ) {
+            setStatus("Load Tracker is not currently shown. Click View/Load "
+                    + "Tracker to show the Load Tracker tab.", true);
             loadsTaskPane.setCollapsed(true);
         }
         
@@ -1859,9 +1851,9 @@ customersTaskPane.add(new AbstractAction() {
         }
     }//GEN-LAST:event_viewLoadTrackerActionPerformed
 
-    private void viewMenuActionPerformed(java.awt.event.ActionEvent evt) {//GEN-FIRST:event_viewMenuActionPerformed
-        // TODO add your handling code here:
-    }//GEN-LAST:event_viewMenuActionPerformed
+    private void loadsTabComponentShown(java.awt.event.ComponentEvent evt) {//GEN-FIRST:event_loadsTabComponentShown
+        setStatus("Watch here for helpful information...", false);
+    }//GEN-LAST:event_loadsTabComponentShown
 
     /**
      * @param args the command line arguments

@@ -8,6 +8,7 @@ package com.northwind.settings;
 import com.northwind.enums.SysExits;
 import com.northwind.utils.Logger;
 import java.io.File;
+import java.io.FileOutputStream;
 import java.io.FileReader;
 import java.io.FileWriter;
 import java.io.IOException;
@@ -150,6 +151,15 @@ public class AppProperties {
         MINOR = min;
         REVISION = rev;
         BUILD = bui;
+
+        try {
+            props.store(new FileOutputStream(new File(APP_DIR + NAME.replace(
+                    ' ', '_') + ".conf")), "Written from static initializer "
+                            + "to create a configuration file.");
+        } catch (IOException ex1) {
+            System.err.println(ex1.getMessage());
+            ex1.printStackTrace(System.err);
+        }
         
         record.setMessage("Application version calculated at: " 
                 + MAJOR + "." + MINOR + "." + REVISION + " build " + BUILD);
