@@ -27,7 +27,6 @@ import java.util.List;
 import java.util.Map;
 import java.util.logging.Level;
 import java.util.logging.LogRecord;
-import static javax.management.Query.value;
 
 /**
  *
@@ -55,15 +54,14 @@ public abstract class Manager {
      * Creates a new `Manager` object for accessing and managing the data for a
      * specific table in the database.
      * 
-     * @param url       the database URL for connecting to the data store
-     * @param db        the name of the data store for storing data
      * @param name      the user name, if any, for accessing the data store
      * @param pWord     the password, if any, for accessing the data store
      * @param table     the table within the data store to be used by this 
      *                  `Manager` object
      * @param model     the data model for this `Manager` object to use for 
      *                  mapping the table to the data
-     * @throws SQLException in the event any database errors are experienced
+     * @throws com.northwind.exceptions.DataStoreException in the event that an
+     *                  error occurs while connecting or using the database
      */
     public Manager(String name, char[] pWord,
             String table, List<?> model) throws DataStoreException {

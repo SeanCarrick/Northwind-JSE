@@ -49,6 +49,15 @@ public class Load {
     private String dispatcherPhone;
     private LocalDate bookedOn;
 
+    public Load() {
+        
+    }
+    
+    public Load(String order, String trip) {
+        this.orderNumber = order;
+        this.tripNumber = trip;
+    }
+    
     public String getOrderNumber() {
         return orderNumber;
     }

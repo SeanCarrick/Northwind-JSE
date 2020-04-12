@@ -24,6 +24,7 @@ import com.northwind.custmgr.view.CustomerSelectionDialog;
 import com.northwind.custmgr.view.CustomersTableModel;
 import com.northwind.exceptions.DataStoreException;
 import com.northwind.loadmgr.view.ArrivalDialog;
+import com.northwind.loadmgr.view.CashAdvanceDialog;
 import com.northwind.settings.AppProperties;
 import com.northwind.utils.Logger;
 import java.awt.Color;
@@ -70,13 +71,34 @@ public class MainWindow extends javax.swing.JFrame {
         actionSupport.removeActionListener(listener);
     }
     
-    public void setStatus(String msg, boolean isError) {
-        this.tipsLabel.setText(msg);
+    public static void setStatus(String msg, boolean isError) {
+        tipsLabel.setText(msg);
         
         if ( isError ) 
-            this.tipsLabel.setForeground(Color.red);
+            tipsLabel.setForeground(Color.red);
         else
-            this.tipsLabel.setForeground(SystemColor.textText);
+            tipsLabel.setForeground(SystemColor.textText);
+    }
+    
+    public static void setHelp(String msg) {
+        helpPane.setText(msg);
+    }
+    
+    public static void resetHelp() {
+        helpPane.setText("<html>\n" +
+                "  <head>\n" +
+                "\n" +
+                "  </head>\n" +
+                "  <body>\n" +
+                "    <h3>Quick Help</h3>\n" +
+                "    <p style=\"margin-top: 0\">\n" +
+                "      This information panel will provide information that "
+                + "will help you get the most out of Northwind Traders. "
+                + "Whenever you are doing anything in the application, look "
+                + "here first if you have questions.\n" +
+                "    </p>\n" +
+                "  </body>\n" +
+                "</html>");
     }
     
     private void enableEdit(boolean enabled) {
@@ -364,7 +386,7 @@ public class MainWindow extends javax.swing.JFrame {
         glTaskPane = new org.jdesktop.swingx.JXTaskPane();
         lowRightPanel = new javax.swing.JPanel();
         jScrollPane10 = new javax.swing.JScrollPane();
-        jTextPane1 = new javax.swing.JTextPane();
+        helpPane = new javax.swing.JTextPane();
         highRightPanel = new javax.swing.JPanel();
         rightTabbedPane = new javax.swing.JTabbedPane();
         perMileBreakdownTab = new javax.swing.JPanel();
@@ -1052,6 +1074,24 @@ public class MainWindow extends javax.swing.JFrame {
 
     loadsTaskPane.add(new AbstractAction() {
         {
+            putValue(Action.NAME, "Take Cash Advance...");
+            putValue(Action.SHORT_DESCRIPTION, "Displays cash advance dialog");
+            putValue(Action.SMALL_ICON, new javax.swing.ImageIcon(getClass()
+                .getResource("/com/northwind/resources/money3D.png")));
+    }
+
+    public void actionPerformed(ActionEvent e) {
+        CashAdvanceDialog dlg = new CashAdvanceDialog(null, false);
+        dlg.pack();
+        dlg.setAlwaysOnTop(true);
+        dlg.setVisible(true);
+    }
+    });
+
+    loadsTaskPane.add(new JSeparator());
+
+    loadsTaskPane.add(new AbstractAction() {
+        {
             putValue(Action.NAME, "View Loads Queue...");
             putValue(Action.SHORT_DESCRIPTION, "Displays Loads Queue dialog");
             putValue(Action.SMALL_ICON, new javax.swing.ImageIcon(getClass()
@@ -1160,9 +1200,9 @@ customersTaskPane.add(new AbstractAction() {
 
     jScrollPane3.setViewportView(mainTaskController);
 
-    jTextPane1.setContentType("text/html"); // NOI18N
-    jTextPane1.setText("<html>\n  <head>\n\n  </head>\n  <body>\n    <h3>Information Panel</h3>\n    <p style=\"margin-top: 0\">\n      This information panel will provide information that will help you get the most out of Northwind Traders. Whenever you are doing anything in the application, look here first if you have questions.\n    </p>\n  </body>\n</html>\n");
-    jScrollPane10.setViewportView(jTextPane1);
+    helpPane.setContentType("text/html"); // NOI18N
+    helpPane.setText("<html>\n  <head>\n\n  </head>\n  <body>\n    <h3>Quick Help</h3>\n    <p style=\"margin-top: 0\">\n      This information panel will provide information that will help you get the most out of Northwind Traders. Whenever you are doing anything in the application, look here first if you have questions.\n    </p>\n  </body>\n</html>\n");
+    jScrollPane10.setViewportView(helpPane);
 
     javax.swing.GroupLayout lowRightPanelLayout = new javax.swing.GroupLayout(lowRightPanel);
     lowRightPanel.setLayout(lowRightPanelLayout);
@@ -1921,6 +1961,7 @@ customersTaskPane.add(new AbstractAction() {
     private javax.swing.JPanel glTab;
     private org.jdesktop.swingx.JXTaskPane glTaskPane;
     private javax.swing.JMenu helpMenu;
+    private static javax.swing.JTextPane helpPane;
     private javax.swing.JPanel highRightPanel;
     private javax.swing.JMenuItem indexMenuItem;
     private javax.swing.JLabel jLabel1;
@@ -1939,7 +1980,6 @@ customersTaskPane.add(new AbstractAction() {
     private javax.swing.JPopupMenu.Separator jSeparator3;
     private javax.swing.JPopupMenu.Separator jSeparator4;
     private javax.swing.JPopupMenu.Separator jSeparator5;
-    private javax.swing.JTextPane jTextPane1;
     private javax.swing.JMenuItem loadMenuItem;
     private javax.swing.JTable loads;
     private javax.swing.JPanel loadsTab;
@@ -1967,7 +2007,7 @@ customersTaskPane.add(new AbstractAction() {
     private javax.swing.JPanel servicesTab;
     private org.jdesktop.swingx.JXTaskPane servicesTaskPane;
     private javax.swing.JMenuItem sortMenuItem;
-    private javax.swing.JLabel tipsLabel;
+    private static javax.swing.JLabel tipsLabel;
     private javax.swing.JMenuItem tiresMenuItem;
     private javax.swing.JMenu toolsMenu;
     private javax.swing.JLabel userLabel;
