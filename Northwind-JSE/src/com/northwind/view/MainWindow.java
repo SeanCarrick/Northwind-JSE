@@ -447,6 +447,7 @@ public class MainWindow extends javax.swing.JFrame {
                     .addComponent(userLabel)))
         );
 
+        mainTabbedPane.setTabLayoutPolicy(javax.swing.JTabbedPane.SCROLL_TAB_LAYOUT);
         mainTabbedPane.addChangeListener(new javax.swing.event.ChangeListener() {
             public void stateChanged(javax.swing.event.ChangeEvent evt) {
                 mainTabbedPaneStateChanged(evt);
@@ -1731,9 +1732,14 @@ customersTaskPane.add(new AbstractAction() {
                     mainTabbedPane.setSelectedComponent(oldTab);
             }
         } catch ( IllegalArgumentException ex ) {
-            setStatus("Load Tracker is not currently shown. Click View/Load "
-                    + "Tracker to show the Load Tracker tab.", true);
-            loadsTaskPane.setCollapsed(true);
+            // Since this exception is thrown in the event the Load Tracker tab
+            //+ is closed, we just need to open the Load Tracker tab and set it
+            //+ as the focused tab.
+            mainTabbedPane.addTab("Load Tracker", 
+                new javax.swing.ImageIcon(getClass().getResource(
+                        "/com/northwind/resources/freight.png")), loadsTab);
+            mainTabbedPane.setSelectedComponent(loadsTab);
+            viewLoadTracker.setSelected(true);
         }
         
         this.mainTabbedPaneStateChanged(null);
