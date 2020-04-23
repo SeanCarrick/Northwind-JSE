@@ -23,6 +23,7 @@ import com.northwind.custmgr.view.CustomerEntryDlg;
 import com.northwind.custmgr.view.CustomerSelectionDialog;
 import com.northwind.custmgr.view.CustomersTableModel;
 import com.northwind.exceptions.DataStoreException;
+import com.northwind.fueljrnl.view.FuelPurchaseDialog;
 import com.northwind.loadmgr.view.ArrivalDialog;
 import com.northwind.loadmgr.view.CashAdvanceDialog;
 import com.northwind.settings.AppProperties;
@@ -43,6 +44,7 @@ import java.util.List;
 import java.util.logging.LogRecord;
 import javax.swing.AbstractAction;
 import javax.swing.Action;
+import javax.swing.ImageIcon;
 import javax.swing.JFileChooser;
 import javax.swing.JOptionPane;
 import javax.swing.JSeparator;
@@ -165,6 +167,9 @@ public class MainWindow extends javax.swing.JFrame {
         initComponents();
         
         props = AppProperties.getInstance();
+        
+        setIconImage(new ImageIcon(MainWindow.class.getResource(
+                "/com/northwind/resources/Northwind16.png")).getImage());
         
         versionLabel.setText(props.getName() + " " + props.getVersion());
         userLabel.setText(System.getProperty("user.name"));
@@ -1115,6 +1120,39 @@ public class MainWindow extends javax.swing.JFrame {
     fuelTaskPane.setMnemonic('F');
     fuelTaskPane.setScrollOnExpand(true);
     fuelTaskPane.setTitle("Fuel Journal Tasks");
+    fuelTaskPane.add(new AbstractAction() {
+        {
+            putValue(Action.NAME, "Close Fuel Journal");
+            putValue(Action.SHORT_DESCRIPTION, "Closes the Fuel Journal window");
+            putValue(Action.SMALL_ICON, new javax.swing.ImageIcon(getClass()
+                .getResource("/com/northwind/resources/Cancel.png")));
+    }
+
+    public void actionPerformed(ActionEvent e) {
+        mainTabbedPane.remove(fuelTab);
+        viewFuelJournal.setSelected(false);
+        fuelTaskPane.setCollapsed(true);
+    }
+    });
+
+    fuelTaskPane.add(new JSeparator());
+
+    fuelTaskPane.add(new AbstractAction() {
+        {
+            putValue(Action.NAME, "Enter Fuel Purchase");
+            putValue(Action.SHORT_DESCRIPTION, "Opens the Fuel Purchase dialog");
+            putValue(Action.SMALL_ICON, new javax.swing.ImageIcon(getClass()
+                .getResource("/com/northwind/resources/GasPump.png")));
+    }
+
+    public void actionPerformed(ActionEvent e) {
+        FuelPurchaseDialog dlg = new FuelPurchaseDialog(null, true);
+        dlg.pack();
+        dlg.setVisible(true);
+    }
+    });
+
+    loadsTaskPane.add(new JSeparator());
     fuelTaskPane.addComponentListener(new java.awt.event.ComponentAdapter() {
         public void componentResized(java.awt.event.ComponentEvent evt) {
             fuelTaskPaneComponentResized(evt);

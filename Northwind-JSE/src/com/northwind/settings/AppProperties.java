@@ -116,7 +116,7 @@ public class AppProperties {
     
     /**
      * Convenience method for getting the data folder for the application. If 
-     * after seaching the properties list, and the defaults property lists,
+     * after searching the properties list, and the defaults property lists,
      * recursively, and the key is not found, the default data folder will be
      * returned.
      * 

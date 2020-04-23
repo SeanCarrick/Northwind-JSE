@@ -1327,6 +1327,9 @@
               <Events>
                 <EventHandler event="componentResized" listener="java.awt.event.ComponentListener" parameters="java.awt.event.ComponentEvent" handler="fuelTaskPaneComponentResized"/>
               </Events>
+              <AuxValues>
+                <AuxValue name="JavaCodeGenerator_InitCodePost" type="java.lang.String" value="fuelTaskPane.add(new AbstractAction() {&#xa;{&#xa;    putValue(Action.NAME, &quot;Close Fuel Journal&quot;);&#xa;    putValue(Action.SHORT_DESCRIPTION, &quot;Closes the Fuel Journal window&quot;);&#xa;    putValue(Action.SMALL_ICON, new javax.swing.ImageIcon(getClass()&#xa;            .getResource(&quot;/com/northwind/resources/Cancel.png&quot;)));&#xa;}&#xa;&#xa;public void actionPerformed(ActionEvent e) {&#xa;    mainTabbedPane.remove(fuelTab);&#xa;    viewFuelJournal.setSelected(false);&#xa;    fuelTaskPane.setCollapsed(true);&#xa;}&#xa;});&#xa;&#xa;fuelTaskPane.add(new JSeparator());&#xa;&#xa;fuelTaskPane.add(new AbstractAction() {&#xa;{&#xa;    putValue(Action.NAME, &quot;Enter Fuel Purchase&quot;);&#xa;    putValue(Action.SHORT_DESCRIPTION, &quot;Opens the Fuel Purchase dialog&quot;);&#xa;    putValue(Action.SMALL_ICON, new javax.swing.ImageIcon(getClass()&#xa;            .getResource(&quot;/com/northwind/resources/GasPump.png&quot;)));&#xa;}&#xa;&#xa;public void actionPerformed(ActionEvent e) {&#xa;    FuelPurchaseDialog dlg = new FuelPurchaseDialog(null, true);&#xa;    dlg.pack();&#xa;    dlg.setVisible(true);&#xa;}&#xa;});&#xa;&#xa;loadsTaskPane.add(new JSeparator());"/>
+              </AuxValues>
             </Component>
             <Component class="org.jdesktop.swingx.JXTaskPane" name="servicesTaskPane">
               <Properties>
