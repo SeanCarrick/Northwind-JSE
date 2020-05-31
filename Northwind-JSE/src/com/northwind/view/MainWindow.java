@@ -26,6 +26,7 @@ import com.northwind.exceptions.DataStoreException;
 import com.northwind.fueljrnl.view.FuelPurchaseDialog;
 import com.northwind.loadmgr.view.ArrivalDialog;
 import com.northwind.loadmgr.view.CashAdvanceDialog;
+import com.northwind.loadmgr.view.LoadEntryDialog;
 import com.northwind.settings.AppProperties;
 import com.northwind.utils.Logger;
 import java.awt.Color;
@@ -307,7 +308,8 @@ public class MainWindow extends javax.swing.JFrame {
     }
     
     private void doNewLoad() {
-        CustomerSelectionDialog dlg = new CustomerSelectionDialog(this, true);
+        LoadEntryDialog dlg = new LoadEntryDialog(this, true);
+        
         dlg.pack();
         dlg.setVisible(true);
     }

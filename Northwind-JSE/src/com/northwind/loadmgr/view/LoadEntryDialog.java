@@ -16,6 +16,9 @@
  */
 package com.northwind.loadmgr.view;
 
+import com.northwind.utils.ScreenUtils;
+import javax.swing.text.StyleConstants;
+
 /**
  *
  * @author Sean Carrick &lt;sean at pekinsoft dot com&gt;
@@ -28,6 +31,18 @@ public class LoadEntryDialog extends javax.swing.JDialog {
     public LoadEntryDialog(java.awt.Frame parent, boolean modal) {
         super(parent, modal);
         initComponents();
+                
+        // Center the dialog on its owner:
+        ScreenUtils.centerDialog(this);
+        
+    }
+    
+    public static void setDecorated(boolean decorate) {
+        doDecoration(!decorate);
+    }
+    
+    private void doDecoration(boolean decoration) {
+        setUndecorated(decoration);
     }
 
     /**
@@ -39,21 +54,80 @@ public class LoadEntryDialog extends javax.swing.JDialog {
     // <editor-fold defaultstate="collapsed" desc="Generated Code">//GEN-BEGIN:initComponents
     private void initComponents() {
 
+        commandPanel = new javax.swing.JPanel();
+        cancelButton = new javax.swing.JButton();
+        saveButton = new javax.swing.JButton();
+
         setDefaultCloseOperation(javax.swing.WindowConstants.DISPOSE_ON_CLOSE);
+        setTitle("Book New Load");
+
+        cancelButton.setIcon(new javax.swing.ImageIcon(getClass().getResource("/com/northwind/resources/Cancel.png"))); // NOI18N
+        cancelButton.setMnemonic('C');
+        cancelButton.setText("Cancel");
+        cancelButton.addActionListener(new java.awt.event.ActionListener() {
+            public void actionPerformed(java.awt.event.ActionEvent evt) {
+                doCancel(evt);
+            }
+        });
+
+        saveButton.setIcon(new javax.swing.ImageIcon(getClass().getResource("/com/northwind/resources/Apply.png"))); // NOI18N
+        saveButton.setMnemonic('B');
+        saveButton.setText("Book Load");
+        saveButton.addActionListener(new java.awt.event.ActionListener() {
+            public void actionPerformed(java.awt.event.ActionEvent evt) {
+                doSave(evt);
+            }
+        });
+
+        javax.swing.GroupLayout commandPanelLayout = new javax.swing.GroupLayout(commandPanel);
+        commandPanel.setLayout(commandPanelLayout);
+        commandPanelLayout.setHorizontalGroup(
+            commandPanelLayout.createParallelGroup(javax.swing.GroupLayout.Alignment.LEADING)
+            .addGroup(javax.swing.GroupLayout.Alignment.TRAILING, commandPanelLayout.createSequentialGroup()
+                .addContainerGap(javax.swing.GroupLayout.DEFAULT_SIZE, Short.MAX_VALUE)
+                .addComponent(saveButton)
+                .addPreferredGap(javax.swing.LayoutStyle.ComponentPlacement.RELATED)
+                .addComponent(cancelButton)
+                .addContainerGap())
+        );
+        commandPanelLayout.setVerticalGroup(
+            commandPanelLayout.createParallelGroup(javax.swing.GroupLayout.Alignment.LEADING)
+            .addGroup(javax.swing.GroupLayout.Alignment.TRAILING, commandPanelLayout.createSequentialGroup()
+                .addContainerGap(javax.swing.GroupLayout.DEFAULT_SIZE, Short.MAX_VALUE)
+                .addGroup(commandPanelLayout.createParallelGroup(javax.swing.GroupLayout.Alignment.BASELINE)
+                    .addComponent(cancelButton)
+                    .addComponent(saveButton))
+                .addContainerGap())
+        );
 
         javax.swing.GroupLayout layout = new javax.swing.GroupLayout(getContentPane());
         getContentPane().setLayout(layout);
         layout.setHorizontalGroup(
             layout.createParallelGroup(javax.swing.GroupLayout.Alignment.LEADING)
-            .addGap(0, 905, Short.MAX_VALUE)
+            .addGroup(javax.swing.GroupLayout.Alignment.TRAILING, layout.createSequentialGroup()
+                .addGap(0, 635, Short.MAX_VALUE)
+                .addComponent(commandPanel, javax.swing.GroupLayout.PREFERRED_SIZE, javax.swing.GroupLayout.DEFAULT_SIZE, javax.swing.GroupLayout.PREFERRED_SIZE))
         );
         layout.setVerticalGroup(
             layout.createParallelGroup(javax.swing.GroupLayout.Alignment.LEADING)
-            .addGap(0, 616, Short.MAX_VALUE)
+            .addGroup(javax.swing.GroupLayout.Alignment.TRAILING, layout.createSequentialGroup()
+                .addGap(0, 576, Short.MAX_VALUE)
+                .addComponent(commandPanel, javax.swing.GroupLayout.PREFERRED_SIZE, javax.swing.GroupLayout.DEFAULT_SIZE, javax.swing.GroupLayout.PREFERRED_SIZE))
         );
 
         pack();
     }// </editor-fold>//GEN-END:initComponents
+
+    private void doCancel(java.awt.event.ActionEvent evt) {//GEN-FIRST:event_doCancel
+        this.dispose();
+    }//GEN-LAST:event_doCancel
+
+    private void doSave(java.awt.event.ActionEvent evt) {//GEN-FIRST:event_doSave
+        // Validate entry and store data to the database:
+        
+        // Keep as last line:
+        doCancel(evt);
+    }//GEN-LAST:event_doSave
 
     /**
      * @param args the command line arguments
@@ -98,5 +172,8 @@ public class LoadEntryDialog extends javax.swing.JDialog {
     }
 
     // Variables declaration - do not modify//GEN-BEGIN:variables
+    private javax.swing.JButton cancelButton;
+    private javax.swing.JPanel commandPanel;
+    private javax.swing.JButton saveButton;
     // End of variables declaration//GEN-END:variables
 }
